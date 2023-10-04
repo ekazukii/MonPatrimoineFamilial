@@ -27,8 +27,7 @@ public class FileController {
     @Autowired
     private FileRepository fileRepository;
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    private String uploadDir = "C:\\Users\\CYTech Student\\IdeaProjects\\monPapiFinito\\src\\main\\resources\\img";
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file")MultipartFile file){
