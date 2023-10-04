@@ -1,9 +1,6 @@
 package fr.cytech.mpf.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -23,6 +20,9 @@ public class User implements Serializable {
     private String password;
 
     private String username;
+
+    @OneToOne
+    private Tree tree;
 
     public long getId() {
         return Id;
