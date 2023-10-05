@@ -10,11 +10,13 @@ import fr.cytech.mpf.service.NodeService;
 import fr.cytech.mpf.utils.NodeVisibility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -47,6 +49,28 @@ public class TreeController {
         tree.setNodes(nodes);
 
         return ResponseEntity.ok(tree);
+    }
+
+    @PostMapping("/tree/byFilter")
+    public ResponseEntity<Map<String, String>> getFilterTree(@RequestBody NodeFilterRequestDTO filterRequest){
+        try{
+            long treeId = filterRequest.getTreeId();
+            String filterIs = filterRequest.getFilterIs();
+            Map <String, String> filterInfo = filterRequest.getFilterInfo();
+            // Appelez la méthode getTree avec les paramètres id et detail
+            ResponseEntity<Tree> response = getTree(treeId, true); // Vous pouvez spécifier la valeur de 'detail' selon vos besoins
+
+            // Si la réponse est OK, renvoyez la même réponse
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return filterInfo;
+            } else {
+                // Si la réponse n'est pas OK, renvoyez la même réponse avec le code d'erreur approprié
+                return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+            }
+        } catch (NumberFormatException e) {
+            // Gérez l'erreur si treeId n'est pas un nombre valide
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/tree")

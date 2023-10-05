@@ -1,6 +1,7 @@
 package fr.cytech.mpf.service;
 
 import fr.cytech.mpf.entity.Node;
+import fr.cytech.mpf.entity.Tree;
 import fr.cytech.mpf.utils.NodeVisibility;
 import org.springframework.stereotype.Service;
 
