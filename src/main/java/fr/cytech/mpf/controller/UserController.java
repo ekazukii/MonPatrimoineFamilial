@@ -13,10 +13,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.function.EntityResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,12 +32,15 @@ public class UserController {
     UserController() {
         modelMapper = new ModelMapper();
     }
+
+    @CrossOrigin
     @PostMapping(value = "/user")
     public void addUser(@RequestBody UserAddDTO userDto) {
         User user = modelMapper.map(userDto, User.class);
         userRepository.save(user);
     }
 
+    @CrossOrigin
     @GetMapping(value = "/user")
     public ResponseEntity<UserGetDTO> getUser(@RequestParam Long id) {
         User user = userRepository.getReferenceById(id);
@@ -47,12 +48,14 @@ public class UserController {
         return ResponseEntity.ok(userGetDTO);
     }
 
+    @CrossOrigin
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUser() {
         List<User> users = userRepository.findAll();
         return ResponseEntity.ok(users);
     }
 
+    @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<User> testUser(@RequestBody LoginDTO loginDTO, HttpSession session) {
         Optional<User> user = userRepository.findUserByUsernameAndPassword(loginDTO.getUsername(), loginDTO.getPassword());
@@ -61,6 +64,7 @@ public class UserController {
         return ResponseEntity.ok(user.get());
     }
 
+    @CrossOrigin
     @PostMapping("/register")
     public ResponseEntity<User> registerNewUser(@RequestBody RegisterDTO registerDTO, HttpSession session) {
         User user = modelMapper.map(registerDTO, User.class);
@@ -69,6 +73,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @CrossOrigin
     @GetMapping("/userinfo")
     public ResponseEntity<User> getUserInfo(HttpSession session) {
         User usr = (User) session.getAttribute("account");
@@ -76,12 +81,14 @@ public class UserController {
         return ResponseEntity.ok(usr);
     }
 
+    @CrossOrigin
     @GetMapping("/logout") @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpSession session) {
         session.invalidate();
         return ResponseEntity.ok("ok");
     }
 
+    @CrossOrigin
     @PostMapping(value = "/addtestuser")
     public ResponseEntity<String> addTestUser() {
         User user = new User();
@@ -94,6 +101,15 @@ public class UserController {
         return ResponseEntity.ok("ok");
     }
 
+    @CrossOrigin
+    @GetMapping(value = "/user")
+    public ResponseEntity<UserGetDTO> getUser(@RequestParam Long id) {
+        User user = userRepository.getReferenceById(id);
+        UserGetDTO userGetDTO = modelMapper.map(user, UserGetDTO.class);
+        return ResponseEntity.ok(userGetDTO);
+    }
+
+    @CrossOrigin
     @GetMapping(value = "/userrdm")
     public ResponseEntity<UserGetDTO> getUserRandom() {
         Optional<User> user = userRepository.findAll().stream().findFirst();
