@@ -4,6 +4,7 @@ import fr.cytech.mpf.entity.Node;
 import fr.cytech.mpf.entity.Tree;
 import fr.cytech.mpf.utils.NodeVisibility;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
     List<Node> findAllByParentAId(Long nodeId);
 
     List<Node> findAllByParentBId(Long nodeId);
+
+    public List<Node> findAllByTreeAndFirstNameAndLastName(Tree tree, String firstName, String lastName);
 }

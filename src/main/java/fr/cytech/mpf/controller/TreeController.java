@@ -52,24 +52,32 @@ public class TreeController {
     }
 
     @PostMapping("/tree/byFilter")
-    public ResponseEntity<Map<String, String>> getFilterTree(@RequestBody NodeFilterRequestDTO filterRequest){
+    public ResponseEntity<?> getFilterTree(@RequestBody NodeFilterRequestDTO filterRequest){
         try{
-            long treeId = filterRequest.getTreeId();
+            Long treeId = filterRequest.getTreeId();
             String filterIs = filterRequest.getFilterIs();
             Map <String, String> filterInfo = filterRequest.getFilterInfo();
-            // Appelez la méthode getTree avec les paramètres id et detail
-            ResponseEntity<Tree> response = getTree(treeId, true); // Vous pouvez spécifier la valeur de 'detail' selon vos besoins
 
-            // Si la réponse est OK, renvoyez la même réponse
-            if (response.getStatusCode() == HttpStatus.OK) {
-                return filterInfo;
-            } else {
-                // Si la réponse n'est pas OK, renvoyez la même réponse avec le code d'erreur approprié
-                return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
-            }
+                if ("byName".equals(filterIs)) {
+                    ResponseEntity<Tree> response = getTree(treeId, true); // Vous pouvez spécifier la valeur de 'detail' selon vos besoins
+                    List<Node> nodesFindByName = nodeRepository.findAllByTreeAndFirstNameAndLastName(response.getBody(), filterInfo.get("firstName"), filterInfo.get("lastName"));
+                    // Si la réponse est OK, renvoyez la même réponse
+                    if (response.getStatusCode() == HttpStatus.OK) {
+                        return ResponseEntity.ok(nodesFindByName);
+                    }
+                    else {
+                        // Si la réponse n'est pas OK, renvoyez la même réponse avec le code d'erreur approprié
+                        return ResponseEntity.notFound().build();
+                    }
+                } else if ("byType".equals(filterIs)) {
+                    //A definir dans les noeuds : cousins , frr etc
+                    return ResponseEntity.ok(filterInfo);
+                } else {
+                    return ResponseEntity.badRequest().body("Filtrage non pris en charge : " + filterIs);
+                }
         } catch (NumberFormatException e) {
             // Gérez l'erreur si treeId n'est pas un nombre valide
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body("L'id de l'arbre est invalide!");
         }
     }
 
