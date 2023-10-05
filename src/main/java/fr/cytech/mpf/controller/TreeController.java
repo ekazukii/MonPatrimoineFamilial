@@ -1,5 +1,6 @@
 package fr.cytech.mpf.controller;
 
+import fr.cytech.mpf.config.MustBeLogged;
 import fr.cytech.mpf.dto.*;
 import fr.cytech.mpf.entity.Node;
 import fr.cytech.mpf.entity.Tree;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 public class TreeController {
@@ -34,6 +36,7 @@ public class TreeController {
         modelMapper = new ModelMapper();
     }
 
+    @MustBeLogged
     @GetMapping("/tree")
     public ResponseEntity<Tree> getTree(@RequestParam Long id,  @RequestParam Boolean detail) {
         Optional<Tree> treeOpt = treeRepository.findById(id);
@@ -43,12 +46,12 @@ public class TreeController {
         Tree tree = treeOpt.get();
         List<NodeVisibility> visibilities = nodeService.getVisibilityList(NodeVisibility.Private);
         List<Node> nodes = nodeRepository.findAllByTreeEqualsAndVisibilityIn(tree, visibilities);
-
         tree.setNodes(nodes);
 
         return ResponseEntity.ok(tree);
     }
 
+    @MustBeLogged
     @PostMapping("/tree")
     public ResponseEntity<Tree> createNewTree (@RequestBody TreeAddDTO treeDto) {
         Tree tree = modelMapper.map(treeDto, Tree.class);
@@ -57,6 +60,7 @@ public class TreeController {
         return ResponseEntity.ok(tree);
     }
 
+    @MustBeLogged
     @PutMapping("/tree")
     public ResponseEntity<Tree> editTree(@RequestBody TreeEditDTO treeEditDTO) {
         Optional<Tree> actualTree = treeRepository.findById(treeEditDTO.getTreeId());
@@ -66,6 +70,7 @@ public class TreeController {
         return ResponseEntity.ok(actualTree.get());
     }
 
+    @MustBeLogged
     @PostMapping("/tree/node")
     public ResponseEntity<Node> addNewNodeToTree (@RequestBody NodeAddDTO nodeDto) {
         Node node = customDTOMapper.nodeAddDtoToNode(nodeDto);
@@ -74,6 +79,7 @@ public class TreeController {
         return ResponseEntity.ok(node);
     }
 
+    @MustBeLogged
     @DeleteMapping("/tree/node")
     public ResponseEntity<String> removeNode (@RequestBody NodeDeleteDTO nodeDto) {
         List<Node> nodesPA = nodeRepository.findAllByParentAId(nodeDto.nodeId);
@@ -89,6 +95,7 @@ public class TreeController {
         return ResponseEntity.ok("ok");
     }
 
+    @MustBeLogged
     @PutMapping("/tree/node")
     public ResponseEntity<Node> editNode(@RequestBody NodeEditDTO nodeDto) {
         Node node = customDTOMapper.nodeAddDtoToNode(nodeDto);
@@ -98,6 +105,7 @@ public class TreeController {
         return ResponseEntity.ok(node);
     }
 
+    @MustBeLogged
     @PostMapping("/createTestTree")
     public ResponseEntity<String> createTestTree() {
         Tree tree = new Tree();
@@ -106,6 +114,7 @@ public class TreeController {
         return ResponseEntity.ok("ok");
     }
 
+    @MustBeLogged
     @PostMapping("/createTestNodes")
     public ResponseEntity<String> createTestNodes() {
         Tree tree = treeRepository.findAll().get(0);
@@ -120,7 +129,7 @@ public class TreeController {
         return ResponseEntity.ok("ok");
     }
 
-
+    @MustBeLogged
     @GetMapping("/getTestTree")
     public ResponseEntity<Tree> getTestTree() {
         Tree tree = treeRepository.findAll().get(0);
