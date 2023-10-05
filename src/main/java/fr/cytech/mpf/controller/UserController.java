@@ -9,10 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
 
 import java.util.Optional;
@@ -30,12 +27,15 @@ public class UserController {
     UserController() {
         modelMapper = new ModelMapper();
     }
+
+    @CrossOrigin
     @PostMapping(value = "/user")
     public void addUser(@RequestBody UserAddDTO userDto) {
         User user = modelMapper.map(userDto, User.class);
         userRepository.save(user);
     }
 
+    @CrossOrigin
     @PostMapping(value = "/addtestuser")
     public ResponseEntity<String> addTestUser() {
         User user = new User();
@@ -48,6 +48,7 @@ public class UserController {
         return ResponseEntity.ok("ok");
     }
 
+    @CrossOrigin
     @GetMapping(value = "/user")
     public ResponseEntity<UserGetDTO> getUser(@RequestParam Long id) {
         User user = userRepository.getReferenceById(id);
@@ -55,6 +56,7 @@ public class UserController {
         return ResponseEntity.ok(userGetDTO);
     }
 
+    @CrossOrigin
     @GetMapping(value = "/userrdm")
     public ResponseEntity<UserGetDTO> getUserRandom() {
         Optional<User> user = userRepository.findAll().stream().findFirst();
