@@ -1,4 +1,5 @@
 import Button from 'react-bootstrap/Button';
+import TreeComponent from '../components/TreeComponent';
 
 const Home = () => {
     const fetchTestUsr = async () => {
@@ -10,6 +11,7 @@ const Home = () => {
 
     return (<div>
         <h1>Home</h1>
+        <TreeComponent/>
         <Button onClick={fetchTestUsr}>Boostrap button example</Button>
     </div>);
 };

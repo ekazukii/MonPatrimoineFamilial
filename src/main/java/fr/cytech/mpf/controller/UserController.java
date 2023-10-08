@@ -41,14 +41,6 @@ public class UserController {
     }
 
     @CrossOrigin
-    @GetMapping(value = "/user")
-    public ResponseEntity<UserGetDTO> getUser(@RequestParam Long id) {
-        User user = userRepository.getReferenceById(id);
-        UserGetDTO userGetDTO = modelMapper.map(user, UserGetDTO.class);
-        return ResponseEntity.ok(userGetDTO);
-    }
-
-    @CrossOrigin
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUser() {
         List<User> users = userRepository.findAll();
