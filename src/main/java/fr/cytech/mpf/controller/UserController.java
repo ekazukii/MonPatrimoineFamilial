@@ -94,14 +94,6 @@ public class UserController {
     }
 
     @CrossOrigin
-    @GetMapping(value = "/user")
-    public ResponseEntity<UserGetDTO> getUser(@RequestParam Long id) {
-        User user = userRepository.getReferenceById(id);
-        UserGetDTO userGetDTO = modelMapper.map(user, UserGetDTO.class);
-        return ResponseEntity.ok(userGetDTO);
-    }
-
-    @CrossOrigin
     @GetMapping(value = "/userrdm")
     public ResponseEntity<UserGetDTO> getUserRandom() {
         Optional<User> user = userRepository.findAll().stream().findFirst();
