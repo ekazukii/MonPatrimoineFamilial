@@ -8,6 +8,7 @@ import fr.cytech.mpf.repository.NodeRepository;
 import fr.cytech.mpf.repository.TreeRepository;
 import fr.cytech.mpf.service.CustomDTOMapper;
 import fr.cytech.mpf.service.NodeService;
+import fr.cytech.mpf.service.validation.ValidationException;
 import fr.cytech.mpf.utils.NodeVisibility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,11 +73,14 @@ public class TreeController {
 
     @MustBeLogged
     @PostMapping("/tree/node")
-    public ResponseEntity<Node> addNewNodeToTree (@RequestBody NodeAddDTO nodeDto) {
-        Node node = customDTOMapper.nodeAddDtoToNode(nodeDto);
-        nodeRepository.save(node);
-        // TODO: Check has permissions to edit
-        return ResponseEntity.ok(node);
+    public ResponseEntity<?> addNewNodeToTree (@RequestBody NodeAddDTO nodeDto) {
+        try {
+            // TODO: Check has permissions to edit
+            Node node = nodeService.addNode(nodeDto);
+            return ResponseEntity.ok(node);
+        } catch (ValidationException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @MustBeLogged
