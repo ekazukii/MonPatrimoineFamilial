@@ -17,7 +17,8 @@ public class NodeAddDTO implements Serializable {
     private String firstName;
     private String lastName;
     private String birthDate;
-    private Long parentAId;
-    private Long parentBId;
+    private boolean male;
+    private Long fatherId;
+    private Long motherId;
     private NodeVisibility nodeVisibility;
 }

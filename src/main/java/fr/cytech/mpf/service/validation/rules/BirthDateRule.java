@@ -14,11 +14,11 @@ public class BirthDateRule implements ValidationRule {
     @Override
     public boolean validate(Node node) {
 
-        if (node.getParentA() != null && !BirthDateRule.isOldEnough(node.getParentA().getBirthDate(), node.getBirthDate())) {
+        if (node.getFather() != null && !BirthDateRule.isOldEnough(node.getFather().getBirthDate(), node.getBirthDate())) {
             return false;
         }
     
-        if (node.getParentB() != null && !BirthDateRule.isOldEnough(node.getParentB().getBirthDate(), node.getBirthDate())) {
+        if (node.getMother() != null && !BirthDateRule.isOldEnough(node.getMother().getBirthDate(), node.getBirthDate())) {
             return false;
         }
     
