@@ -12,8 +12,8 @@ public class DeathDateRule implements ValidationRule {
 
     @Override
     public boolean validate(Node node) {
-        return (DeathDateRule.isDeathDateValid(node.getParentA().getBirthDate(), node.getBirthDate())
-            && DeathDateRule.isDeathDateValid(node.getParentB().getBirthDate(), node.getBirthDate()));
+        return (DeathDateRule.isDeathDateValid(node.getFather().getBirthDate(), node.getBirthDate())
+            && DeathDateRule.isDeathDateValid(node.getMother().getBirthDate(), node.getBirthDate()));
     }
 
     @Override

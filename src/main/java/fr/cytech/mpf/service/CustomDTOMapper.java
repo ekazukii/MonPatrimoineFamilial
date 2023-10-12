@@ -27,13 +27,14 @@ public class CustomDTOMapper {
 
     CustomDTOMapper() {
         modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
     }
 
     public Node nodeAddDtoToNode(NodeAddDTO nodeDTO) {
         Node node = modelMapper.map(nodeDTO, Node.class);
         node.setTree(treeRepository.findById(nodeDTO.getTreeId()).get());
-        if(nodeDTO.getParentAId() != null) node.setParentA(nodeRepository.findById(nodeDTO.getParentAId()).get());
-        if(nodeDTO.getParentBId() != null) node.setParentB(nodeRepository.findById(nodeDTO.getParentBId()).get());
+        if(nodeDTO.getFatherId() != null) node.setFather(nodeRepository.findById(nodeDTO.getFatherId()).get());
+        if(nodeDTO.getMotherId() != null) node.setMother(nodeRepository.findById(nodeDTO.getMotherId()).get());
         node.setId(null);
         return node;
     }

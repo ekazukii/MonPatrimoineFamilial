@@ -86,13 +86,13 @@ public class TreeController {
     @MustBeLogged
     @DeleteMapping("/tree/node")
     public ResponseEntity<String> removeNode (@RequestBody NodeDeleteDTO nodeDto) {
-        List<Node> nodesPA = nodeRepository.findAllByParentAId(nodeDto.nodeId);
-        List<Node> nodesPB = nodeRepository.findAllByParentBId(nodeDto.nodeId);
+        List<Node> nodesPA = nodeRepository.findAllByFatherId(nodeDto.nodeId);
+        List<Node> nodesPB = nodeRepository.findAllByMotherId(nodeDto.nodeId);
         nodesPA.forEach(n -> {
-            n.setParentA(null);
+            n.setFather(null);
         });
         nodesPB.forEach(n -> {
-            n.setParentB(null);
+            n.setMother(null);
         });
         nodeRepository.deleteById(nodeDto.nodeId);
         // TODO: Check has permissions to edit

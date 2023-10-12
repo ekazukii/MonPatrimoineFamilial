@@ -12,9 +12,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
 
     List<Node> findAllByTreeEqualsAndVisibilityIn(Tree tree, List<NodeVisibility> visibility);
 
-    List<Node> findAllByParentAOrParentB(Node parentA, Node parentB);
+    List<Node> findAllByFatherId(Long nodeId);
 
-    List<Node> findAllByParentAId(Long nodeId);
-
-    List<Node> findAllByParentBId(Long nodeId);
+    List<Node> findAllByMotherId(Long nodeId);
 }

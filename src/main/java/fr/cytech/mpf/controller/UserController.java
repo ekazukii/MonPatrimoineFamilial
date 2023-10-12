@@ -5,7 +5,9 @@ import fr.cytech.mpf.dto.LoginDTO;
 import fr.cytech.mpf.dto.RegisterDTO;
 import fr.cytech.mpf.dto.UserAddDTO;
 import fr.cytech.mpf.dto.UserGetDTO;
+import fr.cytech.mpf.entity.Tree;
 import fr.cytech.mpf.entity.User;
+import fr.cytech.mpf.repository.TreeRepository;
 import fr.cytech.mpf.repository.UserRepository;
 import fr.cytech.mpf.service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -26,6 +28,8 @@ public class UserController {
     UserRepository userRepository;
     @Autowired
     UserService userService;
+    @Autowired
+    TreeRepository treeRepository;
 
     ModelMapper modelMapper;
 
@@ -59,8 +63,14 @@ public class UserController {
     @CrossOrigin
     @PostMapping("/register")
     public ResponseEntity<User> registerNewUser(@RequestBody RegisterDTO registerDTO, HttpSession session) {
+        Tree tree = new Tree();
+        tree.setName("Arbre de " + registerDTO.getLastname());
+        treeRepository.save(tree);
+
         User user = modelMapper.map(registerDTO, User.class);
+        user.setTree(tree);
         userRepository.save(user);
+
         session.setAttribute("account", user);
         return ResponseEntity.ok(user);
     }

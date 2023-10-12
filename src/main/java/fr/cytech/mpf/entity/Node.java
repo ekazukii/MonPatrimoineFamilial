@@ -2,6 +2,7 @@ package fr.cytech.mpf.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fr.cytech.mpf.utils.NodeVisibility;
 import jakarta.persistence.*;
@@ -35,11 +36,15 @@ public class Node implements Serializable {
 
     private String birthDate;
 
-    @OneToOne
-    private Node parentA;
+    private boolean male;
 
     @OneToOne
-    private Node parentB;
+    @JsonIdentityReference(alwaysAsId = true)
+    private Node mother;
+
+    @OneToOne
+    @JsonIdentityReference(alwaysAsId = true)
+    private Node father;
 
     public Node(String firstName, String lastName, String birthDate, NodeVisibility visibility, Tree tree) {
         this.firstName = firstName;
@@ -49,10 +54,15 @@ public class Node implements Serializable {
         this.tree = tree;
     }
 
-    public Node(Node parentA, Node parentB, String firstName, String lastName, String birthDate, NodeVisibility visibility, Tree tree) {
+    public Node(String firstName, String lastName, String birthDate, NodeVisibility visibility, Tree tree, boolean isMale) {
         this(firstName, lastName, birthDate, visibility, tree);
-        this.parentA = parentA;
-        this.parentB = parentB;
+        this.male = male;
+    }
+
+    public Node(Node father, Node mother, String firstName, String lastName, String birthDate, NodeVisibility visibility, Tree tree) {
+        this(firstName, lastName, birthDate, visibility, tree);
+        this.father = father;
+        this.mother = mother;
     }
 
     public Node() {
