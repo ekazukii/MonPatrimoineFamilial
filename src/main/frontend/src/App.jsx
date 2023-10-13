@@ -6,6 +6,7 @@ import NoPage from "./pages/NoPage.jsx";
 import './index.css';
 import Register from "./pages/Register.jsx";
 import Souvenirs from "./pages/Souvenirs.jsx";
+import TreePage from "./pages/TreePage.jsx";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
                     <Route path="login" element={<Log />} />
                     <Route path="register" element={<Register/>} />
                     <Route path="souvenirs" element={<Souvenirs/>} />
+                    <Route path="tree" element={<TreePage />} />
                     <Route path="*" element={<NoPage />} />
                 </Route>
             </Routes>

@@ -1,7 +1,7 @@
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import { useLocation } from 'react-router-dom';
 
-function CheminPages() {
+function  CheminPages() {
     const location = useLocation();
     const currentPath = location.pathname;
 
