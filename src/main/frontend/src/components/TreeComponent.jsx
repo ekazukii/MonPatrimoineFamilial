@@ -170,7 +170,7 @@ export default function OrgChartTree() {
 
     return (
         <div>
-            <FamilyTree nodes={nodeList} onUpdate={onUpdate} />
+            <FamilyTree nodes={nodeList} onUpdate={onUpdate} treeId={1}/>
         </div>
     );
 }

@@ -4,8 +4,10 @@ import fr.cytech.mpf.config.MustBeLogged;
 import fr.cytech.mpf.dto.*;
 import fr.cytech.mpf.entity.Node;
 import fr.cytech.mpf.entity.Tree;
+import fr.cytech.mpf.entity.TreeView;
 import fr.cytech.mpf.repository.NodeRepository;
 import fr.cytech.mpf.repository.TreeRepository;
+import fr.cytech.mpf.repository.TreeViewRepository;
 import fr.cytech.mpf.service.CustomDTOMapper;
 import fr.cytech.mpf.service.NodeService;
 import fr.cytech.mpf.service.validation.ValidationException;
@@ -18,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 public class TreeController {
@@ -27,7 +28,11 @@ public class TreeController {
     @Autowired
     TreeRepository treeRepository;
     @Autowired
+    TreeViewRepository treeViewRepository;
+
+    @Autowired
     NodeService nodeService;
+
     @Autowired
     CustomDTOMapper customDTOMapper;
 
@@ -139,5 +144,18 @@ public class TreeController {
         Tree tree = treeRepository.findAll().get(0);
         System.out.println(tree);
         return ResponseEntity.ok(tree);
+    }
+
+    @PostMapping("/tree/view")
+    public ResponseEntity<String> addView(@RequestBody TreeViewAddDTO addViewDTO) {
+        TreeView treeView = customDTOMapper.addViewToTreeView(addViewDTO);
+        treeViewRepository.save(treeView);
+        return ResponseEntity.ok("Ok");
+    }
+
+    @GetMapping("/tree/view")
+    public ResponseEntity<List<TreeView>> getViews(@RequestParam Long treeId) {
+        List<TreeView> treeViews = treeViewRepository.getAllByTreeId(treeId);
+        return ResponseEntity.ok(treeViews);
     }
 }
