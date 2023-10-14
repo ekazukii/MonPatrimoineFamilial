@@ -1,11 +1,17 @@
 import React, {useEffect, useState} from "react";
 import {addPartnersId} from "../utils/tree.js";
-import {useParams} from "react-router-dom";
+import {useLocation} from "react-router-dom";
 import FamilyTree from "../components/MyTree.jsx";
 
-const TreePage = ({match}) => {
-    console.log(match);
-    const { id } = useParams();
+function useQuery() {
+    const { search } = useLocation();
+
+    return React.useMemo(() => new URLSearchParams(search), [search]);
+}
+
+const TreePage = () => {
+    const query = useQuery();
+    const id = query.get("id");
     const [nodes, setNodes] = useState();
 
     const refreshData = async () => {
@@ -44,6 +50,7 @@ const TreePage = ({match}) => {
     }
 
     useEffect(() => {
+        if(!id) return;
         refreshData();
         postView();
     }, [id])
