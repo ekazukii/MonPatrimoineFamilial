@@ -55,7 +55,7 @@ const TreeSettings = ({id, defItem, opened, handleClose}) => {
                 >
                     <Tab title="Statistiques" eventKey="stats">
                         <h1>Stats</h1>
-                        <p>Vue du profil : 1340</p>
+                        <p>Vue du profil : {users?.length || 0}</p>
                         <ListGroup>
                             {users.map((user, index) => <ViewItem key={index} name={user.username}/>)}
                         </ListGroup>
