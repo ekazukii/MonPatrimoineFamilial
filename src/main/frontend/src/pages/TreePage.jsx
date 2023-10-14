@@ -30,8 +30,22 @@ const TreePage = ({match}) => {
         setNodes(nodes);
     };
 
+    const postView = async () => {
+        const data = await fetch("http://localhost:8080/tree/view", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                viewerId: 1,
+                treeId: id
+            })
+        })
+    }
+
     useEffect(() => {
         refreshData();
+        postView();
     }, [id])
 
     return <>

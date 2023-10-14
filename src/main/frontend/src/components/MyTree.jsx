@@ -3,7 +3,7 @@ import FamilyTree from "@balkangraph/familytree.js";
 import TreeSettings from "./TreeSettings.jsx";
 
 
-export default function Chart({nodes, onUpdate, readOnly}) {
+export default function Chart({nodes, onUpdate, readOnly, treeId}) {
     const [familyObject, setFamilyObject] = useState();
     const [defModalItem, setDefModalItem] = useState();
 
@@ -83,7 +83,7 @@ export default function Chart({nodes, onUpdate, readOnly}) {
     return (
         <>
             <div id="tree" ref={ref}></div>
-            <TreeSettings opened={defModalItem !== undefined} defItem={defModalItem} handleClose={() => setDefModalItem(undefined)}/>
+            <TreeSettings id={treeId} opened={defModalItem !== undefined} defItem={defModalItem} handleClose={() => setDefModalItem(undefined)}/>
         </>
     );
 }

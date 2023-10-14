@@ -1,6 +1,7 @@
 package fr.cytech.mpf.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,6 +25,7 @@ public class User implements Serializable {
 
     private String email;
 
+    @JsonIgnore
     private String password;
 
     private String username;

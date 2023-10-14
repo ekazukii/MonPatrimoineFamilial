@@ -31,7 +31,19 @@ const ViewItem = ({name}) => {
 
 const names = ["Tommy Bâillât", "Anatoly Panov", "Baptista Loisona", "Vousa-V-Phyni Zaouche"]
 
-const TreeSettings = ({defItem, opened, handleClose}) => {
+const TreeSettings = ({id, defItem, opened, handleClose}) => {
+    const [users, setUsers] = useState([]);
+    useEffect(() => {
+        fetchStats();
+    }, [id]);
+
+    const fetchStats = async () => {
+        if(!id) return;
+        const data = await fetch("http://localhost:8080/tree/view?treeId="+id);
+        const json = await data.json();
+        setUsers(json.map(viewData => viewData.viewer));
+    }
+
     return (
         <Modal show={opened} onHide={handleClose}>
             <Modal.Header closeButton>
@@ -45,13 +57,13 @@ const TreeSettings = ({defItem, opened, handleClose}) => {
                         <h1>Stats</h1>
                         <p>Vue du profil : 1340</p>
                         <ListGroup>
-                            {names.map(name => <ViewItem name={name}/>)}
+                            {users.map((user, index) => <ViewItem key={index} name={user.username}/>)}
                         </ListGroup>
                     </Tab>
                     <Tab title="Demandes" eventKey="demands">
                         <h1>Demandes</h1>
                         <ListGroup>
-                            {names.map(name => <DemandItem name={name}/>)}
+                            {names.map((name, index) => <DemandItem key={index} name={name}/>)}
                         </ListGroup>
                     </Tab>
                     <Tab title="Parmètre généraux" eventKey="settings">
