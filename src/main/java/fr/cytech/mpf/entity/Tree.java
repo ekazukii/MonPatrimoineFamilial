@@ -18,7 +18,7 @@ import java.util.List;
 public class Tree implements Serializable {
     @Id @GeneratedValue
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @OneToOne
     private User owner;
