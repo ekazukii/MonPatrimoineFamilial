@@ -11,6 +11,8 @@ import fr.cytech.mpf.repository.TreeViewRepository;
 import fr.cytech.mpf.service.CustomDTOMapper;
 import fr.cytech.mpf.service.NodeService;
 import fr.cytech.mpf.service.validation.ValidationException;
+import fr.cytech.mpf.service.mergeTree.MergeTreeService;
+import fr.cytech.mpf.service.mergeTree.MergeTreeException;
 import fr.cytech.mpf.utils.NodeVisibility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,9 @@ public class TreeController {
 
     @Autowired
     NodeService nodeService;
+
+    @Autowired
+    MergeTreeService mergeTreeService;
 
     @Autowired
     CustomDTOMapper customDTOMapper;
@@ -112,6 +117,20 @@ public class TreeController {
         // TODO: Check has permissions to edit
         nodeRepository.save(node);
         return ResponseEntity.ok(node);
+    }
+
+    @MustBeLogged
+    @PostMapping("/tree/merge")
+    public ResponseEntity<?> mergeTree (@RequestBody  MergeTreeDTO mergeTreeDto) {
+        try {
+            List<Tree> mergedTrees = mergeTreeService.mergeTrees(mergeTreeDto);
+            return ResponseEntity.ok(mergedTrees);
+        } catch (MergeTreeException ex) {
+            return ResponseEntity.badRequest().body(
+                "Cause: " + ex.getCause() + "\n" +
+                "Class: " + ex.getClass().getName() + ":" + ex.getStackTrace()[0].getLineNumber() + "\n" +
+                "Message: " + ex.getMessage() + "\n" );
+        }
     }
 
     @MustBeLogged
