@@ -30,6 +30,8 @@ public class MergeTreeService {
     private Tree requestingTree;
     private Tree respondingTree;
 
+
+
     public List<Tree> mergeTrees(MergeTreeDTO mergeTreeDTO) throws MergeTreeException {
         this.requestingTree = findTree(mergeTreeDTO.getRequestingTreeId());
         this.respondingTree = findTree(mergeTreeDTO.getRespondingTreeId());
@@ -51,6 +53,7 @@ public class MergeTreeService {
         return new ArrayList<Tree>() {{ add(requestingTree); add(respondingTree);}};
     }
 
+    
     private Tree findTree(Long id) throws MergeTreeException {
         return treeRepository.findById(id)
                 .orElseThrow(() -> new MergeTreeException("Error: Cannot find tree id: " + id));
@@ -104,9 +107,9 @@ public class MergeTreeService {
             throw new MergeTreeException("Error: Maximum of 2 parents allowed.");
         }
 
-        for (Node node : tree.getNodes()){
-            System.out.println(node.getFirstName() + ", " + node.getLastName());
-        }
+        // for (Node node : tree.getNodes()){
+        //     System.out.println(node.getFirstName() + ", " + node.getLastName());
+        // }
 
         if (!parents.stream().allMatch(p -> tree.getNodes().contains(p))) {
             throw new MergeTreeException("Error: All selected parents for the merge must be in the Tree.");
@@ -129,53 +132,53 @@ public class MergeTreeService {
 
 
 
-    public Node deepCheck(Node fakeMergeNode, Node mergeNode) throws MergeTreeException{
+    public Node deepCheck(Node node1, Node node2) throws MergeTreeException{
 
-        if(fakeMergeNode == null && mergeNode == null){
+        if(node1 == null && node2 == null){
             return null;
         }
 
-        if(fakeMergeNode != null && mergeNode != null){
-            checkNodeAttributes(fakeMergeNode, mergeNode);
-            checkAndSetParent(fakeMergeNode, mergeNode, true);
-            checkAndSetParent(fakeMergeNode, mergeNode, false);
+        if(node1 != null && node2 != null){
+            checkNodeAttributes(node1, node2);
+            checkAndSetParent(node1, node2, true);
+            checkAndSetParent(node1, node2, false);
         } else {
-            if(fakeMergeNode == null) {
-                Node father = deepCheck(null, mergeNode.getFather());
-                Node mother = deepCheck(null,mergeNode.getMother());
+            if(node1 == null) {
+                Node father = deepCheck(null, node2.getFather());
+                Node mother = deepCheck(null,node2.getMother());
                 return nodeRepository.save(new Node(father, mother,
-                        mergeNode.getFirstName(), mergeNode.getLastName(),
-                        mergeNode.getBirthDate(), mergeNode.getVisibility(), this.requestingTree));
+                        node2.getFirstName(), node2.getLastName(),
+                        node2.getBirthDate(), node2.getVisibility(), this.requestingTree));
             }
-            if(mergeNode == null) {
-                Node father = deepCheck(fakeMergeNode.getFather(), null);
-                Node mother = deepCheck(fakeMergeNode.getMother(),null);
+            if(node2 == null) {
+                Node father = deepCheck(node1.getFather(), null);
+                Node mother = deepCheck(node1.getMother(),null);
                 return nodeRepository.save(new Node(father, mother,
-                        fakeMergeNode.getFirstName(), fakeMergeNode.getLastName(),
-                        fakeMergeNode.getBirthDate(), fakeMergeNode.getVisibility(), this.respondingTree));
+                        node1.getFirstName(), node1.getLastName(),
+                        node1.getBirthDate(), node1.getVisibility(), this.respondingTree));
             }
         }
         return null;
     }
 
-    private void checkNodeAttributes(Node fakeNode, Node realNode) throws MergeTreeException {
-        if (!fakeNode.getFirstName().equals(realNode.getFirstName())) {
+    private void checkNodeAttributes(Node node1, Node node2) throws MergeTreeException {
+        if (!node1.getFirstName().equals(node2.getFirstName())) {
             throw new MergeTreeException("CONFLICTS: NOT_THE_SAME_FIRSTNAME");
         }
 
-        if (!fakeNode.getLastName().equals(realNode.getLastName())) {
+        if (!node1.getLastName().equals(node2.getLastName())) {
             throw new MergeTreeException("CONFLICTS: NOT_THE_SAME_LASTNAME");
         }
 
-        if (!fakeNode.getBirthDate().equals(realNode.getBirthDate())) {
+        if (!node1.getBirthDate().equals(node2.getBirthDate())) {
             throw new MergeTreeException("CONFLICTS: NOT_THE_SAME_BIRTHDATE");
         }
     }
 
-    private void checkAndSetParent(Node fakeMergeNode, Node mergeNode, boolean isFather) throws MergeTreeException {
+    private void checkAndSetParent(Node node1, Node node2, boolean isFather) throws MergeTreeException {
         
-        Node fakeParent = (fakeMergeNode != null && isFather) ? fakeMergeNode.getFather() : (fakeMergeNode != null) ? fakeMergeNode.getMother() : null;
-        Node mergeParent = (mergeNode != null && isFather) ? mergeNode.getFather() : (mergeNode != null) ? mergeNode.getMother() : null;
+        Node fakeParent = (node1 != null && isFather) ? node1.getFather() : (node1 != null) ? node1.getMother() : null;
+        Node mergeParent = (node2 != null && isFather) ? node2.getFather() : (node2 != null) ? node2.getMother() : null;
         
         if ((fakeParent != null && mergeParent != null) || (fakeParent == null && mergeParent == null)) {
             deepCheck(fakeParent, mergeParent);
@@ -183,17 +186,17 @@ public class MergeTreeService {
             if (fakeParent == null) {
                 Node parent = deepCheck(null, mergeParent);
                 if (isFather) {
-                    fakeMergeNode.setFather(parent);
+                    node1.setFather(parent);
                 } else {
-                    fakeMergeNode.setMother(parent);
+                    node1.setMother(parent);
                 }
             }
             if (mergeParent == null ) {
                 Node parent = deepCheck(fakeParent, null);
                 if (isFather) {
-                    mergeNode.setFather(parent);
+                    node2.setFather(parent);
                 } else {
-                    mergeNode.setMother(parent);
+                    node2.setMother(parent);
                 }
             }
         }
