@@ -38,11 +38,11 @@ public class Node implements Serializable {
 
     private boolean male;
 
-    @OneToOne
+    @ManyToOne
     @JsonIdentityReference(alwaysAsId = true)
     private Node mother;
 
-    @OneToOne
+    @ManyToOne
     @JsonIdentityReference(alwaysAsId = true)
     private Node father;
 
