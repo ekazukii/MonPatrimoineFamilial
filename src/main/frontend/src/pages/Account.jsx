@@ -66,9 +66,11 @@ const Account = ({user}) => {
                                 <Form.Control type="password" placeholder="Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}/>
                             </Form.Group>
 
-                            <Button variant="primary" type="submit">
-                                Submit
-                            </Button>
+                            <Stack direction="horizontal mx-auto" gap={3}>
+                                <Button variant="primary" type="submit">
+                                    Submit
+                                </Button>
+                            </Stack>
                         </Form>
                     </Col>
             </Row>
