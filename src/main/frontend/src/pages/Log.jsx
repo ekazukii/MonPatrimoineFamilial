@@ -10,6 +10,7 @@ const Log = () => {
         <Container>
             <Row className="justify-content-md-center">
                 <Col xs lg="6">
+                    <h2>Connexion</h2>
                     <Form>
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Email address</Form.Label>
