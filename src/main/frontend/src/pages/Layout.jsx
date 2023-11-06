@@ -32,6 +32,7 @@ const Layout = () => {
                                 <Nav.Link href="/">Accueil</Nav.Link>
                                 <Nav.Link href="/login">Se connecter</Nav.Link>
                                 <Nav.Link href="/register">S'inscrire</Nav.Link>
+                                <Nav.Link href="/account">Mon compte</Nav.Link>
                                 <Nav.Link href="/souvenirs">Mes Souvenirs</Nav.Link>
                                 <NavDropdown
                                     title="Dropdown"
