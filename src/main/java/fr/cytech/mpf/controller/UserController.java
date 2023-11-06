@@ -5,11 +5,14 @@ import fr.cytech.mpf.dto.LoginDTO;
 import fr.cytech.mpf.dto.RegisterDTO;
 import fr.cytech.mpf.dto.UserAddDTO;
 import fr.cytech.mpf.dto.UserGetDTO;
+import fr.cytech.mpf.entity.Node;
 import fr.cytech.mpf.entity.Tree;
 import fr.cytech.mpf.entity.User;
+import fr.cytech.mpf.repository.NodeRepository;
 import fr.cytech.mpf.repository.TreeRepository;
 import fr.cytech.mpf.repository.UserRepository;
 import fr.cytech.mpf.service.UserService;
+import fr.cytech.mpf.utils.NodeVisibility;
 import jakarta.servlet.http.HttpSession;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,7 +34,8 @@ public class UserController {
     UserService userService;
     @Autowired
     TreeRepository treeRepository;
-
+    @Autowired
+    NodeRepository nodeRepository;
     ModelMapper modelMapper;
 
     UserController() {
@@ -53,25 +58,35 @@ public class UserController {
 
     @CrossOrigin
     @PostMapping("/login")
-    public ResponseEntity<User> testUser(@RequestBody LoginDTO loginDTO, HttpSession session) {
-        Optional<User> user = userRepository.findUserByUsernameAndPassword(loginDTO.getUsername(), loginDTO.getPassword());
-        if(user.isEmpty()) return ResponseEntity.notFound().build();
-        session.setAttribute("account", user.get());
-        return ResponseEntity.ok(user.get());
+    public ResponseEntity<User> login(@RequestBody LoginDTO loginDTO, HttpSession session) throws NoSuchAlgorithmException {
+        Optional<User> optUser = userRepository.findUserByUsernameAndPassword(loginDTO.getUsername(), userService.passwordToHash(loginDTO.getPassword()));
+        if(optUser.isEmpty()) return ResponseEntity.notFound().build();
+        User user = optUser.get();
+        if(user.getValidationCode() != null) return ResponseEntity.status(403).build();
+        session.setAttribute("account", user);
+        return ResponseEntity.ok(user);
     }
 
     @CrossOrigin
     @PostMapping("/register")
-    public ResponseEntity<User> registerNewUser(@RequestBody RegisterDTO registerDTO, HttpSession session) {
+    public ResponseEntity<User> registerNewUser(@RequestBody RegisterDTO registerDTO, HttpSession session) throws NoSuchAlgorithmException {
         Tree tree = new Tree();
         tree.setName("Arbre de " + registerDTO.getLastname());
         treeRepository.save(tree);
 
         User user = modelMapper.map(registerDTO, User.class);
         user.setTree(tree);
-        userRepository.save(user);
+        user.setPassword(userService.passwordToHash(registerDTO.getPassword()));
+        UUID validationCode = UUID.randomUUID();
+        user.setValidationCode(validationCode);
 
-        session.setAttribute("account", user);
+        Node rootNode = new Node(registerDTO.getFirstname(), registerDTO.getLastname(), registerDTO.getBirthDate(), NodeVisibility.Private, tree, registerDTO.isMale(), user);
+        nodeRepository.save(rootNode);
+        //TODO: Send validation email
+
+        userRepository.save(user);
+        System.out.println("[USER] - Registering new user "+ registerDTO.getEmail());
+
         return ResponseEntity.ok(user);
     }
 
@@ -83,6 +98,7 @@ public class UserController {
         return ResponseEntity.ok(usr);
     }
 
+    @MustBeLogged
     @CrossOrigin
     @GetMapping("/logout") @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpSession session) {

@@ -18,22 +18,16 @@ import java.util.UUID;
 public class User implements Serializable {
     @Id @GeneratedValue()
     private long Id;
-
     private String lastname;
-
     private String firstname;
-
     private String email;
-
     @JsonIgnore
     private String password;
-
     private String username;
-
     private boolean isMale;
-
     @JsonIdentityReference(alwaysAsId = true)
     @OneToOne(fetch = FetchType.EAGER)
     @Cascade(CascadeType.DELETE_ORPHAN)
     private Tree tree;
+    private UUID validationCode;
 }
