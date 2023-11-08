@@ -5,7 +5,7 @@ import React, {useState} from "react";
 import Row from "react-bootstrap/Row";
 import {FormGroup} from "react-bootstrap";
 
-export const personalInfo = ({ onPersonalInfoChange, personalInfo }) => {
+export const personalInfo = ({ onPersonalInfoChange, personalInfo, display }) => {
     const [localPersonalInfo, setLocalPersonalInfo] = useState(personalInfo);
 
     const [validationErrors, setValidationErrors] = useState({});
@@ -37,28 +37,28 @@ export const personalInfo = ({ onPersonalInfoChange, personalInfo }) => {
         const errors = {};
 
         // Vérification de la longueur minimale pour le nom et le prénom
-        if (localPersonalInfo.nom.length < 2) {
-            errors.nom = "Le nom doit avoir au moins 2 caractères.";
+        if (localPersonalInfo.lastName.length < 2) {
+            errors.lastName = "Le nom doit avoir au moins 2 caractères.";
         }
-        if (localPersonalInfo.prenom.length < 2) {
-            errors.prenom = "Le prénom doit avoir au moins 2 caractères.";
+        if (localPersonalInfo.firstName.length < 2) {
+            errors.firstName = "Le prénom doit avoir au moins 2 caractères.";
         }
 
         // Validation de l'adresse e-mail
         const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-        if (!emailPattern.test(localPersonalInfo.mail)) {
-            errors.mail = "L'adresse e-mail n'est pas valide.";
+        if (!emailPattern.test(localPersonalInfo.email)) {
+            errors.email = "L'adresse e-mail n'est pas valide.";
         }
 
         // Validation du numéro de sécurité sociale (exemple : 15 caractères)
-        if (localPersonalInfo.numeroSecu.length !== 15) {
-            errors.numeroSecu = "Le numéro de sécurité sociale doit avoir 15 caractères.";
+        if (localPersonalInfo.socialSecurityNumber.length !== 15) {
+            errors.socialSecurityNumber = "Le numéro de sécurité sociale doit avoir 15 caractères.";
         }
 
         // Validation de l'âge (entre 18 et 100 ans)
-        const age = calculateAge(localPersonalInfo.dateNaissance);
+        const age = calculateAge(localPersonalInfo.birthDate);
         if (age < 18 || age >= 100) {
-            errors.dateNaissance = "L'âge doit être entre 18 et 99 ans.";
+            errors.birthDate = "L'âge doit être entre 18 et 99 ans.";
         }
 
         // Vérification des mots de passe identiques
@@ -88,37 +88,37 @@ export const personalInfo = ({ onPersonalInfoChange, personalInfo }) => {
 
     return(
         <>
-            <Row className="d-flex flex-row justify-content-around">
+            <Row className={display ? "d-flex flex-row justify-content-around" : "d-none"} >
                 <Col className="col-5">
                     <Form.Group className="mb-3" controlId="formInfoFirstName">
-                        <Form.Label>Nom {validationErrors.nom && (<span className="text-danger">{validationErrors.nom}</span>)}</Form.Label>
+                        <Form.Label>Nom {validationErrors.lastName && (<span className="text-danger">{validationErrors.lastName}</span>)}</Form.Label>
                         <Form.Control
                             type="text"
-                            name="nom"
+                            name="lastName"
                             placeholder="Votre nom"
-                            value={localPersonalInfo.nom}
+                            value={localPersonalInfo.lastName}
                             onChange={handleChange}
                         />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formInfoMail">
-                        <Form.Label>Email {validationErrors.mail && (<span className="text-danger">{validationErrors.mail}</span>)}</Form.Label>
+                        <Form.Label>Email {validationErrors.email && (<span className="text-danger">{validationErrors.email}</span>)}</Form.Label>
                         <Form.Control
                             type="email"
-                            name="mail"
+                            name="email"
                             placeholder="Votre email"
-                            value={localPersonalInfo.mail}
+                            value={localPersonalInfo.email}
                             onChange={handleChange}
                         />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formInfoSocial">
-                        <Form.Label>Numéro sécurité sociale {validationErrors.numeroSecu && (<span className="text-danger">{validationErrors.numeroSecu}</span>)}</Form.Label>
+                        <Form.Label>Numéro sécurité sociale {validationErrors.socialSecurityNumber && (<span className="text-danger">{validationErrors.socialSecurityNumber}</span>)}</Form.Label>
                         <Form.Control
                             type="number"
-                            name="numeroSecu"
+                            name="socialSecurityNumber"
                             placeholder="Numéro sécurité sociale"
-                            value={localPersonalInfo.numeroSecu}
+                            value={localPersonalInfo.socialSecurityNumber}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -139,23 +139,23 @@ export const personalInfo = ({ onPersonalInfoChange, personalInfo }) => {
                 </Col>
                 <Col className="col-5">
                     <Form.Group className="mb-3" controlId="formInfoLastName">
-                        <Form.Label>Prénom {validationErrors.prenom && (<span className="text-danger">{validationErrors.prenom}</span>)}</Form.Label>
+                        <Form.Label>Prénom {validationErrors.firstName && (<span className="text-danger">{validationErrors.firstName}</span>)}</Form.Label>
                         <Form.Control
                             type="text"
-                            name="prenom"
+                            name="firstName"
                             placeholder="Votre prénom"
-                            value={localPersonalInfo.prenom}
+                            value={localPersonalInfo.firstName}
                             onChange={handleChange}
                         />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formInfoBirthday">
-                        <Form.Label>Date de naissance {validationErrors.dateNaissance && (<span className="text-danger">{validationErrors.dateNaissance}</span>)}</Form.Label>
+                        <Form.Label>Date de naissance {validationErrors.birthDate && (<span className="text-danger">{validationErrors.birthDate}</span>)}</Form.Label>
                         <Form.Control
                             type="date"
-                            name="dateNaissance"
+                            name="birthDate"
                             placeholder="Votre date de naissance"
-                            value={localPersonalInfo.dateNaissance}
+                            value={localPersonalInfo.birthDate}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -164,9 +164,9 @@ export const personalInfo = ({ onPersonalInfoChange, personalInfo }) => {
                         <Form.Label>Nationalité d'origine</Form.Label>
                         <Form.Control
                             type="text"
-                            name="nationalite"
+                            name="nationality"
                             placeholder="Nationalité"
-                            value={localPersonalInfo.nationalite}
+                            value={localPersonalInfo.nationality}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -186,16 +186,15 @@ export const personalInfo = ({ onPersonalInfoChange, personalInfo }) => {
                     </Form.Group>
                 </Col>
             </Row>
-            <Row>
+            <Row className={display ? "" : "d-none"} >
                 <Button onClick={handleValidation}>Etape suivante</Button>
             </Row>
         </>
     );
 }
 
-export const documentImport = ({ onDocumentImport, documentImport }) => {
+export const documentImport = ({ display, handleGoNext, idCardRef, photoRef }) => {
     const [validationErrors, setValidationErrors] = useState([]);
-    const [localDocumentImport, setLocalDocumentImport] = useState(documentImport);
 
     const validateFileExtensions = (file, allowedExtensions) => {
         if (file) {
@@ -210,35 +209,25 @@ export const documentImport = ({ onDocumentImport, documentImport }) => {
         return null;
     };
 
-    const handleFileChange = (e) => {
-        const { name, files } = e.target;
-        const file = files[0];
-        setLocalDocumentImport({ ...localDocumentImport, [name]: file });
-
-        // Afficher le nom du fichier sélectionné à côté de l'élément <input>
-        const fileNameDisplay = document.querySelector(`#${name}-file-name-display`);
-        if (fileNameDisplay) {
-            fileNameDisplay.textContent = file ? file.name : "";
-        }
-    };
-
     const handleValidation = () => {
         const errors = [];
         const allowedExtensions = ["pdf", "jpeg", "jpg", "png"];
 
-        const carteIdentiteError = validateFileExtensions(localDocumentImport.carteIdentite, allowedExtensions);
+        console.log(idCardRef.current.files[0].name)
+        console.log(photoRef.current.files[0].name)
+
+        const carteIdentiteError = validateFileExtensions(idCardRef.current.files[0], allowedExtensions);
         if (carteIdentiteError) {
             errors.push(carteIdentiteError);
         }
 
-        const photoError = validateFileExtensions(localDocumentImport.photo, allowedExtensions);
+        const photoError = validateFileExtensions(photoRef.current.files[0], allowedExtensions);
         if (photoError) {
             errors.push(photoError);
         }
 
         if (errors.length === 0) {
-            // Aucune erreur de validation, envoi des données au parent
-            onDocumentImport(localDocumentImport);
+            handleGoNext();
         } else {
             // Il y a des erreurs, mettez-les à jour
             setValidationErrors(errors);
@@ -247,29 +236,19 @@ export const documentImport = ({ onDocumentImport, documentImport }) => {
 
     return (
         <>
-            <Row>
+            <Row className={display ? "" : "d-none"}>
                 <Col className="col-10">
                     <Form.Group controlId="formFileCarteIdentite" className="mb-3">
                         <Form.Label>Carte d'identité</Form.Label>
-                        <Form.Control type="file" name="carteIdentite" onChange={handleFileChange}/>
-                        {localDocumentImport.carteIdentite.name !== "" && (
-                            <Form.Text className="text-muted">
-                                Document importé : {localDocumentImport.carteIdentite.name}
-                            </Form.Text>
-                        )}
+                        <Form.Control type="file" name="carteIdentite" ref={idCardRef}/>
                     </Form.Group>
                     <Form.Group controlId="formFilePhoto" className="mb-3">
                         <Form.Label>Photo</Form.Label>
-                        <Form.Control type="file" name="photo" onChange={handleFileChange}/>
-                        {localDocumentImport.photo.name !== "" && (
-                            <Form.Text className="text-muted">
-                                Document importé : {localDocumentImport.photo.name}
-                            </Form.Text>
-                        )}
+                        <Form.Control type="file" name="photo" ref={photoRef}/>
                     </Form.Group>
                 </Col>
             </Row>
-            <Row>
+            <Row className={display ? "" : "d-none"}>
                 {validationErrors.length > 0 && (
                     <div className="text-danger">
                         {validationErrors.map((error, index) => (
@@ -278,34 +257,34 @@ export const documentImport = ({ onDocumentImport, documentImport }) => {
                     </div>
                 )}
             </Row>
-            <Row>
+            <Row className={display ? "" : "d-none"}>
                 <Button onClick={handleValidation}>Etape suivante</Button>
             </Row>
         </>
     );
 };
 
-export const validationInfo = ({ formData }) => {
+export const validationInfo = ({ formData, display, idCardRef, photoRef }) => {
     return (
-        <Form className="d-flex flex-row justify-content-around">
+        <Form className={display ? "d-flex flex-row justify-content-around" : "d-none"}>
             <Col className="col-5">
                 <FormGroup>
                     <Form.Label>Nom</Form.Label>
-                    <Form.Control type="text" value={formData.personalInfo.nom} disabled />
+                    <Form.Control type="text" value={formData.personalInfo.lastName} disabled />
                 </FormGroup>
                 <FormGroup>
                     <Form.Label>Prénom</Form.Label>
-                    <Form.Control type="text" value={formData.personalInfo.prenom} disabled />
+                    <Form.Control type="text" value={formData.personalInfo.firstName} disabled />
                 </FormGroup>
                 <FormGroup>
                     <Form.Label>Email</Form.Label>
-                    <Form.Control type="email" value={formData.personalInfo.mail} disabled />
+                    <Form.Control type="email" value={formData.personalInfo.email} disabled />
                 </FormGroup>
                 <FormGroup>
                     <Form.Label>Numéro de sécurité sociale</Form.Label>
                     <Form.Control
                         type="text"
-                        value={formData.personalInfo.numeroSecu}
+                        value={formData.personalInfo.socialSecurityNumber}
                         disabled
                     />
                 </FormGroup>
@@ -315,7 +294,7 @@ export const validationInfo = ({ formData }) => {
                     <Form.Label>Date de naissance</Form.Label>
                     <Form.Control
                         type="text"
-                        value={formData.personalInfo.dateNaissance}
+                        value={formData.personalInfo.birthDate}
                         disabled
                     />
                 </FormGroup>
@@ -323,7 +302,7 @@ export const validationInfo = ({ formData }) => {
                     <Form.Label>Nationalité d'origine</Form.Label>
                     <Form.Control
                         type="text"
-                        value={formData.personalInfo.nationalite}
+                        value={formData.personalInfo.nationality}
                         disabled
                     />
                 </FormGroup>
@@ -331,7 +310,7 @@ export const validationInfo = ({ formData }) => {
                     <Form.Label>Carte d'identité</Form.Label>
                     <Form.Control
                         type="text"
-                        value={formData.documentImport.carteIdentite.name}
+                        value={idCardRef.current?.files[0]?.name || "No file"}
                         disabled
                     />
                 </FormGroup>
@@ -339,7 +318,7 @@ export const validationInfo = ({ formData }) => {
                     <Form.Label>Photo</Form.Label>
                     <Form.Control
                         type="text"
-                        value={formData.documentImport.photo.name}
+                        value={photoRef.current?.files[0]?.name || "No file"}
                         disabled
                     />
                 </FormGroup>
