@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
@@ -13,20 +13,18 @@ const Register   = () => {
     const [activeKey, setActiveKey] = useState("link-0");
     const [formData, setFormData] = useState({
         personalInfo: {
-            nom: "",
-            mail: "",
-            numeroSecu: "",
+            lastName: "",
+            email: "",
+            socialSecurityNumber: "",
             password: "",
             password2: "",
-            prenom: "",
-            dateNaissance: "",
-            nationalite: ""
-        },
-        documentImport: {
-            carteIdentite: "",
-            photo: ""
+            firstName: "",
+            birthDate: "",
+            nationality: ""
         }
     });
+    const idCardRef = useRef(null);
+    const photoRef = useRef(null);
 
     const afficherEtapeSuivante = () => {
         setEtp(printEtp + 1);
@@ -38,13 +36,28 @@ const Register   = () => {
         afficherEtapeSuivante();
     };
 
-    const handleDocumentImportChange = (documentImportData) => {
-        setFormData({ ...formData, documentImport: documentImportData });
-        afficherEtapeSuivante();
-    };
+    const handleValidation = async () => {
+        const formDataObject = new FormData();
 
-    const handleValidation = () => {
-        console.log(formData);
+        const persInfo = formData.personalInfo;
+        persInfo.isMale = true;
+        persInfo.username = persInfo.firstName.charAt(0) + persInfo.lastName.split(" ").join("");
+
+        // Append the personalInfo data as JSON
+        formDataObject.append('personalInfo', JSON.stringify(persInfo));
+
+        const idCard = idCardRef.current.files[0];
+        const photo = photoRef.current.files[0];
+
+        formDataObject.append('carteIdentite', idCard);
+        formDataObject.append('photo', photo);
+
+        const response = await fetch("http://localhost:8080/register", {
+            method: "POST",
+            body: formDataObject,
+        });
+
+        console.log(formDataObject);
     };
 
     return (
@@ -67,15 +80,9 @@ const Register   = () => {
             </Row>
             <Row className="justify-content-md-center">
                     <Form>
-                        {printEtp === 0 && (
-                            <RegisterComponent.personalInfo onPersonalInfoChange={handlePersonalInfoChange} personalInfo={formData.personalInfo}/>
-                        )}
-                        {printEtp === 1 && (
-                            <RegisterComponent.documentImport onDocumentImport={handleDocumentImportChange} documentImport={formData.documentImport}/>
-                        )}
-                        {printEtp === 2 && (
-                            <RegisterComponent.validationInfo formData={formData}/>
-                        )}
+                        <RegisterComponent.personalInfo onPersonalInfoChange={handlePersonalInfoChange} personalInfo={formData.personalInfo} display={printEtp === 0}/>
+                        <RegisterComponent.documentImport display={printEtp === 1} handleGoNext={() => afficherEtapeSuivante()} idCardRef={idCardRef} photoRef={photoRef}/>
+                        <RegisterComponent.validationInfo formData={formData} display={printEtp === 2} idCardRef={idCardRef} photoRef={photoRef}/>
                     </Form>
                 {printEtp === 2 && (
                     <Button onClick={handleValidation}>Valider</Button>
