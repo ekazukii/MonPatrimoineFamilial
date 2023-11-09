@@ -34,6 +34,7 @@ const Layout = () => {
                                 <Nav.Link href="/">Accueil</Nav.Link>
                                 {isLoggedIn ? (
                                     <>
+                                    <Nav.Link href="/account">Mon compte</Nav.Link>
                                     <Nav.Link href="/souvenirs">Mes Souvenirs</Nav.Link>
                                     <Nav.Link onClick={() => logout()}>Deconnexion</Nav.Link>
                                         <NavDropdown
