@@ -3,6 +3,7 @@ import styles from '../pages/souvenirs.module.css';
 import { Image } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import { format } from 'date-fns';
+import {useSession} from "../hooks/useSession.jsx";
 
 const SouvenirComponent = ({ data }) => {
     const date = new Date(data.date);
@@ -153,7 +154,7 @@ const PostCommentary = ({ updateComments, id_conv, id_souvenir }) => {
     );
 };
 
-const NewSouvenir = ({id_conv}) => {
+const NewSouvenir = ({id_conv, myUserInfo}) => {
     const [souvenir, setSouvenir] = useState('');
 
     const postSouvenir = async (id_conv, user_id, message) => {
@@ -164,7 +165,7 @@ const NewSouvenir = ({id_conv}) => {
             },
             body: JSON.stringify({
                 conv: id_conv,
-                user_id: user_id,
+                user_id: myUserInfo.id,
                 message: message,
                 date: "2022-05-08"
             }),
@@ -196,7 +197,7 @@ const NewSouvenir = ({id_conv}) => {
             <Image src="src/utils/avatar.jpeg" />
           </span>
                     <span className={styles.username}>
-            <a>John Smith</a> <small></small>
+            <a>{myUserInfo.firstname + " " + myUserInfo.lastname}</a> <small></small>
           </span>
                     <span className="pull-right text-muted">Mettre la date timestamp</span>
                 </div>
@@ -220,6 +221,7 @@ const NewSouvenir = ({id_conv}) => {
 
 export default function GetSouvenirs() {
     const [json, setJson] = useState([]);
+    const { user, isLoggedIn, setSession, login, refreshData, logout } = useSession();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -233,7 +235,9 @@ export default function GetSouvenirs() {
 
     return (
         <ul className={styles.timeline}>
-            <NewSouvenir id_conv={4}/>
+            {isLoggedIn &&
+                <NewSouvenir id_conv={4} myUserInfo={user}/>
+            }
             {json.map((data) => (
                 <SouvenirComponent key={data.id} data={data} />
             ))}
