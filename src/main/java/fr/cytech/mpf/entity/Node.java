@@ -56,7 +56,12 @@ public class Node implements Serializable {
 
     public Node(String firstName, String lastName, String birthDate, NodeVisibility visibility, Tree tree, boolean isMale) {
         this(firstName, lastName, birthDate, visibility, tree);
-        this.male = male;
+        this.male = isMale;
+    }
+
+    public Node(String firstName, String lastName, String birthDate, NodeVisibility visibility, Tree tree, boolean isMale, User userAccount) {
+        this(firstName, lastName, birthDate, visibility, tree, isMale);
+        this.userAccount = userAccount;
     }
 
     public Node(Node father, Node mother, String firstName, String lastName, String birthDate, NodeVisibility visibility, Tree tree) {

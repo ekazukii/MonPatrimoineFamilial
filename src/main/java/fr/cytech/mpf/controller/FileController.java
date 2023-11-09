@@ -1,5 +1,6 @@
 package fr.cytech.mpf.controller;
 
+import fr.cytech.mpf.config.MustBeLogged;
 import fr.cytech.mpf.dto.FileGetDTO;
 import fr.cytech.mpf.dto.MsgGetDTO;
 import fr.cytech.mpf.entity.MsgInfo;
@@ -41,6 +42,7 @@ public class FileController {
     FileController() {
         modelMapper = new ModelMapper();
     }
+    @MustBeLogged
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file")MultipartFile file){
         try{
@@ -60,6 +62,7 @@ public class FileController {
         }
     }
 
+    @MustBeLogged
     @GetMapping("/info")
     public ResponseEntity<FileGetDTO> getFileById(@RequestParam Long id) {
         FileInfo fileInfo = fileRepository.getReferenceById(id);
@@ -67,6 +70,7 @@ public class FileController {
         return ResponseEntity.ok(fileGetDTO);
     }
 
+    @MustBeLogged
     @GetMapping(value = "/famille")
     public ResponseEntity<List<FileGetDTO>> getMsgByConvId(@RequestParam Long conv) {
         List<FileInfo> fileInfos = fileRepository.findByConv(conv);

@@ -165,6 +165,7 @@ public class TreeController {
         return ResponseEntity.ok(tree);
     }
 
+    @MustBeLogged
     @PostMapping("/tree/view")
     public ResponseEntity<String> addView(@RequestBody TreeViewAddDTO addViewDTO) {
         TreeView treeView = customDTOMapper.addViewToTreeView(addViewDTO);
@@ -172,6 +173,7 @@ public class TreeController {
         return ResponseEntity.ok("Ok");
     }
 
+    @MustBeLogged
     @GetMapping("/tree/view")
     public ResponseEntity<List<TreeView>> getViews(@RequestParam Long treeId) {
         List<TreeView> treeViews = treeViewRepository.getAllByTreeId(treeId);

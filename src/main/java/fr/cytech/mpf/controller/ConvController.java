@@ -1,5 +1,6 @@
 package fr.cytech.mpf.controller;
 
+import fr.cytech.mpf.config.MustBeLogged;
 import fr.cytech.mpf.dto.MsgAddDTO;
 import fr.cytech.mpf.dto.UserGetDTO;
 import fr.cytech.mpf.entity.MsgInfo;
@@ -28,6 +29,7 @@ public class ConvController {
         modelMapper = new ModelMapper();
     }
 
+    @MustBeLogged
     @PostMapping("/msg")
     public ResponseEntity<MsgAddDTO> addMsg(@RequestBody MsgAddDTO msgDTO) {
         MsgInfo msgInfo = modelMapper.map(msgDTO, MsgInfo.class);
@@ -35,6 +37,7 @@ public class ConvController {
         return ResponseEntity.ok(msgDTO);
     }
 
+    @MustBeLogged
     @GetMapping("/msg")
     public ResponseEntity<MsgGetDTO> getMsg(@RequestParam Long id) {
         MsgInfo msgInfo = convRepository.getReferenceById(id);
@@ -42,6 +45,7 @@ public class ConvController {
         return ResponseEntity.ok(msgGetDTO);
     }
 
+    @MustBeLogged
     @GetMapping(value = "/famille")
     public ResponseEntity<List<MsgGetDTO>> getMsgByConvId(@RequestParam Long conv) {
         List<MsgInfo> msgInfos = convRepository.findByConv(conv);
