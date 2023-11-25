@@ -6,13 +6,12 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Date;
 
 @Entity
-@Table(name = "ConvInfo")
+@Table(name = "CommInfo")
 @Getter
 @Setter
-public class MsgInfo implements Serializable {
+public class CommInfo implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -21,9 +20,9 @@ public class MsgInfo implements Serializable {
 
     private long user_id;
 
-    private String message;
+    private long souvenir;
 
-    private Date date;
+    private String message;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Timestamp timestamp;

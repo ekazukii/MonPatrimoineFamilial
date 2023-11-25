@@ -1,11 +1,11 @@
 package fr.cytech.mpf.controller;
 
 import fr.cytech.mpf.config.MustBeLogged;
-import fr.cytech.mpf.dto.MsgAddDTO;
-import fr.cytech.mpf.dto.UserGetDTO;
+import fr.cytech.mpf.dto.*;
+import fr.cytech.mpf.entity.CommInfo;
 import fr.cytech.mpf.entity.MsgInfo;
-import fr.cytech.mpf.dto.MsgGetDTO;
 import fr.cytech.mpf.entity.User;
+import fr.cytech.mpf.repository.CommInfoRepository;
 import fr.cytech.mpf.repository.ConvRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,8 @@ import java.util.stream.Collectors;
 public class ConvController {
     @Autowired
     ConvRepository convRepository;
-
+    @Autowired
+    CommInfoRepository commInfoRepository;
     ModelMapper modelMapper;
 
     ConvController() {
@@ -55,5 +56,22 @@ public class ConvController {
         return ResponseEntity.ok(msgGetDTOs);
     }
 
+    @MustBeLogged
+    @GetMapping("/commentary")
+    public ResponseEntity<List<CommGetDTO>> getComm(@RequestParam Long conv, @RequestParam Long souvenir) {
+        List<CommInfo> commInfos = commInfoRepository.findCommInfoByConvAndSouvenir(conv,souvenir);
+        List<CommGetDTO> commGetDTOs = commInfos.stream()
+                        .map(commInfo -> modelMapper.map(commInfo, CommGetDTO.class))
+                        .collect(Collectors.toList());
+                modelMapper.map(commInfos, CommGetDTO.class);
+        return ResponseEntity.ok(commGetDTOs);
+    }
 
+    @MustBeLogged
+    @PostMapping("/commentary")
+    public ResponseEntity<CommAddDTO> addComm(@RequestBody CommAddDTO commDTO) {
+        CommInfo commInfo = modelMapper.map(commDTO, CommInfo.class);
+        commInfoRepository.save(commInfo);
+        return ResponseEntity.ok(commDTO);
+    }
 }
