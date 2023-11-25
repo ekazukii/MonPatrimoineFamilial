@@ -8,6 +8,7 @@ import Register from "./pages/Register.jsx";
 import Souvenirs from "./pages/Souvenirs.jsx";
 import TreePage from "./pages/TreePage.jsx";
 import Account from "./pages/Account.jsx";
+import Admin from "./pages/Admin.jsx"
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
                     <Route path="souvenirs" element={<Souvenirs/>} />
                     <Route path="tree" element={<TreePage />} />
                     <Route path="*" element={<NoPage />} />
+                    <Route path="admin" element={<Admin />} />
                 </Route>
             </Routes>
         </BrowserRouter>

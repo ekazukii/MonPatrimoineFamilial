@@ -2,10 +2,7 @@ package fr.cytech.mpf.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.cytech.mpf.config.MustBeLogged;
-import fr.cytech.mpf.dto.LoginDTO;
-import fr.cytech.mpf.dto.RegisterDTO;
-import fr.cytech.mpf.dto.UserAddDTO;
-import fr.cytech.mpf.dto.UserGetDTO;
+import fr.cytech.mpf.dto.*;
 import fr.cytech.mpf.entity.Node;
 import fr.cytech.mpf.entity.Tree;
 import fr.cytech.mpf.entity.User;
@@ -146,5 +143,34 @@ public class UserController {
             return ResponseEntity.ok(modelMapper.map(user.get(), UserGetDTO.class));
         }
         return ResponseEntity.internalServerError().build();
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/user")
+    public ResponseEntity<String> removeNode (@RequestBody UserDeleteDTO userDto) {
+        userRepository.deleteById(userDto.userId);
+        // TODO: Check has permissions to edit
+        return ResponseEntity.ok("ok");
+    }
+
+    @MustBeLogged
+    @CrossOrigin
+    @PutMapping("/user")
+    public ResponseEntity<User> editUser(@RequestBody UserEditDTO userEditDTO) {
+        Optional<User> actualUser = userRepository.findById(userEditDTO.getId());
+        if(actualUser.isEmpty()) return ResponseEntity.notFound().build();
+
+        User userToUpdate = actualUser.get();
+
+        // Mettre à jour les propriétés de l'utilisateur avec les valeurs du DTO
+        if(userEditDTO.getUsername() != null) userToUpdate.setUsername(userEditDTO.getUsername());
+        if(userEditDTO.getLastname() != null) userToUpdate.setLastname(userEditDTO.getLastname());
+        if(userEditDTO.getFirstname() != null) userToUpdate.setFirstname(userEditDTO.getFirstname());
+        if(userEditDTO.getEmail() != null) userToUpdate.setEmail(userEditDTO.getEmail());
+        if(userEditDTO.isAdmin() != userToUpdate.isAdmin()) userToUpdate.setAdmin(userEditDTO.isAdmin());
+        if(userEditDTO.isValidated() != userToUpdate.isValidated()) userToUpdate.setValidated(userEditDTO.isValidated());
+
+        userRepository.save(actualUser.get());
+        return ResponseEntity.ok(actualUser.get());
     }
 }

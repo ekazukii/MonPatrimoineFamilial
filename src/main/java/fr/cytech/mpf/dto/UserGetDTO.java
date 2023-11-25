@@ -11,6 +11,10 @@ public class UserGetDTO {
 
     private String username;
 
+    private boolean isValidated;
+
+    private boolean isAdmin;
+
     public String getEmail() {
         return email;
     }
