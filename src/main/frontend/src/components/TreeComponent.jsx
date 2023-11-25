@@ -84,84 +84,9 @@ export default function OrgChartTree() {
         setNodeList(nodes);
     }
 
-    const addNodeToTree = async (name, birthday, isMale, fid, mid) => {
-        const data = await fetch("http://localhost:8080/tree/node", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                firstName: name.split(" ")[0],
-                lastName: name.split(" ")[1],
-                birthDate: birthday,
-                fatherId: fid,
-                motherId: mid,
-                treeId: 1,
-                nodeVisibility: "Public",
-                male: isMale
-            })
-        });
-        const json = await data.json();
-        return json.id;
-    }
 
-    const updateNode = async (nodeId, name, birthday, isMale, fid, mid) => {
-        const data = await fetch("http://localhost:8080/tree/node", {
-            method: "PUT",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                firstName: name.split(" ")[0],
-                lastName: name.split(" ")[1],
-                birthDate: birthday,
-                fatherId: fid,
-                motherId: mid,
-                treeId: 1,
-                nodeVisibility: "Public",
-                id: nodeId,
-                male: isMale
-            })
-        });
-        return nodeId;
-    }
+    const onSubmit = async (tree) => {
 
-    const updateOneNode = async (node, tree) => {
-        if(node.birthday === undefined || node.name === undefined) return;
-        const [fNode, mNode] = getParents(tree, node.fid, node.mid);
-        const isMale = node.gender === 'male';
-
-        if(node.nodeId === undefined) {
-            return addNodeToTree(node.name, node.birthday, isMale, fNode?.nodeId, mNode?.nodeId);
-        } else {
-            return updateNode(node.nodeId, node.name, node.birthday, isMale, fNode?.nodeId, mNode?.nodeId);
-        }
-    }
-
-    const updateOneChildren = async (node, tree, newParNodeId, newParId) => {
-        if(node.birthday === undefined || node.name === undefined) return;
-        const [fNode, mNode] = getParents(tree, node.fid, node.mid);
-        if(fNode?.id === newParId) fNode.nodeId = newParNodeId;
-        if(mNode?.id === newParId) mNode.nodeId = newParNodeId;
-        const isMale = node.gender === 'male';
-
-        return updateNode(node.nodeId, node.name, node.birthday, isMale, fNode?.nodeId, mNode?.nodeId);
-    }
-
-    const onUpdate = async (tree, node) => {
-        const nodes = Object.values(tree.nodes)
-        alert("update")
-        if(!parentExists(nodes, node)) {
-            alert("parent error");
-            return;
-        };
-        const parentId = await updateOneNode(node, tree);
-        const children = getChildren(nodes, node);
-        for (const child of children) {
-            const childNodeData = tree.get(child.id)
-            await updateOneChildren(childNodeData, tree, parentId, node.id);
-        }
-        await fetchData();
     }
 
     useEffect(() => {
@@ -170,7 +95,7 @@ export default function OrgChartTree() {
 
     return (
         <div>
-            <FamilyTree nodes={nodeList} onUpdate={onUpdate} treeId={1}/>
+            <FamilyTree nodes={nodeList} onSubmit={onSubmit} treeId={1}/>
         </div>
     );
 }

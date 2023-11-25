@@ -12,8 +12,9 @@ import fr.cytech.mpf.service.CustomDTOMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.Objects;
-
 
 @Service
 public class MergeTreeService {
@@ -50,7 +51,7 @@ public class MergeTreeService {
         basicCheck(parentsNodesRequester, childrenNodesRequester, requestingTree, respondingTree);
 
         // Node mergeNode = findUserNodeTree(respondingTree);
-        Node mergeNode = findNode(12L); // Hardcoded node ID for merging.
+        Node mergeNode = findNode(null); // Hardcoded node ID for merging.
         Node fakeMergeNode = createFakeMergeNode(parentsNodesRequester, mergeNode, requestingTree);
 
         nodeRepository.save(fakeMergeNode);
@@ -89,12 +90,12 @@ public class MergeTreeService {
                 .orElseThrow(() -> new MergeTreeException("Error: Cannot find tree id: " + id));
     }
 
-    private Node findNode(Long id) throws MergeTreeException {
+    private Node findNode(UUID id) throws MergeTreeException {
         return nodeRepository.findById(id)
                 .orElseThrow(() -> new MergeTreeException("Error: node " + id + " is not present"));
     }
 
-    private List<Node> findNodes(Long[] ids) {
+    private List<Node> findNodes(UUID[] ids) {
 
         if (ids == null){
             return null;
@@ -111,7 +112,6 @@ public class MergeTreeService {
         }
 
         return nodes;
-        
     }
 
     private Node createFakeMergeNode(List<Node> parentsNodesRequester, Node mergeNode, Tree requestingTree) {
