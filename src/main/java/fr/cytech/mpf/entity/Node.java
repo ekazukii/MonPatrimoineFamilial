@@ -71,7 +71,33 @@ public class Node implements Serializable {
         this.mother = mother;
     }
 
+    public Node(Node father, Node mother, String firstName, String lastName, String birthDate, NodeVisibility visibility, Tree tree, boolean isMale) {
+        this(father, mother, firstName, lastName, birthDate, visibility, tree);
+        this.male = isMale;
+    }
+
     public Node() {
 
     }
+
+
+    @Override
+    public String toString() {
+        return this.firstName + " : " + this.lastName;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Node other = (Node) obj;
+        return this.firstName.equals(other.getFirstName()) && this.lastName.equals(other.getLastName()) 
+            && this.birthDate.equals(other.getBirthDate()) && this.male == other.isMale();
+    }
+
+    
 }
