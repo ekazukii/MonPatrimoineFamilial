@@ -72,15 +72,18 @@ export default function OrgChartTree() {
                 nodeId: data.id,
                 birthday: data.birthDate,
                 name: data.firstName + ' ' + data.lastName,
-                mid: data.father,
-                fid: data.mother,
+                mid: data.mother,
+                fid: data.father,
                 gender: data.male ? "male" : "female",
+                registered: data.userAccount != null,
                 pids: []
             }
         });
 
         addPartnersId(nodes);
-        nodes[0].tags = ["registered"]
+        nodes.forEach(node => {
+            if(node.registered) node.tags = [node.gender === "male" ? "registeredM": "registeredF"];
+        })
         setNodeList(nodes);
     }
 

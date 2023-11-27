@@ -18,8 +18,7 @@ import java.util.UUID;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "node")
 public class Node implements Serializable {
-    @Id @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id")
+    @Id @Column(name = "id")
     private UUID id;
 
     @ManyToOne

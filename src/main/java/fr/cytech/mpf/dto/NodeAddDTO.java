@@ -22,4 +22,5 @@ public class NodeAddDTO implements Serializable {
     private UUID fatherId;
     private UUID motherId;
     private NodeVisibility nodeVisibility;
+    private UUID id;
 }
