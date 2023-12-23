@@ -12,6 +12,7 @@ import fr.cytech.mpf.entity.User;
 import fr.cytech.mpf.repository.NodeRepository;
 import fr.cytech.mpf.repository.TreeRepository;
 import fr.cytech.mpf.repository.UserRepository;
+import fr.cytech.mpf.service.MailService;
 import fr.cytech.mpf.service.UserService;
 import fr.cytech.mpf.utils.NodeVisibility;
 import jakarta.servlet.http.HttpSession;
@@ -40,6 +41,8 @@ public class UserController {
     UserRepository userRepository;
     @Autowired
     UserService userService;
+    @Autowired
+    MailService mailService;
     @Autowired
     TreeRepository treeRepository;
     @Autowired
@@ -71,8 +74,7 @@ public class UserController {
         Optional<User> optUser = userRepository.findUserByUsernameAndPassword(loginDTO.getUsername(), hashedPass);
         if(optUser.isEmpty()) return ResponseEntity.notFound().build();
         User user = optUser.get();
-        //TODO: Reactivate when email verif
-        //sif(user.getValidationCode() != null) return ResponseEntity.status(403).build();
+        if(user.getValidationCode() != null) return ResponseEntity.status(403).build();
         session.setAttribute("account", user);
         return ResponseEntity.ok(user);
     }
@@ -100,6 +102,8 @@ public class UserController {
         user.setValidationCode(validationCode);
         userRepository.save(user);
 
+        mailService.sendValidationCode(user);
+
         Node rootNode = new Node(personalInfoData.getFirstName(), personalInfoData.getLastName(), personalInfoData.getBirthDate(), NodeVisibility.Private, tree, personalInfoData.isMale(), user);
         nodeRepository.save(rootNode);
 
@@ -107,6 +111,14 @@ public class UserController {
         System.out.println("[USER] - Registering new user "+ personalInfoData.getEmail());
 
         return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/user/validate")
+    public String validateUser(@RequestParam String code) {
+        List<User> users = userRepository.findUsersByValidationCode(UUID.fromString(code));
+        users.forEach((u) -> u.setValidationCode(null));
+        userRepository.saveAll(users);
+        return "redirect:https://localhost:5173/login";
     }
 
     @CrossOrigin

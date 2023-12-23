@@ -52,6 +52,7 @@ public class Node implements Serializable {
         this.birthDate = birthDate;
         this.visibility = visibility;
         this.tree = tree;
+        this.id = UUID.randomUUID();
     }
 
     public Node(String firstName, String lastName, String birthDate, NodeVisibility visibility, Tree tree, boolean isMale) {
