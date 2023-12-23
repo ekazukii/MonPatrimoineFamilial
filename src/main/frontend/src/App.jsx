@@ -10,6 +10,7 @@ import TreePage from "./pages/TreePage.jsx";
 import Account from "./pages/Account.jsx";
 import Annuary from "./pages/Annuary.jsx";
 import ExampleDataSet from "./pages/ExampleDataSet.jsx";
+import UserSearchPage from "./pages/UserSearchPage.jsx";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
                     <Route path="souvenirs" element={<Souvenirs/>} />
                     <Route path="tree" element={<TreePage />} />
                     <Route path="annuary" element={<Annuary />} />
+                    <Route path="search" element={<UserSearchPage />}/>
                     <Route path="example_dataset" element={<ExampleDataSet />}/>
                     <Route path="*" element={<NoPage />} />
                 </Route>

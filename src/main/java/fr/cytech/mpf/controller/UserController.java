@@ -121,6 +121,13 @@ public class UserController {
         return "redirect:https://localhost:5173/login";
     }
 
+    @GetMapping("/user/search")
+    public ResponseEntity<List<User>> getUser(@RequestParam String query, @RequestParam String gender, @RequestParam String birthdate) {
+        List<User> users = userRepository.findByFirstnameLastnameOrUsernameContainingIgnoreCase(query.toLowerCase());
+        return ResponseEntity.ok(users);
+    }
+
+
     @CrossOrigin
     @GetMapping("/userinfo")
     public ResponseEntity<User> getUserInfo(HttpSession session) {
