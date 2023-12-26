@@ -29,7 +29,7 @@ const ViewItem = ({name}) => {
     )
 }
 
-const names = ["Tommy Bâillât", "Anatoly Panov", "Baptista Loisona", "Vousa-V-Phyni Zaouche"]
+const names = ["Tommy Bâillât", "Anatoly Panov", "Baptista Loisona"]
 
 const TreeSettings = ({id, defItem, opened, handleClose}) => {
     const [users, setUsers] = useState([]);
