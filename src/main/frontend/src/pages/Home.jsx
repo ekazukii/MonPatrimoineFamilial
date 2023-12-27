@@ -7,15 +7,18 @@ import img2 from "../../../resources/img/home/home-2-nobg.png";
 import img3 from "../../../resources/img/home/home-3-nobg.png";
 import img4 from "../../../resources/img/home/home-4-nobg.png";
 import img5 from "../../../resources/img/home/home-5-nobg.png";
+import {useSession} from "../hooks/useSession.jsx";
 import './Home.css';
 
 const Home = () => {
     const fetchTestUsr = async () => {
         const data = await fetch("http://localhost:8080/userrdm");
         const json = await data.json();
-
+        
         alert(json);
     }
+    
+    const { user, isLoggedIn, setSession, login, refreshData, logout } = useSession();
 
     return (
         <div>
@@ -59,8 +62,20 @@ const Home = () => {
                         </div>
                         <div className="image" >
                             <div className='connection'> 
-                                <button className="big-button">S'inscrire</button>
-                                <a className="already-sub" href="#">Je suis déjà inscrit</a>
+                                {!isLoggedIn ? (
+                                    <>
+                                        <a href="/register">
+                                            <button className="big-button">S'inscrire</button>
+                                        </a>
+                                        <a className="already-sub" href="/login">Je suis déjà inscrit</a>
+                                    </>
+                                ) : (
+                                    <>
+                                        <a href="/tree">
+                                            <button className="big-button">Mon Arbre</button>
+                                        </a>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
