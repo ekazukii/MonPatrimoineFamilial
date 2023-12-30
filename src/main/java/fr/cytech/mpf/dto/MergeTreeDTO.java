@@ -12,5 +12,7 @@ public class MergeTreeDTO implements Serializable {
     public Long respondingTreeId;
     public UUID[] parentsNodesRequester;
     public UUID[] childrenNodesRequester;
+    public UUID userNodeRequesterId;
+    public UUID userNodeResponderId;
 }
 

@@ -51,12 +51,11 @@ public class MergeTreeService {
         basicCheck(parentsNodesRequester, childrenNodesRequester, requestingTree, respondingTree);
 
         // Node mergeNode = findUserNodeTree(respondingTree);
-        Node mergeNode = findNode(null); // Hardcoded node ID for merging.
+        Node mergeNode = findNode(mergeTreeDTO.getUserNodeResponderId());
         Node fakeMergeNode = createFakeMergeNode(parentsNodesRequester, mergeNode, requestingTree);
 
         nodeRepository.save(fakeMergeNode);
         this.requestingTree.getNodes().add(fakeMergeNode);
-        treeRepository.save(requestingTree);
 
         // TO DO: find a way to not change the `healthy` nodes at start 
         if (childrenNodesRequester != null){
@@ -259,13 +258,13 @@ public class MergeTreeService {
         List<FamilyTree> f1ParentsFamilyTreesList = null;
         List<FamilyTree> f2ParentsFamilyTreesList = null;
         if(f1 != null) {
-            f1ParentsFamilyTreesList = f1.travelParents();     
-            f1.travelChildren();
+            f1ParentsFamilyTreesList = f1.travelParents();    
+            //f1.travelChildren();
         }
         
         if(f2 != null) {
             f2ParentsFamilyTreesList = f2.travelParents();      
-            f2.travelChildren();   
+            //f2.travelChildren();   
         }
         
         // i == 0 is is for family trees fathers, i == 1 is for family trees mothers
