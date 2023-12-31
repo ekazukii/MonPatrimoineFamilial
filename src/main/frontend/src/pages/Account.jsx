@@ -1,19 +1,31 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
 import Stack from "react-bootstrap/Stack";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
+import {useSession} from "../hooks/useSession.jsx";
 
 //{email, username, firstName, familyName, isMale}
-const Account = ({user}) => {
-    const [email, setEmail] = useState(user.email);
-    const [firstName, setFirstName] = useState(user.firstName);
-    const [familyName, setFamilyName] = useState(user.familyName);
-    const [isMale, setIsMale] = useState(user.isMale);
+const Account = () => {
+    const { user, isLoggedIn } = useSession();
+    const [email, setEmail] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [familyName, setFamilyName] = useState("");
+    const [isMale, setIsMale] = useState("");
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
+
+    useEffect(() => {
+        if(!user) return;
+        setEmail(user.email)
+        setFamilyName(user.lastname);
+        setFirstName(user.firstname);
+        setIsMale(user.male);
+    }, [user]);
+
+    if(!isLoggedIn) return <></>
 
     //TODO: Edit profile picture
 
