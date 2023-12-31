@@ -11,6 +11,21 @@ import {useSession} from "../hooks/useSession.jsx";
 import './Home.css';
 
 const Home = () => {
+    const products = [{
+        id:1,
+        name:'test',
+        price:110
+    } ];
+    const columns = [{
+        dataField: 'id',
+        text: 'Product ID'
+    }, {
+        dataField: 'name',
+        text: 'Product Name'
+    }, {
+        dataField: 'price',
+        text: 'Product Price'
+    }];
     const fetchTestUsr = async () => {
         const data = await fetch("http://localhost:8080/userrdm");
         const json = await data.json();

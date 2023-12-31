@@ -28,7 +28,6 @@ const Account = () => {
     if(!isLoggedIn) return <></>
 
     //TODO: Edit profile picture
-
     return (
         <Container>
             <Row className="justify-content-md-center">

@@ -16,6 +16,7 @@ import fr.cytech.mpf.service.MailService;
 import fr.cytech.mpf.service.UserService;
 import fr.cytech.mpf.utils.NodeVisibility;
 import jakarta.servlet.http.HttpSession;
+import jdk.jshell.spi.ExecutionControlProvider;
 import lombok.SneakyThrows;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -116,9 +117,17 @@ public class UserController {
     @GetMapping("/user/validate")
     public String validateUser(@RequestParam String code) {
         List<User> users = userRepository.findUsersByValidationCode(UUID.fromString(code));
-        users.forEach((u) -> u.setValidationCode(null));
-        userRepository.saveAll(users);
-        return "redirect:https://localhost:5173/login";
+        if (users != null && !users.isEmpty()) {
+            // Des utilisateurs ont été trouvés avec le code de validation
+            users.forEach((u) -> u.setValidationCode(null));
+            userRepository.saveAll(users);
+            //TODO: Mettre une route vers un message de validation
+            return "redirect:http://localhost:5173/login";
+        } else {
+            // Aucun utilisateur n'a été trouvé avec le code de validation
+            //TODO: Mettre une route vers un message d'erreur (non trouvé)
+            return "redirect:http://localhost:5173/";
+        }
     }
 
     @GetMapping("/user/search")

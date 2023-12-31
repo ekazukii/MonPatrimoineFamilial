@@ -1,7 +1,8 @@
 import { Outlet, Link } from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
 import classes from "./layout.module.css";
-import Container from "react-bootstrap/Container";
+import { Container, Row, Col } from 'react-bootstrap';
+import React from 'react';
 import Offcanvas from "react-bootstrap/Offcanvas";
 import Nav from "react-bootstrap/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
@@ -14,7 +15,7 @@ import {useSession} from "../hooks/useSession.jsx";
 const Layout = () => {
     const { user, isLoggedIn, setSession, login, refreshData, logout } = useSession();
     return (
-        <>
+        <div className={classes['wrapper']}>
             <Navbar key={false} expand={false} className={"mb-3 "+classes['custom-bg']}>
                 <Container fluid>
                     <Navbar.Brand href="/">MonPapiFinito</Navbar.Brand>
@@ -39,19 +40,6 @@ const Layout = () => {
                                     <Nav.Link href="/souvenirs">Mes Souvenirs</Nav.Link>
                                     <Nav.Link href="/search">Recherche d'utilisateur</Nav.Link>
                                     <Nav.Link onClick={() => logout()}>Deconnexion</Nav.Link>
-                                        <NavDropdown
-                                        title="Dropdown"
-                                        id={`offcanvasNavbarDropdown-expand-${false}`}
-                                        >
-                                            <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
-                                            <NavDropdown.Item href="#action4">
-                                                Another action
-                                            </NavDropdown.Item>
-                                            <NavDropdown.Divider />
-                                            <NavDropdown.Item href="#action5">
-                                                Something else here
-                                            </NavDropdown.Item>
-                                        </NavDropdown>
                                     </>
                                 ) : (
                                     <>
@@ -61,22 +49,30 @@ const Layout = () => {
                                     </>
                                 )}
                             </Nav>
-                            <Form className="d-flex">
-                                <Form.Control
-                                    type="search"
-                                    placeholder="Search"
-                                    className="me-2"
-                                    aria-label="Search"
-                                />
-                                <Button variant="outline-success">Search</Button>
-                            </Form>
                         </Offcanvas.Body>
                     </Navbar.Offcanvas>
                 </Container>
             </Navbar>
             <CheminPages />
-            <Outlet />
-        </>
+            <div className={classes['contentWrapper']}>
+                <Outlet/>
+            </div>
+            <footer className={classes['custom-bg']}>
+                <Container>
+                    <Row className="pt-2 pb-2">
+                        <Col className="d-flex justify-content-center align-items-center">
+                            <span>&copy; {new Date().getFullYear()} monPapiFinito</span>
+                        </Col>
+                        <Col className="d-flex justify-content-center align-items-center">
+                            <span>Retrouvez-nous sur GitHub :</span>
+                            <a href="https://github.com/votre-utilisateur" target="_blank" rel="noopener noreferrer" className="ms-1">
+                                <i className="fa fa-github text-black fa-2x"/>
+                            </a>
+                        </Col>
+                    </Row>
+                </Container>
+            </footer>
+        </div>
     )
 };
 
