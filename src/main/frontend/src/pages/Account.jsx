@@ -16,7 +16,6 @@ const Account = ({user}) => {
     const [newPassword, setNewPassword] = useState("");
 
     //TODO: Edit profile picture
-
     return (
         <Container>
             <Row className="justify-content-md-center">
