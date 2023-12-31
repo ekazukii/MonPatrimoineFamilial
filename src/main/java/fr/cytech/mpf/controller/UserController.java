@@ -195,8 +195,16 @@ public class UserController {
         if(userEditDTO.getLastname() != null) userToUpdate.setLastname(userEditDTO.getLastname());
         if(userEditDTO.getFirstname() != null) userToUpdate.setFirstname(userEditDTO.getFirstname());
         if(userEditDTO.getEmail() != null) userToUpdate.setEmail(userEditDTO.getEmail());
-        if(userEditDTO.isAdmin() != userToUpdate.isAdmin()) userToUpdate.setAdmin(userEditDTO.isAdmin());
-        if(userEditDTO.isValidated() != userToUpdate.isValidated()) userToUpdate.setValidated(userEditDTO.isValidated());
+        if(userEditDTO.getIsAdmin() != null && userEditDTO.getIsAdmin() != userToUpdate.isAdmin()) userToUpdate.setAdmin(userEditDTO.getIsAdmin());
+        if(userEditDTO.getIsValidated() != null) {
+            if(userEditDTO.getIsValidated() && userToUpdate.getValidationCode() != null) {
+                userToUpdate.setValidationCode(null);
+            } else if(!userEditDTO.getIsValidated() && userToUpdate.getValidationCode() == null) {
+                userToUpdate.setValidationCode(UUID.randomUUID());
+                mailService.sendValidationCode(userToUpdate);
+            }
+        }
+
 
         userRepository.save(actualUser.get());
         return ResponseEntity.ok(actualUser.get());

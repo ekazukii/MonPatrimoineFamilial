@@ -32,7 +32,6 @@ public class User implements Serializable {
     private Tree tree;
     private UUID validationCode;
     private boolean isAdmin;
-    private boolean isValidated;
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Timestamp lastModifyDate;
 }
