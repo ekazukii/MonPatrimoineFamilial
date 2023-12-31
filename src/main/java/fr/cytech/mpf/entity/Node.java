@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,9 +18,8 @@ import java.io.Serializable;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "node")
 public class Node implements Serializable {
-    @Id @GeneratedValue
-    @Column(name = "id")
-    private Long id;
+    @Id @Column(name = "id")
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "tree_id", referencedColumnName = "id")
@@ -52,6 +52,7 @@ public class Node implements Serializable {
         this.birthDate = birthDate;
         this.visibility = visibility;
         this.tree = tree;
+        this.id = UUID.randomUUID();
     }
 
     public Node(String firstName, String lastName, String birthDate, NodeVisibility visibility, Tree tree, boolean isMale) {
@@ -70,7 +71,33 @@ public class Node implements Serializable {
         this.mother = mother;
     }
 
+    public Node(Node father, Node mother, String firstName, String lastName, String birthDate, NodeVisibility visibility, Tree tree, boolean isMale) {
+        this(father, mother, firstName, lastName, birthDate, visibility, tree);
+        this.male = isMale;
+    }
+
     public Node() {
 
     }
+
+
+    @Override
+    public String toString() {
+        return this.firstName + " : " + this.lastName;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Node other = (Node) obj;
+        return this.firstName.equals(other.getFirstName()) && this.lastName.equals(other.getLastName()) 
+            && this.birthDate.equals(other.getBirthDate()) && this.male == other.isMale();
+    }
+
+    
 }

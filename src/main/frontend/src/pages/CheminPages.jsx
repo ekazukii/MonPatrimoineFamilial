@@ -5,6 +5,11 @@ function  CheminPages() {
     const location = useLocation();
     const currentPath = location.pathname;
 
+    // Si currentPath est "/", ne rien rendre
+    if (currentPath === "/") {
+        return null;
+    }
+
     const tableauDeMots = currentPath.split("/");
     let cheminRelatif = "";
 

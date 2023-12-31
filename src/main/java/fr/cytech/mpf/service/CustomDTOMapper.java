@@ -39,7 +39,7 @@ public class CustomDTOMapper {
         node.setTree(treeRepository.findById(nodeDTO.getTreeId()).get());
         if(nodeDTO.getFatherId() != null) node.setFather(nodeRepository.findById(nodeDTO.getFatherId()).get());
         if(nodeDTO.getMotherId() != null) node.setMother(nodeRepository.findById(nodeDTO.getMotherId()).get());
-        node.setId(null);
+        node.setId(nodeDTO.getId());
         return node;
     }
 
