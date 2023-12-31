@@ -7,8 +7,11 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
+import {useSession} from "../hooks/useSession.jsx";
 
 const UserSearch = () => {
+    const {isLoggedIn, user} = useSession();
+
     const [query, setQuery] = useState('');
     const [gender, setGender] = useState(null);
     const [birthdate, setBirthdate] = useState(null);
@@ -59,6 +62,10 @@ const UserSearch = () => {
         setQuery(e.target.value);
     }
 
+    const mergeWith = (id) => {
+        // INIT MERGE
+    }
+
     useEffect(() => {
         handleSearch();
     }, [query, gender, birthdate])
@@ -90,6 +97,8 @@ const UserSearch = () => {
                             <th>Last Name</th>
                             <th>Email</th>
                             <th>Username</th>
+                            <th>See the tree</th>
+                            {isLoggedIn && <th>Merge</th>}
                         </tr>
                         </thead>
                         <tbody>
@@ -100,6 +109,8 @@ const UserSearch = () => {
                                 <td>{user.lastname}</td>
                                 <td>{user.email}</td>
                                 <td>{user.username}</td>
+                                <td><a href={`/external?id=${user.id}`}>Go to tree</a></td>
+                                {isLoggedIn && (<td><Button onClick={() => mergeWith(user.id)}>Merge tree</Button></td>)}
                             </tr>
                         ))}
                         </tbody>

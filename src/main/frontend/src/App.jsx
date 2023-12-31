@@ -25,7 +25,7 @@ function App() {
                     <Route path="register" element={<Register/>} />
                     <Route path="account" element={<Account />}/>
                     <Route path="souvenirs" element={<Souvenirs/>} />
-                    {/* <Route path="tree" element={<TreePage />} /> */}
+                    <Route path="external" element={<TreePage />} />
                     <Route path="tree" element={<Tree />} />
                     <Route path="annuary" element={<Annuary />} />
                     <Route path="search" element={<UserSearchPage />}/>
