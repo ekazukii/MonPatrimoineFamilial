@@ -22,7 +22,7 @@ function App() {
                     <Route path="home" element={<Home />} />
                     <Route path="login" element={<Log />} />
                     <Route path="register" element={<Register/>} />
-                    <Route path="account" element={<Account user={{email: "myemail@gmail.com", username: "myUsername", firstName: "myFirstName", familyName: "myFamilyName", socialSecurityNumber: 1021011124981, birthdate: new Date()}}/>}/>
+                    <Route path="account" element={<Account />}/>
                     <Route path="souvenirs" element={<Souvenirs/>} />
                     {/* <Route path="tree" element={<TreePage />} /> */}
                     <Route path="tree" element={<Tree />} />
