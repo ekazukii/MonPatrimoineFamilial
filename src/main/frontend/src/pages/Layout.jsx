@@ -11,15 +11,24 @@ import Button from "react-bootstrap/Button";
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import CheminPages from "./CheminPages.jsx";
 import {useSession} from "../hooks/useSession.jsx";
+import {useState} from "react";
 
 const Layout = () => {
     const { user, isLoggedIn, setSession, login, refreshData, logout } = useSession();
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
     return (
         <div className={classes['wrapper']}>
             <Navbar key={false} expand={false} className={"mb-3 "+classes['custom-bg']}>
                 <Container fluid>
                     <Navbar.Brand href="/">MonPapiFinito</Navbar.Brand>
-                    <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${false}`} />
+                    <div>
+                        <Button variant="danger" className={"me-2"} onClick={handleShow}>
+                            Administrateur
+                        </Button>
+                        <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${false}`} />
+                    </div>
                     <Navbar.Offcanvas
                         id={`offcanvasNavbar-expand-${false}`}
                         aria-labelledby={`offcanvasNavbarLabel-expand-${false}`}
@@ -53,6 +62,18 @@ const Layout = () => {
                     </Navbar.Offcanvas>
                 </Container>
             </Navbar>
+            <Offcanvas show={show} onHide={handleClose} backdrop="static">
+                <Offcanvas.Header closeButton>
+                    <Offcanvas.Title>Admin Tool</Offcanvas.Title>
+                </Offcanvas.Header>
+                <Offcanvas.Body>
+                    <Nav defaultActiveKey="/admin" variant="underline" className="flex-column">
+                        <Nav.Link href="/admin">Active</Nav.Link>
+                        <Nav.Link eventKey="link-1">Link</Nav.Link>
+                        <Nav.Link eventKey="link-2">Link</Nav.Link>
+                    </Nav>
+                </Offcanvas.Body>
+            </Offcanvas>
             <CheminPages />
             <div className={classes['contentWrapper']}>
                 <Outlet/>
