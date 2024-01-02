@@ -86,6 +86,8 @@ public class UserController {
         ObjectMapper objectMapper = new ObjectMapper();
         RegisterDTO personalInfoData = objectMapper.readValue(personalInfo, RegisterDTO.class);
 
+        userService.generateUniqueUsername(personalInfoData);
+
         userService.saveFileImage(carteIdentite, personalInfoData.getUsername(), "idcard");
         userService.saveFileImage(photo, personalInfoData.getUsername(), "photo");
 

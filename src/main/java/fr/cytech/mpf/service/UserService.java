@@ -1,5 +1,7 @@
 package fr.cytech.mpf.service;
 
+import fr.cytech.mpf.dto.RegisterDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -8,8 +10,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import fr.cytech.mpf.repository.UserRepository;
+
 @Service
 public class UserService {
+    @Autowired
+    UserRepository userRepository;
     public String passwordToHash(String password) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-512");
         md.update("tempsalt".getBytes(StandardCharsets.UTF_8));
@@ -34,5 +40,21 @@ public class UserService {
         MessageDigest md = MessageDigest.getInstance("SHA-512");
         String hashedPassword = md.digest(password.getBytes(StandardCharsets.UTF_8)).toString();
         return hashedPassword.equals(password);
+    }
+
+    public void generateUniqueUsername(RegisterDTO personalInfoData) {
+        String baseUsername = personalInfoData.getFirstName().charAt(0) +
+                personalInfoData.getLastName().replace(" ", "");
+
+        String finalUsername = baseUsername;
+        int suffix = 1;
+
+        // Vérifiez si le username existe déjà
+        while (userRepository.existsByUsername(finalUsername)) {
+            finalUsername = baseUsername + suffix;
+            suffix++;
+        }
+
+        personalInfoData.setUsername(finalUsername);
     }
 }

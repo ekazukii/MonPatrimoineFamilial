@@ -6,6 +6,7 @@ import Col from 'react-bootstrap/Col';
 import Container from "react-bootstrap/Container";
 import Nav from 'react-bootstrap/Nav';
 import * as RegisterComponent from '../components/RegisterComponent.jsx'
+import ValidationFront from '../components/ValidationComponent.jsx'
 
 const Register   = () => {
     const [printEtp, setPrintEtp] = useState(0);
@@ -23,6 +24,7 @@ const Register   = () => {
             nationality: ""
         }
     });
+    const [loading, setLoading] = useState(false); // État pour gérer le chargement
     const idCardRef = useRef(null);
     const photoRef = useRef(null);
 
@@ -37,6 +39,8 @@ const Register   = () => {
     };
 
     const handleValidation = async () => {
+        setLoading(true); // Activer le chargement pendant l'attente de la réponse
+
         const formDataObject = new FormData();
 
         const persInfo = formData.personalInfo;
@@ -52,10 +56,24 @@ const Register   = () => {
         formDataObject.append('carteIdentite', idCard);
         formDataObject.append('photo', photo);
 
-        const response = await fetch("http://localhost:8080/register", {
-            method: "POST",
-            body: formDataObject,
-        });
+        try {
+            const response = await fetch("http://localhost:8080/register", {
+                method: "POST",
+                body: formDataObject,
+            });
+
+            if (response.ok) {
+                // Validation successful, display "OK"
+                setPrintEtp(3);
+            } else {
+                // Validation failed, handle the error
+                console.error("Validation failed");
+            }
+        } catch (error) {
+            console.error("Error during validation:", error);
+        } finally {
+            setLoading(false); // Désactiver le chargement après la réponse
+        }
 
         console.log(formDataObject);
     };
@@ -79,13 +97,21 @@ const Register   = () => {
                 </Col>
             </Row>
             <Row className="justify-content-md-center">
-                    <Form>
-                        <RegisterComponent.personalInfo onPersonalInfoChange={handlePersonalInfoChange} personalInfo={formData.personalInfo} display={printEtp === 0}/>
-                        <RegisterComponent.documentImport display={printEtp === 1} handleGoNext={() => afficherEtapeSuivante()} idCardRef={idCardRef} photoRef={photoRef}/>
-                        <RegisterComponent.validationInfo formData={formData} display={printEtp === 2} idCardRef={idCardRef} photoRef={photoRef}/>
-                    </Form>
-                {printEtp === 2 && (
-                    <Button onClick={handleValidation}>Valider</Button>
+                {printEtp < 3 ? (
+                    <>
+                        <Form>
+                            <RegisterComponent.personalInfo onPersonalInfoChange={handlePersonalInfoChange} personalInfo={formData.personalInfo} display={printEtp === 0}/>
+                            <RegisterComponent.documentImport display={printEtp === 1} handleGoNext={() => afficherEtapeSuivante()} idCardRef={idCardRef} photoRef={photoRef}/>
+                            <RegisterComponent.validationInfo formData={formData} display={printEtp === 2} idCardRef={idCardRef} photoRef={photoRef}/>
+                        </Form>
+                        {printEtp === 2 && (
+                            <Button onClick={handleValidation} disabled={loading}>
+                                {loading ? 'Chargement...' : 'Valider'}
+                            </Button>
+                        )}
+                    </>
+                ) : (
+                    <ValidationFront title="Vous avez reçu un mail de confirmation!" textBody="Allez voir vos mails ;)"/>
                 )}
             </Row>
         </Container>
