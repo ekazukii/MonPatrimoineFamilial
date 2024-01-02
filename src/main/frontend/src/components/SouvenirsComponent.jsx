@@ -5,10 +5,13 @@ import Form from 'react-bootstrap/Form';
 import { format } from 'date-fns';
 import {useSession} from "../hooks/useSession.jsx";
 
+
 const SouvenirComponent = ({ data }) => {
     const date = new Date(data.date);
     const formattedYear = format(date, 'yyyy');
     const formattedDate = format(date, 'dd/MM');
+    const timestampDate = new Date(data.timestamp);
+    const formattedTimestampDate = format(timestampDate, 'dd/MM/yyyy HH:mm');
 
     const [isDivVisible, setIsDivVisible] = useState(false);
 
@@ -33,7 +36,7 @@ const SouvenirComponent = ({ data }) => {
                     <span className={styles.username}>
             <a>John Smith</a> <small></small>
           </span>
-                    <span className="pull-right text-muted">Mettre la date</span>
+                    <span className="pull-right text-muted">{formattedTimestampDate}</span>
                 </div>
                 <div className={styles['timeline-content']}>
                     <p>{data.message}</p>
@@ -154,10 +157,14 @@ const PostCommentary = ({ updateComments, id_conv, id_souvenir }) => {
     );
 };
 
-const NewSouvenir = ({id_conv, myUserInfo}) => {
+const NewSouvenir = ({id_conv, myUserInfo, updateSouvenir}) => {
     const [souvenir, setSouvenir] = useState('');
+    const [dateSouvenir, setDateSouvenir] = useState('');
 
-    const postSouvenir = async (id_conv, user_id, message) => {
+    const date = new Date();
+    const formattedDate = format(date, 'dd/MM/yyyy HH:mm');
+
+    const postSouvenir = async (id_conv, user_id, message, date) => {
         const data = await fetch('http://localhost:8080/conversation/msg', {
             method: 'POST',
             headers: {
@@ -167,7 +174,7 @@ const NewSouvenir = ({id_conv, myUserInfo}) => {
                 conv: id_conv,
                 user_id: myUserInfo.id,
                 message: message,
-                date: "2022-05-08"
+                date: date
             }),
         });
         return await data.json();
@@ -178,8 +185,10 @@ const NewSouvenir = ({id_conv, myUserInfo}) => {
             return;
         }
 
-        await postSouvenir(id_conv, 1, souvenir);
+        await postSouvenir(id_conv, 1, souvenir, dateSouvenir);
+        updateSouvenir();
         setSouvenir('');
+        setDateSouvenir('');
     };
 
     return(
@@ -193,18 +202,26 @@ const NewSouvenir = ({id_conv, myUserInfo}) => {
             </div>
             <div className={styles['timeline-body']}>
                 <div className={styles['timeline-header']}>
-          <span className={styles.userimage}>
-            <Image src="src/utils/avatar.jpeg" />
-          </span>
-                    <span className={styles.username}>
-            <a>{myUserInfo.firstname + " " + myUserInfo.lastname}</a> <small></small>
-          </span>
-                    <span className="pull-right text-muted">Mettre la date timestamp</span>
+                      <span className={styles.userimage}>
+                        <Image src="src/utils/avatar.jpeg" />
+                      </span>
+                                <span className={styles.username}>
+                        <a>{myUserInfo.firstname + " " + myUserInfo.lastname}</a> <small></small>
+                      </span>
+                      <span className="pull-right text-muted">{formattedDate}</span>
                 </div>
                 <div className={styles['timeline-content']}>
+                    <Form.Label>La date de votre souvenir :</Form.Label>
+                    <Form.Control
+                        type="date"
+                        value={dateSouvenir}
+                        onChange={(e) => setDateSouvenir(e.target.value)}
+                        className="mb-2"
+                    />
+                    <Form.Label>Le contenu de votre souvenir :</Form.Label>
                     <Form.Control
                         type="text"
-                        placeholder="Votre commentaire..."
+                        placeholder="Votre souvenir..."
                         value={souvenir}
                         onChange={(e) => setSouvenir(e.target.value)}
                     />
@@ -223,11 +240,22 @@ export default function GetSouvenirs() {
     const [json, setJson] = useState([]);
     const { user, isLoggedIn, setSession, login, refreshData, logout } = useSession();
 
+    // Fonction pour mettre à jour les souvenirs après l'ajout d'un nouveau souvenir
+    const updateSouvenir = async () => {
+        const data = await fetch('http://localhost:8080/conversation/famille?conv=4');
+        const jsonData = await data.json();
+        const sortedJsonData = [...jsonData].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        setJson(sortedJsonData);
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             const data = await fetch('http://localhost:8080/conversation/famille?conv=4');
             const jsonData = await data.json();
-            setJson(jsonData);
+            const sortedJsonData = [...jsonData].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            setJson(sortedJsonData);
         };
 
         fetchData();
@@ -235,9 +263,7 @@ export default function GetSouvenirs() {
 
     return (
         <ul className={styles.timeline}>
-            {isLoggedIn &&
-                <NewSouvenir id_conv={4} myUserInfo={user}/>
-            }
+            {isLoggedIn && <NewSouvenir id_conv={4} myUserInfo={user} updateSouvenir={updateSouvenir} />}
             {json.map((data) => (
                 <SouvenirComponent key={data.id} data={data} />
             ))}

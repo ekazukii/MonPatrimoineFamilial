@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import FamilyTree from "./MyTree.jsx";
+import {useSession} from "../hooks/useSession.jsx";
 
 const dasdqf = [
     { id: 1, pids: [2], name: 'Amber McKenzie', gender: 'female', birthday: '18/06/1972', username: 'Person1' },
@@ -59,11 +60,11 @@ const getChildren = (nodes, node) => {
 }
 
 export default function OrgChartTree() {
-
+    const { user, isLoggedIn } = useSession();
     const [nodeList, setNodeList] = useState([]);
 
-    const fetchData = async () => {
-        const data = await fetch("http://localhost:8080/tree?detail=true&id=1")
+    const fetchData = async (treeId) => {
+        const data = await fetch("http://localhost:8080/tree?detail=true&id="+treeId)
         const json = await data.json();
 
         const nodes = json.nodes.map(data => {
@@ -93,12 +94,13 @@ export default function OrgChartTree() {
     }
 
     useEffect(() => {
-        fetchData();
-    }, [])
+        if(!user) return;
+        fetchData(user.tree);
+    }, [user]);
 
     return (
         <div>
-            <FamilyTree nodes={nodeList} onSubmit={onSubmit} treeId={1}/>
+            <FamilyTree nodes={nodeList} onSubmit={onSubmit} treeId={user?.id || 1}/>
         </div>
     );
 }

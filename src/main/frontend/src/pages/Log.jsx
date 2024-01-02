@@ -17,7 +17,7 @@ const Log = () => {
         e.preventDefault();
         const success = await login(inputs.username, inputs.password);
         if(!success) return alert("Connexion failed");
-        navigate("/home");
+        window.location.href = "/";
     }
 
     return (

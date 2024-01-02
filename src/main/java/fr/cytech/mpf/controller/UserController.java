@@ -2,10 +2,7 @@ package fr.cytech.mpf.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.cytech.mpf.config.MustBeLogged;
-import fr.cytech.mpf.dto.LoginDTO;
-import fr.cytech.mpf.dto.RegisterDTO;
-import fr.cytech.mpf.dto.UserAddDTO;
-import fr.cytech.mpf.dto.UserGetDTO;
+import fr.cytech.mpf.dto.*;
 import fr.cytech.mpf.entity.Node;
 import fr.cytech.mpf.entity.Tree;
 import fr.cytech.mpf.entity.User;
@@ -16,6 +13,7 @@ import fr.cytech.mpf.service.MailService;
 import fr.cytech.mpf.service.UserService;
 import fr.cytech.mpf.utils.NodeVisibility;
 import jakarta.servlet.http.HttpSession;
+import jdk.jshell.spi.ExecutionControlProvider;
 import lombok.SneakyThrows;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -116,10 +114,25 @@ public class UserController {
     @GetMapping("/user/validate")
     public String validateUser(@RequestParam String code) {
         List<User> users = userRepository.findUsersByValidationCode(UUID.fromString(code));
-        users.forEach((u) -> u.setValidationCode(null));
-        userRepository.saveAll(users);
-        return "redirect:https://localhost:5173/login";
+        if (users != null && !users.isEmpty()) {
+            // Des utilisateurs ont été trouvés avec le code de validation
+            users.forEach((u) -> u.setValidationCode(null));
+            userRepository.saveAll(users);
+            //TODO: Mettre une route vers un message de validation
+            return "redirect:http://localhost:5173/login";
+        } else {
+            // Aucun utilisateur n'a été trouvé avec le code de validation
+            //TODO: Mettre une route vers un message d'erreur (non trouvé)
+            return "redirect:http://localhost:5173/";
+        }
     }
+
+    @GetMapping("/user/search")
+    public ResponseEntity<List<User>> getUser(@RequestParam String query, @RequestParam String gender, @RequestParam String birthdate) {
+        List<User> users = userRepository.findByFirstnameLastnameOrUsernameContainingIgnoreCase(query.toLowerCase());
+        return ResponseEntity.ok(users);
+    }
+
 
     @CrossOrigin
     @GetMapping("/userinfo")
@@ -158,5 +171,34 @@ public class UserController {
             return ResponseEntity.ok(modelMapper.map(user.get(), UserGetDTO.class));
         }
         return ResponseEntity.internalServerError().build();
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/user")
+    public ResponseEntity<String> removeNode (@RequestBody UserDeleteDTO userDto) {
+        userRepository.deleteById(userDto.userId);
+        // TODO: Check has permissions to edit
+        return ResponseEntity.ok("ok");
+    }
+
+    @MustBeLogged
+    @CrossOrigin
+    @PutMapping("/user")
+    public ResponseEntity<User> editUser(@RequestBody UserEditDTO userEditDTO) {
+        Optional<User> actualUser = userRepository.findById(userEditDTO.getId());
+        if(actualUser.isEmpty()) return ResponseEntity.notFound().build();
+
+        User userToUpdate = actualUser.get();
+
+        // Mettre à jour les propriétés de l'utilisateur avec les valeurs du DTO
+        if(userEditDTO.getUsername() != null) userToUpdate.setUsername(userEditDTO.getUsername());
+        if(userEditDTO.getLastname() != null) userToUpdate.setLastname(userEditDTO.getLastname());
+        if(userEditDTO.getFirstname() != null) userToUpdate.setFirstname(userEditDTO.getFirstname());
+        if(userEditDTO.getEmail() != null) userToUpdate.setEmail(userEditDTO.getEmail());
+        if(userEditDTO.isAdmin() != userToUpdate.isAdmin()) userToUpdate.setAdmin(userEditDTO.isAdmin());
+        if(userEditDTO.isValidated() != userToUpdate.isValidated()) userToUpdate.setValidated(userEditDTO.isValidated());
+
+        userRepository.save(actualUser.get());
+        return ResponseEntity.ok(actualUser.get());
     }
 }
