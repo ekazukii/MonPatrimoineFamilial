@@ -58,7 +58,7 @@ public class TreeController {
         List<NodeVisibility> visibilities = nodeService.getVisibilityList(NodeVisibility.Private);
         List<Node> nodes = nodeRepository.findAllByTreeEqualsAndVisibilityIn(tree, visibilities);
         tree.setNodes(nodes);
-
+    
         return ResponseEntity.ok(tree);
     }
 
@@ -123,8 +123,9 @@ public class TreeController {
     public ResponseEntity<?> mergeTree (@RequestBody  MergeTreeDTO mergeTreeDto) {
         try {
             List<Tree> mergedTrees = mergeTreeService.mergeTrees(mergeTreeDto);
-            return ResponseEntity.ok(mergedTrees);
+            return ResponseEntity.ok("ok");
         } catch (MergeTreeException ex) {
+            ex.printStackTrace();
             return ResponseEntity.badRequest().body(
                 "Cause: " + ex.getCause() + "\n" +
                 "Class: " + ex.getClass().getName() + ":" + ex.getStackTrace()[0].getLineNumber() + "\n" +
