@@ -27,4 +27,6 @@ public class MsgInfo implements Serializable {
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Timestamp timestamp;
+
+    private long file_id;
 }

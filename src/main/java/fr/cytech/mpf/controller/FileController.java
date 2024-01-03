@@ -44,7 +44,7 @@ public class FileController {
     }
     @MustBeLogged
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file")MultipartFile file){
+    public ResponseEntity<FileInfo> uploadFile(@RequestParam("file")MultipartFile file){
         try{
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
             Path targetPath = Paths.get(uploadDir).resolve(fileName);
@@ -56,9 +56,9 @@ public class FileController {
             fileInfo.setFileSize(file.getSize());
             fileRepository.save(fileInfo);
 
-            return ResponseEntity.ok("File uploaded successfully");
+            return ResponseEntity.ok(fileInfo);
         }catch (IOException ex){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file");
+            return ResponseEntity.badRequest().body(null);
         }
     }
 

@@ -74,7 +74,6 @@ const Layout = () => {
                     </Nav>
                 </Offcanvas.Body>
             </Offcanvas>
-            <CheminPages />
             <div className={classes['contentWrapper']}>
                 <Outlet/>
             </div>

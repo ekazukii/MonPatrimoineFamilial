@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from '../pages/souvenirs.module.css';
-import { Image } from 'react-bootstrap';
+import {Image} from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
-import { format } from 'date-fns';
+import {format} from 'date-fns';
 import {useSession} from "../hooks/useSession.jsx";
 
 
@@ -14,9 +14,26 @@ const SouvenirComponent = ({ data }) => {
     const formattedTimestampDate = format(timestampDate, 'dd/MM/yyyy HH:mm');
 
     const [isDivVisible, setIsDivVisible] = useState(false);
+    const [imageSouvenir, setImageSouvenir] = useState(null);
 
     const handleButtonClick = () => {
         setIsDivVisible(!isDivVisible);
+    };
+
+    useEffect(() => {
+        const fetchImage = async () => {
+            if (data.file_id !== 0) {
+                const imageInfo = await getImage(data.file_id);
+                setImageSouvenir(imageInfo);
+            }
+        };
+
+        fetchImage();
+    }, [data.file_id]);
+
+    const getImage = async (id_file) => {
+        const dataFile = await fetch(`http://localhost:8080/files/info?id=${id_file}`);
+        return await dataFile.json();
     };
 
     return (
@@ -40,6 +57,9 @@ const SouvenirComponent = ({ data }) => {
                 </div>
                 <div className={styles['timeline-content']}>
                     <p>{data.message}</p>
+                    {imageSouvenir && imageSouvenir.fileName && (
+                        <Image src={`src/utils/file_import/${imageSouvenir.fileName}`} />
+                    )}
                 </div>
                 <div className={styles['timeline-footer']}>
                     <a onClick={handleButtonClick} className="m-r-15 text-inverse-lighter">
@@ -160,35 +180,73 @@ const PostCommentary = ({ updateComments, id_conv, id_souvenir }) => {
 const NewSouvenir = ({id_conv, myUserInfo, updateSouvenir}) => {
     const [souvenir, setSouvenir] = useState('');
     const [dateSouvenir, setDateSouvenir] = useState('');
+    const [fileSouvenir, setFileSouvenir] = useState(null);
+
+    const [fileInputKey, setFileInputKey] = useState(Date.now());
 
     const date = new Date();
     const formattedDate = format(date, 'dd/MM/yyyy HH:mm');
 
-    const postSouvenir = async (id_conv, user_id, message, date) => {
-        const data = await fetch('http://localhost:8080/conversation/msg', {
+    const postSouvenir = async (id_conv, user_id, message, date, fileUpload) => {
+        let fileId = null;
+        if (fileUpload !== null) {
+            const formData = new FormData();
+            formData.append('file', fileUpload);
+
+            const fileUploadResponse = await fetch('http://localhost:8080/files/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (fileUploadResponse.ok) {
+                const fileUploadData = await fileUploadResponse.json();
+                fileId = fileUploadData.id;
+                console.log(fileId);
+                return postMessage(id_conv, user_id, message, date, fileId);
+            } else {
+                console.error('Error uploading file:', fileUploadResponse.statusText);
+                // Handle the error, e.g., show an error message to the user
+                throw new Error('Failed to upload file');
+            }
+        } else {
+            return postMessage(id_conv, user_id, message, date, fileId);
+        }
+    };
+
+    const postMessage = async (id_conv, user_id, message, date, fileId) =>{
+        const messageResponse = await fetch('http://localhost:8080/conversation/msg', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 conv: id_conv,
-                user_id: myUserInfo.id,
+                user_id: user_id,
                 message: message,
-                date: date
+                date: date,
+                file_id: fileId, // Include the file ID in the message request
             }),
         });
-        return await data.json();
-    };
+
+        if (messageResponse.ok) {
+            return await messageResponse.json();
+        } else {
+            console.error('Error sending message:', messageResponse.statusText);
+            throw new Error('Failed to send message');
+        }
+    }
 
     const handleSouvenirSubmit = async () => {
         if (souvenir.trim() === '') {
             return;
         }
 
-        await postSouvenir(id_conv, 1, souvenir, dateSouvenir);
+        await postSouvenir(id_conv, 1, souvenir, dateSouvenir, fileSouvenir);
         updateSouvenir();
         setSouvenir('');
         setDateSouvenir('');
+        setFileSouvenir(null);
+        setFileInputKey(Date.now());
     };
 
     return(
@@ -224,6 +282,12 @@ const NewSouvenir = ({id_conv, myUserInfo, updateSouvenir}) => {
                         placeholder="Votre souvenir..."
                         value={souvenir}
                         onChange={(e) => setSouvenir(e.target.value)}
+                    />
+                    <Form.Label>La photo de votre souvenir :</Form.Label>
+                    <Form.Control
+                        key={fileInputKey}
+                        type="file"
+                        onChange={(e) => setFileSouvenir(e.target.files[0])}
                     />
                 </div>
                 <div className={styles['timeline-footer']}>

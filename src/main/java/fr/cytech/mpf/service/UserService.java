@@ -9,6 +9,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import fr.cytech.mpf.repository.UserRepository;
 
@@ -56,5 +58,24 @@ public class UserService {
         }
 
         personalInfoData.setUsername(finalUsername);
+    }
+
+    public boolean isBirthdateValid(String birthdate) {
+        try {
+            // Vérifier si la date peut être parsée correctement
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate parsedDate = LocalDate.parse(birthdate, formatter);
+
+            // Vérifier si la personne a entre 18 et 100 ans
+            LocalDate currentDate = LocalDate.now();
+            LocalDate minDate = currentDate.minusYears(100);
+            LocalDate maxDate = currentDate.minusYears(18);
+
+            return !parsedDate.isAfter(maxDate) && !parsedDate.isBefore(minDate);
+
+        } catch (Exception e) {
+            // En cas d'erreur de parsing ou autre, renvoyer false
+            return false;
+        }
     }
 }
