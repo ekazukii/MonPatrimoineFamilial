@@ -3,7 +3,9 @@ package fr.cytech.mpf.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -15,6 +17,7 @@ import java.util.UUID;
 
 @Entity
 @Getter @Setter
+@AllArgsConstructor @NoArgsConstructor
 @Table(name = "UserTable")
 public class User implements Serializable {
     @Id @GeneratedValue()
