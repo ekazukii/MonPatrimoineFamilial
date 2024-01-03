@@ -31,6 +31,7 @@ public class BirthDateRule implements ValidationRule {
     }
 
     private static boolean isOldEnough(String birthDateParent, String birthDateChild) {
+        if(birthDateChild == null || birthDateChild.equals("")) return true;
         // Conversion des chaînes de dates de naissance en objets LocalDate
         LocalDate dateOfBirthParent = LocalDate.parse(birthDateParent, FORMATTER);
         LocalDate dateOfBirthChild = LocalDate.parse(birthDateChild, FORMATTER);

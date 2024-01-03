@@ -43,6 +43,19 @@ public class CustomDTOMapper {
         return node;
     }
 
+    public Node nodeAddDtoToNode(Node node, NodeAddDTO nodeDTO) {
+        node.setVisibility(nodeDTO.getNodeVisibility());
+        node.setFirstName(nodeDTO.getFirstName());
+        node.setLastName(nodeDTO.getLastName());
+        node.setBirthDate(nodeDTO.getBirthDate());
+        node.setMale(nodeDTO.isMale());
+        node.setTree(treeRepository.findById(nodeDTO.getTreeId()).get());
+        if(nodeDTO.getFatherId() != null) node.setFather(nodeRepository.findById(nodeDTO.getFatherId()).get());
+        if(nodeDTO.getMotherId() != null) node.setMother(nodeRepository.findById(nodeDTO.getMotherId()).get());
+        node.setId(nodeDTO.getId());
+        return node;
+    }
+
     public TreeView addViewToTreeView(TreeViewAddDTO viewAddDTO) {
         TreeView treeView = new TreeView();
         treeView.setViewer(userRepository.findById(viewAddDTO.getViewerId()).get());

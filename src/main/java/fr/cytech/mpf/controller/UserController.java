@@ -111,7 +111,11 @@ public class UserController {
 
         mailService.sendValidationCode(user);
 
-        Node rootNode = new Node(personalInfoData.getFirstName(), personalInfoData.getLastName(), personalInfoData.getBirthDate(), NodeVisibility.Private, tree, personalInfoData.isMale(), user);
+        // Convert birthdate from YYYY-MM-DD to DD/MM/YYYY
+        String[] birthdateParts = personalInfoData.getBirthDate().split("-");
+        String birthdate = birthdateParts[2] + "/" + birthdateParts[1] + "/" + birthdateParts[0];
+
+        Node rootNode = new Node(personalInfoData.getFirstName(), personalInfoData.getLastName(), birthdate, NodeVisibility.Private, tree, personalInfoData.isMale(), user);
         nodeRepository.save(rootNode);
 
         //TODO: Send validation email

@@ -112,7 +112,9 @@ public class TreeController {
     @MustBeLogged
     @PutMapping("/tree/node")
     public ResponseEntity<Node> editNode(@RequestBody NodeEditDTO nodeDto) {
-        Node node = customDTOMapper.nodeAddDtoToNode(nodeDto);
+        Node node = nodeRepository.findById(nodeDto.getId()).orElse(null);
+        if(node == null) return ResponseEntity.notFound().build();
+        customDTOMapper.nodeAddDtoToNode(node, nodeDto);
         // TODO: Check has permissions to edit
         nodeRepository.save(node);
         return ResponseEntity.ok(node);
