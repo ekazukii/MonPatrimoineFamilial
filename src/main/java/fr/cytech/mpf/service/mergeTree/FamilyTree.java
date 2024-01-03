@@ -130,7 +130,7 @@ public class FamilyTree {
     public FamilyTree travelChildren(Node child) throws MergeTreeException {
 
         if(!this.getChildren().contains(child)){
-            throw new MergeTreeException("Error: It's impossible to travel through a null child");
+            throw new MergeTreeException("Error: Child is not not in family");
         }
 
         if (this.children != null) {
@@ -148,7 +148,7 @@ public class FamilyTree {
         return null;
     }
 
-    public List<Node> getChildren(Node father, Node mother) throws MergeTreeException {
+    private List<Node> getChildren(Node father, Node mother) throws MergeTreeException {
 
         List<Node> children = new ArrayList<>();
 
@@ -188,7 +188,7 @@ public class FamilyTree {
 
     }
 
-    public List<Node> getChildren(Node parent) throws MergeTreeException {
+    private List<Node> getChildren(Node parent) throws MergeTreeException {
 
         List<Node> children = new ArrayList<>();
         
@@ -197,7 +197,7 @@ public class FamilyTree {
         }
         
         if(parent.isMale()) {
-            for (Node node : parent.getTree().getNodes()){   
+            for (Node node : this.tree.getNodes()){   
                 if(node.getFather() != null && node.getFather().getId() == parent.getId()) {
                     if (node.getFather() != parent) {
                         throw new MergeTreeException("Error: Same id but not the same reference");

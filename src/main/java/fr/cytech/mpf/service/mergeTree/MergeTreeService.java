@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import fr.cytech.mpf.dto.MergeTreeDTO;
 import fr.cytech.mpf.entity.Node;
 import fr.cytech.mpf.entity.Tree;
+import fr.cytech.mpf.entity.User;
 import fr.cytech.mpf.repository.NodeRepository;
 import fr.cytech.mpf.repository.TreeRepository;
+import fr.cytech.mpf.repository.UserRepository;
 import fr.cytech.mpf.service.CustomDTOMapper;
 
 import java.util.ArrayList;
@@ -28,11 +30,17 @@ public class MergeTreeService {
     @Autowired
     private NodeRepository nodeRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     private Tree requestingTree;
     private Tree respondingTree;
 
 
     public List<Tree> mergeTrees(MergeTreeDTO mergeTreeDTO) throws MergeTreeException {
+
+        User userRequester = userRepository.getReferenceById(mergeTreeDTO.getIdRequester());
+        User userResponder = userRepository.getReferenceById(mergeTreeDTO.getIdResponder());
 
         this.requestingTree = findTree(mergeTreeDTO.getRequestingTreeId());
         this.respondingTree = findTree(mergeTreeDTO.getRespondingTreeId());
@@ -51,12 +59,12 @@ public class MergeTreeService {
         basicCheck(parentsNodesRequester, childrenNodesRequester, requestingTree, respondingTree);
 
         // Node mergeNode = findUserNodeTree(respondingTree);
-        Node mergeNode = findNode(null); // Hardcoded node ID for merging.
+        // Node mergeNode = findNode(mergeTreeDTO.getUserNodeResponderId());
+        Node mergeNode = findUserNode(userResponder, respondingTree);
         Node fakeMergeNode = createFakeMergeNode(parentsNodesRequester, mergeNode, requestingTree);
 
         nodeRepository.save(fakeMergeNode);
         this.requestingTree.getNodes().add(fakeMergeNode);
-        treeRepository.save(requestingTree);
 
         // TO DO: find a way to not change the `healthy` nodes at start 
         if (childrenNodesRequester != null){
@@ -135,19 +143,34 @@ public class MergeTreeService {
         return null;
     }
 
+    private Node findUserNode(User user, Tree userTree) throws MergeTreeException {
+
+        if (user == null || userTree == null) {
+            throw new MergeTreeException("Error: Tree or User is null");
+        }
+
+        for (Node node : userTree.getNodes() ) {
+            if (node.getUserAccount() == user) {
+                return node;
+            }
+        }
+
+        return null;
+    }
 
 
 
 
     public void basicCheck(List<Node> parentsNodesRequester, List<Node> childrenNodesRequester,
                            Tree requestingTree, Tree respondingTree) throws MergeTreeException {
-
+       
         validateParentsNodes(parentsNodesRequester, requestingTree, respondingTree);
-        validateChildrenNodes(childrenNodesRequester, requestingTree);
+        validateChildrenNodes(childrenNodesRequester, parentsNodesRequester, requestingTree);
 
     }
 
     private void validateParentsNodes(List<Node> parents, Tree requestingTree, Tree respondingTree) throws MergeTreeException {
+        
         if (parents == null) return;
 
         if (parents.size() != 2) {
@@ -158,13 +181,13 @@ public class MergeTreeService {
             throw new MergeTreeException("Error: All non-null selected parents for the merge must be in the Tree.");
         }
 
-
     }
 
-    private void validateChildrenNodes(List<Node> children, Tree tree) throws MergeTreeException {
+    private void validateChildrenNodes(List<Node> children, List<Node> parents, Tree tree) throws MergeTreeException {
+        
         if (children == null) return;
 
-        if (children.isEmpty()) {
+        if (parents.get(0) == null && parents.get(1) == null && children.isEmpty()) {
             throw new MergeTreeException("Error: At least one child is needed for merging.");
         }
 
@@ -259,13 +282,13 @@ public class MergeTreeService {
         List<FamilyTree> f1ParentsFamilyTreesList = null;
         List<FamilyTree> f2ParentsFamilyTreesList = null;
         if(f1 != null) {
-            f1ParentsFamilyTreesList = f1.travelParents();     
-            f1.travelChildren();
+            f1ParentsFamilyTreesList = f1.travelParents();    
+            //f1.travelChildren();
         }
         
         if(f2 != null) {
             f2ParentsFamilyTreesList = f2.travelParents();      
-            f2.travelChildren();   
+            //f2.travelChildren();   
         }
         
         // i == 0 is is for family trees fathers, i == 1 is for family trees mothers

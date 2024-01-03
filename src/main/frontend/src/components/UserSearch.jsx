@@ -16,8 +16,41 @@ const UserSearch = () => {
     const [gender, setGender] = useState(null);
     const [birthdate, setBirthdate] = useState(null);
     const [showModal, setShowModal] = useState(false);
-
+    
     const [users, setUsers] = useState([]);
+
+    const [modalMerge, setModalMerge] = useState(false);
+    const [nodeList, setNodeList] = useState([]);
+    const [user2, setUser2] = useState(null);
+
+    const [selectedEnfants, setSelectedEnfants] = useState([]);
+    const [selectedParents, setSelectedParents] = useState([]);
+
+    const [mergeStatus, setMergeStatus] = useState(null);
+
+    const [isMerging, setIsMerging] = useState(false);
+
+    const handleSelectEnfant = (e) => {
+        const selectedNode = nodeList.find(node => node.name === e.target.value);
+        if (!selectedEnfants.includes(selectedNode)) {
+            setSelectedEnfants([...selectedEnfants, selectedNode]);
+        }
+    };
+
+    const handleRemoveEnfant = (nodeToRemove) => {
+        setSelectedEnfants(selectedEnfants.filter(node => node !== nodeToRemove));
+    };
+
+    const handleSelectParent = (e) => {
+        const selectedNode = nodeList.find(node => node.name === e.target.value);
+        if (!selectedParents.includes(selectedNode)) {
+            setSelectedParents([...selectedParents, selectedNode]);
+        }
+    };
+
+    const handleRemoveParent = (nodeToRemove) => {
+        setSelectedParents(selectedParents.filter(node => node !== nodeToRemove));
+    };
 
     const handleSearch = async () => {
         // Construct query parameters
@@ -60,10 +93,75 @@ const UserSearch = () => {
 
     const handleSearchChange = (e) => {
         setQuery(e.target.value);
+    }      
+
+    const mergeWith = async() => {
+
+        const childrenNodeIds = selectedEnfants.map(node => node.id);
+        const parentNodeIds = selectedParents ? selectedParents.slice(0, 2).map(node => node ? node.id : null): [null, null];
+        while (parentNodeIds.length < 2) {
+            parentNodeIds.push(null);
+        }
+        
+        try {
+            setIsMerging(true); 
+            const response = await fetch('http://localhost:8080/tree/merge', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    requestingTreeId: user.tree,
+                    respondingTreeId: user2.tree,
+                    parentsNodesRequester: parentNodeIds,
+                    childrenNodesRequester: childrenNodeIds,
+                    idRequester: user.id,
+                    idResponder: user2.id
+                })
+            });
+    
+            if (response.ok) {
+                const responseBody = await response.text();
+                setMergeStatus("Successfully merged");
+            } else {
+                const errorBody = await response.text();
+                setMergeStatus("Erreur: " + errorBody); // Utilisez directement errorBody
+            }
+            
+            setIsMerging(false); 
+        } catch (error) {
+            setMergeStatus("Erreur de connexion au serveur");
+            setIsMerging(false); 
+        }
     }
 
-    const mergeWith = (id) => {
-        // INIT MERGE
+    const fetchData = async (treeId) => {
+
+        const data = await fetch("http://localhost:8080/tree?detail=true&id="+treeId)
+        // const data2 = await fetch("http://localhost:8080/tree?detail=falseid="+treeId)
+        const json = await data.json();
+
+        const nodes = json.nodes.map(data => {
+            return {
+                id: data.id,
+                nodeId: data.id,
+                birthday: data.birthDate,
+                name: data.firstName + ' ' + data.lastName,
+                mid: data.mother,
+                fid: data.father,
+                gender: data.male ? "male" : "female",
+                registered: data.userAccount != null,
+                pids: []
+            }
+        });
+        setNodeList(nodes);
+    }
+
+    const handleOnMerge = (user2) => {
+        //user2 -> user that we merge with but not the logged user
+        setModalMerge(true);
+        setUser2(user2);
+        fetchData(user.tree);
     }
 
     useEffect(() => {
@@ -110,7 +208,7 @@ const UserSearch = () => {
                                 <td>{user.email}</td>
                                 <td>{user.username}</td>
                                 <td><a href={`/external?id=${user.id}`}>Go to tree</a></td>
-                                {isLoggedIn && (<td><Button onClick={() => mergeWith(user.id)}>Merge tree</Button></td>)}
+                                {isLoggedIn && (<td><Button onClick={() => handleOnMerge(user)}>Merge tree</Button></td>)}
                             </tr>
                         ))}
                         </tbody>
@@ -148,6 +246,80 @@ const UserSearch = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            <Modal 
+            show={modalMerge} 
+            onHide={() => setModalMerge(false)}
+            size="lg"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+        >
+            <Modal.Header closeButton>
+                <Modal.Title id="contained-modal-title-vcenter">
+                    Modal heading
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <h4>Centered Modal</h4>
+                <p>
+                    Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
+                    dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
+                    consectetur ac, vestibulum at eros.
+                </p>
+
+                <Form.Group controlId="noeudsEnfantsSelect">
+                    <Form.Label>Noeuds enfants</Form.Label>
+                    <Form.Select aria-label="Noeuds enfants select" onChange={handleSelectEnfant}>
+                        <option>Choisir un enfant</option>
+                        {nodeList.map((node, index) => (
+                            <option key={index}>{node.name}</option>
+                        ))}
+                    </Form.Select>
+                    <div>
+                        {selectedEnfants.map((node, index) => (
+                            <span key={index} className="badge bg-secondary m-1">
+                                {node.name} <Button size="sm" onClick={() => handleRemoveEnfant(node)}>x</Button>
+                            </span>
+                        ))}
+                    </div>
+                </Form.Group>
+
+
+                <Form.Group controlId="noeudsParentsSelect">
+                    <Form.Label>Noeuds Parents</Form.Label>
+                    <Form.Select aria-label="Noeuds parents select" onChange={handleSelectParent}>
+                        <option>Choisir un parent</option>
+                        {nodeList.map((node, index) => (
+                            <option key={index}>{node.name}</option>
+                        ))}
+                    </Form.Select>
+                    <div>
+                        {selectedParents.map((node, index) => (
+                            <span key={index} className="badge bg-secondary m-1">
+                                {node.name} <Button size="sm" onClick={() => handleRemoveParent(node)}>x</Button>
+                            </span>
+                        ))}
+                    </div>
+                </Form.Group>
+
+                {/* Composant similaire pour les parents */}
+
+                {/* {mergeStatus && <p>{mergeStatus}</p>} */}
+                {mergeStatus && (
+                    <div className={`${mergeStatus.startsWith("Erreur") ? "alert alert-danger" : "alert alert-success"} mt-4`}>
+                        {mergeStatus}
+                    </div>
+                )}
+
+
+
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setModalMerge(false)}>Fermer</Button>
+                <Button variant="primary" onClick={() => mergeWith()} disabled={isMerging}>Valider</Button>
+            </Modal.Footer>
+        </Modal>
+            
         </Container>
     );
 };
