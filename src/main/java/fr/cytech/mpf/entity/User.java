@@ -3,7 +3,9 @@ package fr.cytech.mpf.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -16,6 +18,7 @@ import java.util.UUID;
 
 @Entity
 @Getter @Setter
+@AllArgsConstructor @NoArgsConstructor
 @Table(name = "UserTable")
 public class User implements Serializable {
     @Id @GeneratedValue()
@@ -34,7 +37,6 @@ public class User implements Serializable {
     private Tree tree;
     private UUID validationCode;
     private boolean isAdmin;
-    private boolean isValidated;
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Timestamp lastModifyDate;
     @Column(unique = true, nullable = false, length = 15)

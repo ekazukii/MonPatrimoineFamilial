@@ -14,6 +14,6 @@ public class UserEditDTO {
     private String firstname;
     private String email;
     private String username;
-    private boolean isAdmin;
-    private boolean isValidated;
+    private Boolean isAdmin;
+    private Boolean isValidated;
 }
