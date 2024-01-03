@@ -33,6 +33,11 @@ public class ConvController {
     @MustBeLogged
     @PostMapping("/msg")
     public ResponseEntity<MsgAddDTO> addMsg(@RequestBody MsgAddDTO msgDTO) {
+        // Check for null values in required properties
+        if (msgDTO.getMessage() == null || msgDTO.getUser_id() == 0 || msgDTO.getDate() == null || msgDTO.getConv() == 0) {
+            return ResponseEntity.badRequest().build(); // 400 Bad Request
+        }
+
         MsgInfo msgInfo = modelMapper.map(msgDTO, MsgInfo.class);
         convRepository.save(msgInfo);
         return ResponseEntity.ok(msgDTO);

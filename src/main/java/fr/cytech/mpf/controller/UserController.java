@@ -28,6 +28,7 @@ import org.springframework.web.servlet.function.EntityResponse;
 
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -85,6 +86,14 @@ public class UserController {
 
         ObjectMapper objectMapper = new ObjectMapper();
         RegisterDTO personalInfoData = objectMapper.readValue(personalInfo, RegisterDTO.class);
+
+        userService.generateUniqueUsername(personalInfoData);
+
+        // Vérification de la date de naissance
+        if (!userService.isBirthdateValid(personalInfoData.getBirthDate())) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
 
         userService.saveFileImage(carteIdentite, personalInfoData.getUsername(), "idcard");
         userService.saveFileImage(photo, personalInfoData.getUsername(), "photo");

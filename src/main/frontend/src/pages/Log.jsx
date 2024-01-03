@@ -6,6 +6,8 @@ import Col from 'react-bootstrap/Col';
 import Container from "react-bootstrap/Container";
 import {useSession} from "../hooks/useSession.jsx";
 import {useNavigate} from "react-router-dom";
+import {Image} from "react-bootstrap";
+import img1 from "../../../resources/img/home/home-1-nobg.png";
 
 const Log = () => {
     const [inputs, setInputs] = useState({});
@@ -21,33 +23,36 @@ const Log = () => {
     }
 
     return (
-        <Container>
-            <Row className="justify-content-md-center">
-                <Col xs lg="6">
-                    <h2>Connexion</h2>
-                    <Form onSubmit={sendForm}>
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Label>Username</Form.Label>
-                            <Form.Control type="username" placeholder="Enter username" name="username" onChange={handleChange} value={inputs.username}/>
-                            <Form.Text className="text-muted">
-                                We'll never share your email with anyone else.
-                            </Form.Text>
-                        </Form.Group>
+        <>
+            <Row className="justify-content-center">
+                <Col lg={10} md={12} xl={8} className="position-relative justify-md-content-end justify-content-center d-flex">
+                    <div className={`position-${window.innerWidth >= 768 ?'absolute start-0 top-50 translate-middle-y' : 'relative w-100'} p-4 rounded`} style={{ width:'60%', zIndex: 1, background: 'rgba(255, 255, 255, 0.55)', backdropFilter: 'blur(10px)', boxShadow: '0 0 25px rgba(0, 0, 0, 0.2)'}}>
+                        <h2>Connexion</h2>
+                        <Form onSubmit={sendForm}>
+                            <Form.Group className="mb-3" controlId="formBasicEmail">
+                                <Form.Label>Username</Form.Label>
+                                <Form.Control type="username" placeholder="Enter username" name="username" onChange={handleChange} value={inputs.username} />
+                                <Form.Text className="text-muted">
+                                    We'll never share your email with anyone else.
+                                </Form.Text>
+                            </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="formBasicPassword">
-                            <Form.Label>Password</Form.Label>
-                            <Form.Control type="password" placeholder="Password" name="password" onChange={handleChange} value={inputs.password}/>
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="formBasicCheckbox">
-                            <Form.Check type="checkbox" label="Check me out" />
-                        </Form.Group>
-                        <Button variant="primary" type="submit">
-                            Submit
-                        </Button>
-                    </Form>
+                            <Form.Group className="mb-3" controlId="formBasicPassword">
+                                <Form.Label>Password</Form.Label>
+                                <Form.Control type="password" placeholder="Password" name="password" onChange={handleChange} value={inputs.password} />
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formBasicCheckbox">
+                                <Form.Check type="checkbox" label="Check me out" />
+                            </Form.Group>
+                            <Button variant="primary" type="submit">
+                                Submit
+                            </Button>
+                        </Form>
+                    </div>
+                    <Image src={img1} className="d-none d-md-block"/>
                 </Col>
             </Row>
-        </Container>
+        </>
     );
 };
 

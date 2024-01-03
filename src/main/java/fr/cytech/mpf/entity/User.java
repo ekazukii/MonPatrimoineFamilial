@@ -13,6 +13,7 @@ import org.hibernate.annotations.Fetch;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -27,6 +28,7 @@ public class User implements Serializable {
     private String email;
     @JsonIgnore
     private String password;
+    @Column(unique = true)
     private String username;
     private boolean isMale;
     @JsonIdentityReference(alwaysAsId = true)
@@ -37,4 +39,8 @@ public class User implements Serializable {
     private boolean isAdmin;
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Timestamp lastModifyDate;
+    @Column(unique = true, nullable = false, length = 15)
+    private String socialSecurityNumber;
+    @Column(nullable = false)
+    private String birthdate;
 }

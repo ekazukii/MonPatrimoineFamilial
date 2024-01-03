@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "LOWER(u.lastname) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(u.username) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<User> findByFirstnameLastnameOrUsernameContainingIgnoreCase(String query);
+
+    boolean existsByUsername(String username);
 }

@@ -14,4 +14,5 @@ public class MsgAddDTO implements Serializable {
     private long user_id;
     private String message;
     private Date date;
+    private long file_id;
 }
