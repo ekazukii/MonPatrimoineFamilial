@@ -16,4 +16,6 @@ public class MsgGetDTO implements Serializable{
     private String message;
     private Date date;
     private Timestamp timestamp;
+
+    private long file_id;
 }

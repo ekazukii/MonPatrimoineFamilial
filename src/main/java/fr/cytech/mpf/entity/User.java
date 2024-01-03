@@ -11,6 +11,7 @@ import org.hibernate.annotations.Fetch;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -36,4 +37,8 @@ public class User implements Serializable {
     private boolean isValidated;
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Timestamp lastModifyDate;
+    @Column(unique = true, nullable = false, length = 15)
+    private String socialSecurityNumber;
+    @Column(nullable = false)
+    private String birthdate;
 }
