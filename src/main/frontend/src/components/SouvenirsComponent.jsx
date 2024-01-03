@@ -58,7 +58,7 @@ const SouvenirComponent = ({ data }) => {
                 <div className={styles['timeline-content']}>
                     <p>{data.message}</p>
                     {imageSouvenir && imageSouvenir.fileName && (
-                        <Image src={`src/utils/file_import/${imageSouvenir.fileName}`} />
+                        <Image src={`src/utils/${imageSouvenir.fileName}`} />
                     )}
                 </div>
                 <div className={styles['timeline-footer']}>

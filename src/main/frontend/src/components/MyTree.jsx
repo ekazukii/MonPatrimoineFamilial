@@ -42,7 +42,7 @@ export default function Chart({nodes, readOnly, treeId}) {
             generateElementsFromFields: false,
             elements: [
                 {type: 'textbox', label: 'Nom complet', binding: 'name'},
-                {type: 'textbox', label: 'Date de naissance', binding: 'birthday'},
+                {type: 'textbox', label: 'Date de naissance (DD/MM/YYYY)', binding: 'birthday'},
                 {type: 'textbox', label: 'Sexe', binding: 'gender'}
             ],
             buttons: {
@@ -80,7 +80,6 @@ export default function Chart({nodes, readOnly, treeId}) {
 
         family.onUpdateNode(async (args) => {
             if(args.removeNodeId) {
-                console.log("REMOVING UPDATING IDK")
                 await fetch('http://localhost:8080/tree/node', {
                     method: "DELETE",
                     headers: {
@@ -92,9 +91,22 @@ export default function Chart({nodes, readOnly, treeId}) {
                 })
             }
 
-            await Promise.all(args.addNodesData.map(addedNode => {
+            // Do in first the nodes without father or mother
+            // Then do the nodes with father or mother
+            // Then do the nodes with father and mother
+            args.addNodesData.sort((a, b) => {
+                if(a.fid == null && b.fid != null) return -1;
+                if(a.fid != null && b.fid == null) return 1;
+                if(a.mid == null && b.mid != null) return -1;
+                if(a.mid != null && b.mid == null) return 1;
+                if(a.fid != null && a.mid != null && b.fid == null && b.mid == null) return -1;
+                if(a.fid == null && a.mid == null && b.fid != null && b.mid != null) return 1;
+                return 0;
+            });
+
+            for(const addedNode of args.addNodesData) {
                 const [firstName, lastName] = addedNode.name && addedNode.name.includes(" ") ? addedNode.name.split(" ") : ["", ""];
-                return fetch('http://localhost:8080/tree/node', {
+                await fetch('http://localhost:8080/tree/node', {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -111,7 +123,7 @@ export default function Chart({nodes, readOnly, treeId}) {
                         id: addedNode.id
                     })
                 })
-            }));
+            }
 
             args.updateNodesData.forEach(nodeData => {
                 const [firstName, lastName] = nodeData.name && nodeData.name.includes(" ") ? nodeData.name.split(" ") : ["", ""];
