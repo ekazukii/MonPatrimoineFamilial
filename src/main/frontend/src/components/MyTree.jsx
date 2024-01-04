@@ -101,7 +101,7 @@ export default function Chart({nodes, readOnly, treeId}) {
                 return true;
             }
 
-            if(node.tags.includes("registeredF") || node.tags.includes("registeredM")) {
+            if(nodes.tags && (node.tags.includes("registeredF") || node.tags.includes("registeredM"))) {
                 toast.error("You can't edit a registered node");
                 return false;
             }

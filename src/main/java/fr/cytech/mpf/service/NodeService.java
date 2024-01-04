@@ -2,6 +2,8 @@ package fr.cytech.mpf.service;
 
 import fr.cytech.mpf.dto.NodeAddDTO;
 import fr.cytech.mpf.entity.Node;
+import fr.cytech.mpf.entity.Tree;
+import fr.cytech.mpf.entity.User;
 import fr.cytech.mpf.repository.NodeRepository;
 import fr.cytech.mpf.service.validation.ValidationException;
 import fr.cytech.mpf.service.validation.ValidationResponse;
@@ -24,6 +26,12 @@ public class NodeService {
 
     @Autowired
     CustomDTOMapper customDTOMapper;
+
+    MailService mailService;
+
+    public NodeService(MailService mailService) {
+        this.mailService = mailService;
+    }
 
     /**
      * Given a NodeVisibility object return a List wil all NodeVisibility lower or equals this one
@@ -57,5 +65,15 @@ public class NodeService {
 
         return nodeRepository.save(node);
 
+    }
+
+    public void notifyChange(Tree tree) {
+        List<Node> nodesToNotify = nodeRepository.findByUserAccountIdAndTreeIdNot(tree.getId(), tree.getId());
+        List<Tree> treesToNotify = nodesToNotify.stream().map(Node::getTree).toList();
+        List<User> usersToNotify = treesToNotify.stream().map(Tree::getOwner).toList();
+
+        for (User user : usersToNotify) {
+            mailService.sendUpdateMessage(user, tree.getOwner());
+        }
     }
 }
