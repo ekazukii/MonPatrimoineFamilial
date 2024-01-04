@@ -15,7 +15,7 @@ const TreePage = () => {
     const [nodes, setNodes] = useState();
 
     const refreshData = async () => {
-        const data = await fetch("http://localhost:8080/tree?detail=true&id=1")
+        const data = await fetch(`http://localhost:8080/tree?detail=true&id=${id}`)
         const json = await data.json();
 
         const nodes = json.nodes.map(data => {

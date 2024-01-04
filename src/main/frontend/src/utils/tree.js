@@ -15,8 +15,12 @@ const addPartnersId = (nodes) => {
    for(const node of nodes) {
       if(node.mid && node.fid) {
          const [father, mother] = findParents(nodes, node.mid, node.fid);
-         father.pids.push(mother.id);
-         mother.pids.push(father.id);
+         if(!father.pids.includes(mother.id)){
+            father.pids.push(mother.id);
+         }
+         if(!mother.pids.includes(father.id)){
+            mother.pids.push(father.id);
+         }
       }
    }
 }

@@ -59,8 +59,8 @@ public class UserControllerTest {
 
     @Test
     public void givenUsers_whenGetUsers_thenReturnJsonArray() throws Exception {
-        User user = new User(10, "lastname", "firstname", "email", "password", "username", true, null, null, true, null);
-        User user2 = new User(20, "lastname2", "firstname2", "email2", "password2", "username2", true, null, null, true, null);
+        User user = new User(10, "lastname", "firstname", "email", "password", "username", true, null, null, true, null, "111111111111111", "01/01/2001");
+        User user2 = new User(20, "lastname2", "firstname2", "email2", "password2", "username2", true, null, null, true, null, "222222222222222", "01/01/2001");
         List<User> allUsers = Arrays.asList(user, user2);
 
         given(userRepository.findAll()).willReturn(allUsers);
