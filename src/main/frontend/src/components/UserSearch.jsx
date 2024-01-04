@@ -98,11 +98,36 @@ const UserSearch = () => {
     const mergeWith = async() => {
 
         const childrenNodeIds = selectedEnfants.map(node => node.id);
-        const parentNodeIds = selectedParents ? selectedParents.slice(0, 2).map(node => node ? node.id : null): [null, null];
-        while (parentNodeIds.length < 2) {
-            parentNodeIds.push(null);
+
+        let parentNodeIds = [null, null];
+        let maleCount = 0;
+        let femaleCount = 0;
+    
+        if (selectedParents && selectedParents.length > 2) {
+            setMergeStatus("Erreur: plus de deux parents sélectionnés");
+            return; 
         }
-        
+    
+        for (const node of selectedParents) {
+            if (node) {
+                if (node.gender === "male") {
+                    maleCount++;
+                    if (maleCount >= 2) {
+                        setMergeStatus("Erreur: plus de deux hommes");
+                        return; 
+                    }
+                    parentNodeIds[0] = parentNodeIds[0] ? parentNodeIds[0] : node.id;
+                } else if (node.gender === "female") {
+                    femaleCount++;
+                    if (femaleCount >= 2) {
+                        setMergeStatus("Erreur: plus de deux femmes");
+                        return; 
+                    }
+                    parentNodeIds[1] = parentNodeIds[1] ? parentNodeIds[1] : node.id;
+                }
+            }
+        }
+ 
         try {
             setIsMerging(true); 
             const response = await fetch('http://localhost:8080/tree/merge', {
