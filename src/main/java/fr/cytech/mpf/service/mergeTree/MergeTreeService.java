@@ -62,6 +62,13 @@ public class MergeTreeService {
         // Node mergeNode = findNode(mergeTreeDTO.getUserNodeResponderId());
         Node mergeNode = findUserNode(userResponder, respondingTree);
         Node fakeMergeNode = createFakeMergeNode(parentsNodesRequester, mergeNode, requestingTree);
+        
+        for (Node node : requestingTree.getNodes()) {
+            if(node.equals(fakeMergeNode)){
+                fakeMergeNode = node;  // quick fix, need to change variable name
+                break;
+            }
+        }
 
         nodeRepository.save(fakeMergeNode);
         this.requestingTree.getNodes().add(fakeMergeNode);
