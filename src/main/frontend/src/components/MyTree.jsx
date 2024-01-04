@@ -76,6 +76,11 @@ export default function Chart({nodes, readOnly, treeId}) {
             menu: readOnly ? null : {}
         });
 
+        family.onNodeTreeMenuShow((args) => {
+            // remove args.nodes with id "_ft_partner"
+            args.nodes = args.nodes.filter(node => node.id !== "_ft_partner");
+        });
+
         family.generateId = () => uuidv4();
 
         family.onUpdateNode(async (args) => {
