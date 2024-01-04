@@ -81,6 +81,7 @@ export default function OrgChartTree() {
                 fid: data.father,
                 gender: data.male ? "male" : "female",
                 registered: data.userAccount != null,
+                userInfo: data.userAccount,
                 pids: []
             }
         });
