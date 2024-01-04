@@ -80,6 +80,9 @@ export default function Chart({nodes, readOnly, treeId}) {
 
         family.onUpdateNode(async (args) => {
             if(args.removeNodeId) {
+                if(args.removeNodeId === treeId) {
+                    return false;
+                }
                 await fetch('http://localhost:8080/tree/node', {
                     method: "DELETE",
                     headers: {
