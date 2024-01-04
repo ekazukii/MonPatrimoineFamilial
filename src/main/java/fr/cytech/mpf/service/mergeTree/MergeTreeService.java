@@ -127,7 +127,8 @@ public class MergeTreeService {
                 parentsNodesRequester.get(0), parentsNodesRequester.get(1),
                 mergeNode.getFirstName(), mergeNode.getLastName(),
                 mergeNode.getBirthDate(), mergeNode.getVisibility(), 
-                requestingTree, mergeNode.isMale()
+                requestingTree, mergeNode.isMale(),
+                mergeNode.getUserAccount()  
         );
     }
 
@@ -196,16 +197,16 @@ public class MergeTreeService {
         }
     }
 
+
     
-
-
+    
 
     public void mergeFamilyTrees(FamilyTree f1, FamilyTree f2) throws MergeTreeException {
 
         if (f1 == null && f2 == null) {
             return;
         } 
-
+        
         //parents updater 
         for(int i =  0 ; i <  2 ; i++) {
 
@@ -222,13 +223,15 @@ public class MergeTreeService {
                     f1.getParents()[i] = nodeRepository.save(new Node(null, null,
                                         f2.getParents()[i].getFirstName(), f2.getParents()[i].getLastName(),
                                         f2.getParents()[i].getBirthDate(), f2.getParents()[i].getVisibility(), 
-                                        this.requestingTree, f2.getParents()[i].isMale() ));
+                                        this.requestingTree, f2.getParents()[i].isMale(),
+                                        f2.getParents()[i].getUserAccount()));
                 }
                 if(f2 != null && f1 != null && f2.getParents()[i] == null) {
                     f2.getParents()[i] = nodeRepository.save(new Node(null, null,
                                         f1.getParents()[i] .getFirstName(), f1.getParents()[i] .getLastName(),
                                         f1.getParents()[i] .getBirthDate(), f1.getParents()[i] .getVisibility(), 
-                                        this.respondingTree, f1.getParents()[i].isMale() ));                    
+                                        this.respondingTree, f1.getParents()[i].isMale(),
+                                        f1.getParents()[i].getUserAccount()));                    
                             
                 }                
             } 
@@ -264,13 +267,16 @@ public class MergeTreeService {
                     f1.getChildren().add(nodeRepository.save(new Node(f1.getParents()[0], f1.getParents()[1],
                                         child2.getFirstName(), child2.getLastName(),
                                         child2.getBirthDate(), child2.getVisibility(), 
-                                        this.requestingTree, child2.isMale())));
+                                        this.requestingTree, child2.isMale(),
+                                        child2.getUserAccount()
+                                        )));
                 }
                 if(f2 != null && child2 == null) {
                     f2.getChildren().add(nodeRepository.save(new Node(f2.getParents()[0], f2.getParents()[1],
                                         child1.getFirstName(), child1.getLastName(),
                                         child1.getBirthDate(), child1.getVisibility(), 
-                                        this.respondingTree, child1.isMale()
+                                        this.respondingTree, child1.isMale(),
+                                        child1.getUserAccount()
                     )));                    
 
                             

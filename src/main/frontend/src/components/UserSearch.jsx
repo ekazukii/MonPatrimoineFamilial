@@ -281,17 +281,19 @@ const UserSearch = () => {
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                    Modal heading
+                    <h1>Choisir la position des enfants et/ou des parents pour le merge</h1>
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <h4>Centered Modal</h4>
-                <p>
-                    Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-                    dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-                    consectetur ac, vestibulum at eros.
+                <p ClassName="display-6">
+                    Pour effectuer la fusion il est nécessaire de connaître le 
+                    point commun entre les deux arbres.
                 </p>
-
+                <p ClassName="display-6">
+                    Vous devez choisir parmis les noeuds de votre arbre, 
+                    {user2 && ` des nœuds qui seront les parents de ${user2.lastname}`} 
+                    {user2 && ` ou des nœuds qui seront des enfants de ${user2.lastname}`}.
+                </p>
                 <Form.Group controlId="noeudsEnfantsSelect">
                     <Form.Label>Noeuds enfants</Form.Label>
                     <Form.Select aria-label="Noeuds enfants select" onChange={handleSelectEnfant}>

@@ -88,6 +88,29 @@ public class FamilyTree {
             }
 
         }
+
+        if (this.parents[0] != null && !this.parents[0].isMale()) {
+            throw new MergeTreeException("Error : parents[0] " + parents[0] + " must be a male");
+        }
+
+        if (this.parents[1] != null && this.parents[1].isMale()) {
+            throw new MergeTreeException("Error : parents[1] " + parents[1] + " must be a female");
+        }
+
+        for (Node parent : parents) {
+            if (children.contains(parent)) {
+                throw new MergeTreeException("Error : There are parents that are children or children that are parents");
+            }
+        }
+
+        for (Node child : children) {
+            for (Node parent : parents) {
+                if (child.equals(parent)) {
+                    throw new MergeTreeException("Error : There are parents that are children or children that are parents");
+                }
+            }
+        }
+        
     }
 
     public List<FamilyTree> travelParents() throws MergeTreeException {
