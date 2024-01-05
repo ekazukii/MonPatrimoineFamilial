@@ -44,46 +44,30 @@ public class MergeTreeService {
 
         this.requestingTree = findTree(mergeTreeDTO.getRequestingTreeId());
         this.respondingTree = findTree(mergeTreeDTO.getRespondingTreeId());
-        
-        for (Node node : requestingTree.getNodes()){
-            System.out.println(node.getFirstName() + " : " + node.getLastName() + " : " + node.getFather() + " : " + node.getMother() + " : id :" + node.getId());
-        }
-        System.out.println("----------------------");
-        for (Node node : respondingTree.getNodes()){
-            System.out.println(node.getFirstName() + " : " + node.getLastName() + " : " + node.getFather() + " : " + node.getMother() + " : id :" + node.getId());
-        }
+      
+        Node userNodeRequester = findUserNode(userRequester, requestingTree);
+        Node userNodeResponder = findUserNode(userResponder, respondingTree);
 
-        List<Node> parentsNodesRequester = findNodes(mergeTreeDTO.getParentsNodesRequester());
-        List<Node> childrenNodesRequester = findNodes(mergeTreeDTO.getChildrenNodesRequester());
-
-        basicCheck(parentsNodesRequester, childrenNodesRequester, requestingTree, respondingTree);
-
-        // Node mergeNode = findUserNodeTree(respondingTree);
-        // Node mergeNode = findNode(mergeTreeDTO.getUserNodeResponderId());
-        Node mergeNode = findUserNode(userResponder, respondingTree);
-        Node fakeMergeNode = createFakeMergeNode(parentsNodesRequester, mergeNode, requestingTree);
-        
-        for (Node node : requestingTree.getNodes()) {
-            if(node.equals(fakeMergeNode)){
-                fakeMergeNode = node;  // quick fix, need to change variable name
-                break;
-            }
+        if(userNodeRequester == null || userNodeResponder == null) {
+            throw new MergeTreeException("Error: Can't find connected user in one of both tree");
         }
 
-        nodeRepository.save(fakeMergeNode);
-        this.requestingTree.getNodes().add(fakeMergeNode);
-
-        // TO DO: find a way to not change the `healthy` nodes at start 
-        if (childrenNodesRequester != null){
-            for (Node child : childrenNodesRequester) {
-                if(fakeMergeNode.isMale()){
-                    child.setFather(fakeMergeNode);
-                    nodeRepository.save(child);
-                } else {
-                    child.setMother(fakeMergeNode);
-                    nodeRepository.save(child);
+        Node mergeNode = null;
+        Node fakeMergeNode = null;
+        // find common node in both tree 
+        Boolean mergeStatus = false;
+        for (Node nodeRequester : requestingTree.getNodes()) {
+            for (Node nodeResponder : respondingTree.getNodes()) {
+                if (nodeRequester.equals(nodeResponder)) {
+                    mergeStatus = true;
+                    mergeNode = nodeResponder;
+                    fakeMergeNode = nodeRequester; // TO DO : change variable name
                 }
             }
+        }
+
+        if(!mergeStatus){
+            throw new MergeTreeException("Error: No matching node in your tree");
         }
 
         FamilyTree familyTreeAscending1 = new FamilyTree(fakeMergeNode, false);
@@ -93,6 +77,22 @@ public class MergeTreeService {
         FamilyTree familyTreeDescending1 = new FamilyTree(fakeMergeNode, true);
         FamilyTree familyTreeDescending2 = new FamilyTree(mergeNode, true);
         this.mergeFamilyTrees(familyTreeDescending1, familyTreeDescending2);
+
+        // Add star to tree 
+        for (Node node : respondingTree.getNodes()) {
+            if (node.equals(userNodeRequester)){
+                node.setUserAccount(userRequester);
+                nodeRepository.save(node);
+            }
+        }
+
+        for (Node node : requestingTree.getNodes()) {
+            if (node.equals(userNodeResponder)){
+                node.setUserAccount(userRequester);
+                nodeRepository.save(node);
+            }
+        }
+
         return new ArrayList<Tree>() {{ add(requestingTree); add(respondingTree);}};
     }
 
@@ -165,48 +165,6 @@ public class MergeTreeService {
 
         return null;
     }
-
-
-
-
-    public void basicCheck(List<Node> parentsNodesRequester, List<Node> childrenNodesRequester,
-                           Tree requestingTree, Tree respondingTree) throws MergeTreeException {
-       
-        validateParentsNodes(parentsNodesRequester, requestingTree, respondingTree);
-        validateChildrenNodes(childrenNodesRequester, parentsNodesRequester, requestingTree);
-
-    }
-
-    private void validateParentsNodes(List<Node> parents, Tree requestingTree, Tree respondingTree) throws MergeTreeException {
-        
-        if (parents == null) return;
-
-        if (parents.size() != 2) {
-            throw new MergeTreeException("Error: `parentsNodesRequester` should have two parents [one of them can be null]");
-        }
-
-        if (parents.stream().filter(Objects::nonNull).anyMatch(p -> !requestingTree.getNodes().contains(p))) {
-            throw new MergeTreeException("Error: All non-null selected parents for the merge must be in the Tree.");
-        }
-
-    }
-
-    private void validateChildrenNodes(List<Node> children, List<Node> parents, Tree tree) throws MergeTreeException {
-        
-        if (children == null) return;
-
-        if (parents.get(0) == null && parents.get(1) == null && children.isEmpty()) {
-            throw new MergeTreeException("Error: At least one child is needed for merging.");
-        }
-
-        if (!children.stream().allMatch(c -> tree.getNodes().contains(c))) {
-            throw new MergeTreeException("Error: All selected children for the merge must be in the Tree.");
-        }
-    }
-
-
-    
-    
 
     public void mergeFamilyTrees(FamilyTree f1, FamilyTree f2) throws MergeTreeException {
 
