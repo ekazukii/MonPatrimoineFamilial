@@ -39,9 +39,11 @@ public class MergeTreeService {
 
     public List<Tree> mergeTrees(MergeTreeDTO mergeTreeDTO) throws MergeTreeException {
 
+        // Récupération des infos utilisateurs
         User userRequester = userRepository.getReferenceById(mergeTreeDTO.getIdRequester());
         User userResponder = userRepository.getReferenceById(mergeTreeDTO.getIdResponder());
 
+        // Récupération des arbres des 2 utilisateurs
         this.requestingTree = findTree(mergeTreeDTO.getRequestingTreeId());
         this.respondingTree = findTree(mergeTreeDTO.getRespondingTreeId());
       
@@ -73,7 +75,14 @@ public class MergeTreeService {
         FamilyTree familyTreeAscending1 = new FamilyTree(fakeMergeNode, false);
         FamilyTree familyTreeAscending2 = new FamilyTree(mergeNode, false);
         this.mergeFamilyTrees(familyTreeAscending1, familyTreeAscending2);
-        
+
+        System.out.println("----------------------familyTreeAscending1-------------------");
+        System.out.println(familyTreeAscending1);
+        System.out.println("----------------------familyTreeAscending2-------------------");
+        System.out.println(familyTreeAscending2);
+        System.out.println("----------------------this-------------------");
+        System.out.println(this);
+
         FamilyTree familyTreeDescending1 = new FamilyTree(fakeMergeNode, true);
         FamilyTree familyTreeDescending2 = new FamilyTree(mergeNode, true);
         this.mergeFamilyTrees(familyTreeDescending1, familyTreeDescending2);

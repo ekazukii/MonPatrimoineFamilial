@@ -99,6 +99,4 @@ public class Node implements Serializable {
         return this.firstName.equals(other.getFirstName()) && this.lastName.equals(other.getLastName()) 
             && this.birthDate.equals(other.getBirthDate()) && this.male == other.isMale();
     }
-
-    
 }

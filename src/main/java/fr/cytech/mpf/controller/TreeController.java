@@ -9,6 +9,7 @@ import fr.cytech.mpf.repository.NodeRepository;
 import fr.cytech.mpf.repository.TreeRepository;
 import fr.cytech.mpf.repository.TreeViewRepository;
 import fr.cytech.mpf.service.CustomDTOMapper;
+import fr.cytech.mpf.service.MergeTreeTomService;
 import fr.cytech.mpf.service.NodeService;
 import fr.cytech.mpf.service.validation.ValidationException;
 import fr.cytech.mpf.service.mergeTree.MergeTreeService;
@@ -40,6 +41,9 @@ public class TreeController {
 
     @Autowired
     CustomDTOMapper customDTOMapper;
+
+    @Autowired
+    private MergeTreeTomService mergeTreeTomService;
 
     ModelMapper modelMapper;
 
@@ -136,6 +140,30 @@ public class TreeController {
                 "Message: " + ex.getMessage() + "\n" );
         }
     }
+
+    @MustBeLogged
+    @PostMapping("/tree/mergeTom")
+    public ResponseEntity<?> mergeTreeTom(@RequestBody MergeTreeDTO mergeTreeDto) {
+        try {
+            Optional<Tree> treeA = treeRepository.findTreeByIdWithNodes(mergeTreeDto.getRequestingTreeId());
+            Optional<Tree> treeB = treeRepository.findTreeByIdWithNodes(mergeTreeDto.getRespondingTreeId());
+
+            if (treeA.isPresent() && treeB.isPresent()) {
+                System.out.println("----------------------Avant fusion TreeA-------------------");
+                System.out.println(treeA.get().getNodes());
+                System.out.println("----------------------Avant fusion TreeB-------------------");
+                System.out.println(treeB.get().getNodes());
+                Tree mergedTree = mergeTreeTomService.mergeTrees(treeA.get(), treeB.get());
+                return ResponseEntity.ok(mergedTree);
+            } else {
+                return ResponseEntity.badRequest().body("Arbres non trouvés");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.badRequest().body("Erreur lors de la fusion : " + ex.getMessage());
+        }
+    }
+
 
     @MustBeLogged
     @PostMapping("/createTestTree")

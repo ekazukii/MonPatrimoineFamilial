@@ -21,7 +21,7 @@ import java.util.UUID;
 @AllArgsConstructor @NoArgsConstructor
 @Table(name = "UserTable")
 public class User implements Serializable {
-    @Id @GeneratedValue()
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long Id;
     private String lastname;
     private String firstname;
@@ -35,6 +35,10 @@ public class User implements Serializable {
     @OneToOne(fetch = FetchType.EAGER)
     @Cascade(CascadeType.DELETE_ORPHAN)
     private Tree tree;
+    // MyFamilyTree not supported
+    // @ManyToOne(fetch = FetchType.EAGER)
+    // @Cascade(CascadeType.DELETE_ORPHAN)
+    // private Tree myFamilyTree;
     private UUID validationCode;
     private boolean isAdmin;
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
