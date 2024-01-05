@@ -95,39 +95,8 @@ const UserSearch = () => {
         setQuery(e.target.value);
     }      
 
-    const mergeWith = async() => {
+    const mergeWith = async(user2) => {
 
-        const childrenNodeIds = selectedEnfants.map(node => node.id);
-
-        let parentNodeIds = [null, null];
-        let maleCount = 0;
-        let femaleCount = 0;
-    
-        if (selectedParents && selectedParents.length > 2) {
-            setMergeStatus("Erreur: plus de deux parents sélectionnés");
-            return; 
-        }
-    
-        for (const node of selectedParents) {
-            if (node) {
-                if (node.gender === "male") {
-                    maleCount++;
-                    if (maleCount >= 2) {
-                        setMergeStatus("Erreur: plus de deux hommes");
-                        return; 
-                    }
-                    parentNodeIds[0] = parentNodeIds[0] ? parentNodeIds[0] : node.id;
-                } else if (node.gender === "female") {
-                    femaleCount++;
-                    if (femaleCount >= 2) {
-                        setMergeStatus("Erreur: plus de deux femmes");
-                        return; 
-                    }
-                    parentNodeIds[1] = parentNodeIds[1] ? parentNodeIds[1] : node.id;
-                }
-            }
-        }
- 
         try {
             setIsMerging(true); 
             const response = await fetch('http://localhost:8080/tree/merge', {
@@ -138,8 +107,8 @@ const UserSearch = () => {
                 body: JSON.stringify({
                     requestingTreeId: user.tree,
                     respondingTreeId: user2.tree,
-                    parentsNodesRequester: parentNodeIds,
-                    childrenNodesRequester: childrenNodeIds,
+                    // parentsNodesRequester: null,
+                    // childrenNodesRequester: null,
                     idRequester: user.id,
                     idResponder: user2.id
                 })
@@ -180,13 +149,6 @@ const UserSearch = () => {
             }
         });
         setNodeList(nodes);
-    }
-
-    const handleOnMerge = (user2) => {
-        //user2 -> user that we merge with but not the logged user
-        setModalMerge(true);
-        setUser2(user2);
-        fetchData(user.tree);
     }
 
     useEffect(() => {
@@ -233,7 +195,7 @@ const UserSearch = () => {
                                 <td>{user.email}</td>
                                 <td>{user.username}</td>
                                 <td><a href={`/external?id=${user.id}`}>Go to tree</a></td>
-                                {isLoggedIn && (<td><Button onClick={() => handleOnMerge(user)}>Merge tree</Button></td>)}
+                                {isLoggedIn && (<td><Button onClick={() => mergeWith(user) } disabled={isMerging}>Merge tree</Button></td>)}
                             </tr>
                         ))}
                         </tbody>
@@ -273,7 +235,7 @@ const UserSearch = () => {
             </Modal>
 
             <Modal 
-            show={modalMerge} 
+            show={mergeStatus} 
             onHide={() => setModalMerge(false)}
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
@@ -281,69 +243,18 @@ const UserSearch = () => {
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                    <h1>Choisir la position des enfants et/ou des parents pour le merge</h1>
+                    <h1>Message</h1>
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <p ClassName="display-6">
-                    Pour effectuer la fusion il est nécessaire de connaître le 
-                    point commun entre les deux arbres.
-                </p>
-                <p ClassName="display-6">
-                    Vous devez choisir parmis les noeuds de votre arbre, 
-                    {user2 && ` des nœuds qui seront les parents de ${user2.lastname}`} 
-                    {user2 && ` ou des nœuds qui seront des enfants de ${user2.lastname}`}.
-                </p>
-                <Form.Group controlId="noeudsEnfantsSelect">
-                    <Form.Label>Noeuds enfants</Form.Label>
-                    <Form.Select aria-label="Noeuds enfants select" onChange={handleSelectEnfant}>
-                        <option>Choisir un enfant</option>
-                        {nodeList.map((node, index) => (
-                            <option key={index}>{node.name}</option>
-                        ))}
-                    </Form.Select>
-                    <div>
-                        {selectedEnfants.map((node, index) => (
-                            <span key={index} className="badge bg-secondary m-1">
-                                {node.name} <Button size="sm" onClick={() => handleRemoveEnfant(node)}>x</Button>
-                            </span>
-                        ))}
-                    </div>
-                </Form.Group>
-
-
-                <Form.Group controlId="noeudsParentsSelect">
-                    <Form.Label>Noeuds Parents</Form.Label>
-                    <Form.Select aria-label="Noeuds parents select" onChange={handleSelectParent}>
-                        <option>Choisir un parent</option>
-                        {nodeList.map((node, index) => (
-                            <option key={index}>{node.name}</option>
-                        ))}
-                    </Form.Select>
-                    <div>
-                        {selectedParents.map((node, index) => (
-                            <span key={index} className="badge bg-secondary m-1">
-                                {node.name} <Button size="sm" onClick={() => handleRemoveParent(node)}>x</Button>
-                            </span>
-                        ))}
-                    </div>
-                </Form.Group>
-
-                {/* Composant similaire pour les parents */}
-
-                {/* {mergeStatus && <p>{mergeStatus}</p>} */}
                 {mergeStatus && (
                     <div className={`${mergeStatus.startsWith("Erreur") ? "alert alert-danger" : "alert alert-success"} mt-4`}>
                         {mergeStatus}
                     </div>
                 )}
-
-
-
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => setModalMerge(false)}>Fermer</Button>
-                <Button variant="primary" onClick={() => mergeWith()} disabled={isMerging}>Valider</Button>
+                <Button variant="secondary" onClick={() => setMergeStatus(null)}>Fermer</Button>
             </Modal.Footer>
         </Modal>
             

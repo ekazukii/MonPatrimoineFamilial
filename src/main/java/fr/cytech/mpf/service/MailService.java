@@ -35,4 +35,15 @@ public class MailService {
         messageBuilder.append(user.getValidationCode());
         this.sendEmail(user.getEmail(), "[MPF] Validation de votre email", messageBuilder.toString());
     }
+
+    @Async
+    public void sendUpdateMessage(User user, User userThatChangedTree) {
+        StringBuilder messageBuilder = new StringBuilder();
+        messageBuilder.append("Modification de l'arbre de ");
+        messageBuilder.append(userThatChangedTree.getUsername());
+        messageBuilder.append("\n");
+        messageBuilder.append("Pour voir les modifications cliquez sur ce lien http://localhost:8080/tree?id=");
+        messageBuilder.append(user.getTree().getId());
+        this.sendEmail(user.getEmail(), "[MPF] Modification de l'arbre de " + userThatChangedTree.getUsername(), messageBuilder.toString());
+    }
 }

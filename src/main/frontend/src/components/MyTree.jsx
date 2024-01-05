@@ -2,6 +2,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import FamilyTree from "@balkangraph/familytree.js";
 import TreeSettings from "./TreeSettings.jsx";
 import { v4 as uuidv4 } from 'uuid';
+import toast from "react-hot-toast";
 
 
 export default function Chart({nodes, readOnly, treeId}) {
@@ -48,7 +49,13 @@ export default function Chart({nodes, readOnly, treeId}) {
             buttons: {
                 pdf: null,
                 share: null,
-            }
+                remove: {
+                    icon: FamilyTree.icon.remove(24,24,'#fff'),
+                    text: 'Remove',
+                    hideIfEditMode: false,
+                    hideIfDetailsMode: false
+                }
+            },
         }
 
         if(readOnly) editForm.buttons.edit = null;
@@ -81,11 +88,31 @@ export default function Chart({nodes, readOnly, treeId}) {
             args.nodes = args.nodes.filter(node => node.id !== "_ft_partner");
         });
 
+        family.editUI.on('button-click', function (sender, args) {
+            // find nodes with id args.nodeId
+            const node = nodes.find(n => n.id === args.nodeId);
+            if(!node) return true;
+
+            if (args.name === 'remove') {
+                if(node.userInfo?.id === treeId) {
+                    toast.error("You can't delete your own node");
+                    return false;
+                }
+                return true;
+            }
+
+            if(nodes.tags && (node.tags.includes("registeredF") || node.tags.includes("registeredM"))) {
+                toast.error("You can't edit a registered node");
+                return false;
+            }
+        });
+
         family.generateId = () => uuidv4();
 
         family.onUpdateNode(async (args) => {
             if(args.removeNodeId) {
-                if(args.removeNodeId === treeId) {
+                if(node.nodeId === treeId) {
+                    toast.error("You BACKUP ");
                     return false;
                 }
                 await fetch('http://localhost:8080/tree/node', {

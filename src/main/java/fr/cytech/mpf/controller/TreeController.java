@@ -91,6 +91,7 @@ public class TreeController {
         try {
             // TODO: Check has permissions to edit
             Node node = nodeService.addNode(nodeDto);
+            nodeService.notifyChange(node.getTree());
             return ResponseEntity.ok(node);
         } catch (ValidationException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
@@ -120,6 +121,7 @@ public class TreeController {
         if(node == null) return ResponseEntity.notFound().build();
         customDTOMapper.nodeAddDtoToNode(node, nodeDto);
         // TODO: Check has permissions to edit
+        nodeService.notifyChange(node.getTree());
         nodeRepository.save(node);
         return ResponseEntity.ok(node);
     }
