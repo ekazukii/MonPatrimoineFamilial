@@ -68,7 +68,7 @@ public class NodeService {
     }
 
     public void notifyChange(Tree tree) {
-        List<Node> nodesToNotify = nodeRepository.findByUserAccountIdAndTreeIdNot(tree.getId(), tree.getId());
+        List<Node> nodesToNotify = nodeRepository.findByUserAccountIdAndTreeIdNot(tree.getOwner().getId(), tree.getId());
         List<Tree> treesToNotify = nodesToNotify.stream().map(Node::getTree).toList();
         List<User> usersToNotify = treesToNotify.stream().map(Tree::getOwner).toList();
 
