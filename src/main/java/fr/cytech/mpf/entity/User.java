@@ -35,6 +35,10 @@ public class User implements Serializable {
     @OneToOne(fetch = FetchType.EAGER)
     @Cascade(CascadeType.DELETE_ORPHAN)
     private Tree tree;
+    // MyFamilyTree not supported
+    // @ManyToOne(fetch = FetchType.EAGER)
+    // @Cascade(CascadeType.DELETE_ORPHAN)
+    // private Tree myFamilyTree;
     private UUID validationCode;
     private boolean isAdmin;
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
