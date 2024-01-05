@@ -39,12 +39,15 @@ public class MergeTreeService {
 
     public List<Tree> mergeTrees(MergeTreeDTO mergeTreeDTO) throws MergeTreeException {
 
+        // Récupération des infos utilisateurs
         User userRequester = userRepository.getReferenceById(mergeTreeDTO.getIdRequester());
         User userResponder = userRepository.getReferenceById(mergeTreeDTO.getIdResponder());
 
+        // Récupération des arbres des 2 utilisateurs
         this.requestingTree = findTree(mergeTreeDTO.getRequestingTreeId());
         this.respondingTree = findTree(mergeTreeDTO.getRespondingTreeId());
-        
+
+        // Ecris en console les liens des 2 arbres
         for (Node node : requestingTree.getNodes()){
             System.out.println(node.getFirstName() + " : " + node.getLastName() + " : " + node.getFather() + " : " + node.getMother() + " : id :" + node.getId());
         }
@@ -55,21 +58,28 @@ public class MergeTreeService {
 
         List<Node> parentsNodesRequester = findNodes(mergeTreeDTO.getParentsNodesRequester());
         List<Node> childrenNodesRequester = findNodes(mergeTreeDTO.getChildrenNodesRequester());
-
+        System.out.println("----------------------ParentsNodesRequester-------------------");
+        System.out.println(parentsNodesRequester);
+        System.out.println("----------------------ChildrenNodesRequester-------------------");
+        System.out.println(childrenNodesRequester);
         basicCheck(parentsNodesRequester, childrenNodesRequester, requestingTree, respondingTree);
 
         // Node mergeNode = findUserNodeTree(respondingTree);
         // Node mergeNode = findNode(mergeTreeDTO.getUserNodeResponderId());
         Node mergeNode = findUserNode(userResponder, respondingTree);
         Node fakeMergeNode = createFakeMergeNode(parentsNodesRequester, mergeNode, requestingTree);
-        
+        System.out.println("----------------------MergeNode-------------------");
+        System.out.println(mergeNode);
+        System.out.println("----------------------FakeMergeNode-------------------");
+        System.out.println(fakeMergeNode);
         for (Node node : requestingTree.getNodes()) {
             if(node.equals(fakeMergeNode)){
                 fakeMergeNode = node;  // quick fix, need to change variable name
                 break;
             }
         }
-
+        System.out.println("----------------------FakeMergeNode2-------------------");
+        System.out.println(fakeMergeNode);
         nodeRepository.save(fakeMergeNode);
         this.requestingTree.getNodes().add(fakeMergeNode);
 
@@ -89,10 +99,22 @@ public class MergeTreeService {
         FamilyTree familyTreeAscending1 = new FamilyTree(fakeMergeNode, false);
         FamilyTree familyTreeAscending2 = new FamilyTree(mergeNode, false);
         this.mergeFamilyTrees(familyTreeAscending1, familyTreeAscending2);
-        
+
+        System.out.println("----------------------familyTreeAscending1-------------------");
+        System.out.println(familyTreeAscending1);
+        System.out.println("----------------------familyTreeAscending2-------------------");
+        System.out.println(familyTreeAscending2);
+        System.out.println("----------------------this-------------------");
+        System.out.println(this);
+
         FamilyTree familyTreeDescending1 = new FamilyTree(fakeMergeNode, true);
         FamilyTree familyTreeDescending2 = new FamilyTree(mergeNode, true);
         this.mergeFamilyTrees(familyTreeDescending1, familyTreeDescending2);
+
+        System.out.println("----------------------FamilyTreeDescending1-------------------");
+        System.out.println(familyTreeDescending1);
+        System.out.println("----------------------FamilyTreeDescending2-------------------");
+        System.out.println(familyTreeDescending2);
         return new ArrayList<Tree>() {{ add(requestingTree); add(respondingTree);}};
     }
 

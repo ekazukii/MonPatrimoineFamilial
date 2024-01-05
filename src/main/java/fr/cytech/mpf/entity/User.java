@@ -21,7 +21,7 @@ import java.util.UUID;
 @AllArgsConstructor @NoArgsConstructor
 @Table(name = "UserTable")
 public class User implements Serializable {
-    @Id @GeneratedValue()
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long Id;
     private String lastname;
     private String firstname;

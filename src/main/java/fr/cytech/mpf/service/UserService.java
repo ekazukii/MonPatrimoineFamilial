@@ -33,7 +33,7 @@ public class UserService {
         String[] parts = image.getOriginalFilename().split("[.]");
         String extension = parts[parts.length - 1];
 
-        File file = new File("/Users/ekazuki/Desktop/imgWebsite/" + fileName + "." + extension);
+        File file = new File("/Desktop/" + fileName + "." + extension);
         OutputStream os = new FileOutputStream(file);
         os.write(image.getBytes());
     }

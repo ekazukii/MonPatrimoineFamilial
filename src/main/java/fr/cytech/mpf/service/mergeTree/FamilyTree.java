@@ -30,16 +30,32 @@ public class FamilyTree {
         this.instigatorNodeIsParent = isParent;
         this.tree = node.getTree();
 
-        if(this.instigatorNodeIsParent) {
+        if(isParent){
+            System.out.println("----------------------FamilyTree Arbre Ascendant-------------------");
+            for (Node noode : this.tree.getNodes()){
+                System.out.println(noode.getFirstName() + " : " + noode.getLastName() + " : " + noode.getFather() + " : " + noode.getMother() + " : id :" + noode.getId());
+            }
+        }else{
+            System.out.println("----------------------FamilyTree Arbre Descendant-------------------");
+            for (Node noode : this.tree.getNodes()){
+                System.out.println(noode.getFirstName() + " : " + noode.getLastName() + " : " + noode.getFather() + " : " + noode.getMother() + " : id :" + noode.getId());
+            }
+        }
 
+
+        if(this.instigatorNodeIsParent) {
+            // 0 : Pere / 1 : Mere
             if(instigatorNode.isMale()) {
                 this.parents[0] = instigatorNode;
             } else {
                 this.parents[1] = instigatorNode;
             }
-
+            System.out.println("----------------------FamilyTree Arbre Ascendant parents-------------------");
+            System.out.println("Pere :" + this.parents[0] + ", Mere :" + this.parents[1]);
+            // Récupère les enfants : il faut absolument une mere et un pere
             this.children = this.getChildren(this.parents[0], this.parents[1]);
-
+            System.out.println("----------------------FamilyTree Arbre Ascendant getChildren-------------------");
+            System.out.println(this.children);
             //find the second parents
             if (this.children != null) {
 
