@@ -42,7 +42,12 @@ public class MailService {
         messageBuilder.append("Modification de l'arbre de ");
         messageBuilder.append(userThatChangedTree.getUsername());
         messageBuilder.append("\n");
-        messageBuilder.append("Pour voir les modifications cliquez sur ce lien http://localhost:8080/tree?id=");
+        messageBuilder.append("\n");
+        messageBuilder.append("Pour voir les modifications cliquez sur ce lien http://localhost:5173/external?id=");
+        messageBuilder.append(user.getTree().getId());
+        messageBuilder.append("\n");
+        messageBuilder.append("\n");
+        messageBuilder.append("Pour re-synchroniser les changements cliquez sur ce lien http://localhost:8080/mergeStrategy?id=");
         messageBuilder.append(user.getTree().getId());
         this.sendEmail(user.getEmail(), "[MPF] Modification de l'arbre de " + userThatChangedTree.getUsername(), messageBuilder.toString());
     }
