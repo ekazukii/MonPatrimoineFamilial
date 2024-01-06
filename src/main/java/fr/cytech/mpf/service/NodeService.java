@@ -53,6 +53,11 @@ public class NodeService {
         return visibilities;
     }
 
+    /**
+     * Add a node to a tree if validation strategy passes
+     * @param nodeDto NodeDTO Object
+     * @return the added node
+     */
     public Node addNode(NodeAddDTO nodeDto) {
         Node node = customDTOMapper.nodeAddDtoToNode(nodeDto);
 
@@ -67,6 +72,11 @@ public class NodeService {
 
     }
 
+
+    /**
+     * Notify all user that contains the users that changed his tree
+     * @param tree tree that has been updated
+     */
     public void notifyChange(Tree tree) {
         List<Node> nodesToNotify = nodeRepository.findByUserAccountIdAndTreeIdNot(tree.getOwner().getId(), tree.getId());
         List<Tree> treesToNotify = nodesToNotify.stream().map(Node::getTree).toList();

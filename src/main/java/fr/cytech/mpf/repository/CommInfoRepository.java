@@ -8,5 +8,11 @@ import java.util.List;
 
 @Repository
 public interface CommInfoRepository extends JpaRepository<CommInfo, Long> {
+    /**
+     * Get all the comments of a conversation
+     * @param conv the conversation id
+     * @param souvenir the souvenir id
+     * @return a list of comments
+     */
     List<CommInfo> findCommInfoByConvAndSouvenir(Long conv, Long souvenir);
 }

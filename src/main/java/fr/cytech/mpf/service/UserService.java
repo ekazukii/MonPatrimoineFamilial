@@ -18,6 +18,13 @@ import fr.cytech.mpf.repository.UserRepository;
 public class UserService {
     @Autowired
     UserRepository userRepository;
+
+    /**
+     * Hash the password with SHA-512
+     * @param password plain tesxt passsword
+     * @return hashed password
+     * @throws NoSuchAlgorithmException
+     */
     public String passwordToHash(String password) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-512");
         md.update("tempsalt".getBytes(StandardCharsets.UTF_8));
@@ -29,6 +36,13 @@ public class UserService {
         return sb.toString();
     }
 
+    /**
+     * Save image from multipart file to specified location
+     * @param image image to save
+     * @param fileName filename of the image
+     * @param subFolder
+     * @throws IOException
+     */
     public void saveFileImage(MultipartFile image, String fileName, String subFolder) throws IOException {
         String[] parts = image.getOriginalFilename().split("[.]");
         String extension = parts[parts.length - 1];
@@ -44,6 +58,10 @@ public class UserService {
         return hashedPassword.equals(password);
     }
 
+    /**
+     * Generate an unique username if the basic one is taken
+     * @param personalInfoData user information to generate username
+     */
     public void generateUniqueUsername(RegisterDTO personalInfoData) {
         String baseUsername = personalInfoData.getFirstName().charAt(0) +
                 personalInfoData.getLastName().replace(" ", "");
@@ -60,6 +78,11 @@ public class UserService {
         personalInfoData.setUsername(finalUsername);
     }
 
+    /**
+     * Check if birthdate is in the good format
+     * @param birthdate
+     * @return
+     */
     public boolean isBirthdateValid(String birthdate) {
         try {
             // Vérifier si la date peut être parsée correctement

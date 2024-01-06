@@ -17,13 +17,19 @@ import fr.cytech.mpf.service.mergeTree.MergeTreeException;
 import fr.cytech.mpf.utils.NodeVisibility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * MVC Controller for the tree node features
+ */
 @Controller
 public class TreeController {
     @Autowired
@@ -51,6 +57,13 @@ public class TreeController {
         modelMapper = new ModelMapper();
     }
 
+    /**
+     * Get a specific tree by their id
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param id tree id
+     * @param detail wether to send tree detail or not
+     * @return Tree JSON
+     */
     @MustBeLogged
     @GetMapping("/tree")
     public ResponseEntity<Tree> getTree(@RequestParam Long id,  @RequestParam Boolean detail) {
@@ -66,6 +79,13 @@ public class TreeController {
         return ResponseEntity.ok(tree);
     }
 
+    /**
+     * Create a new tree in the database
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param treeDto tree object
+     * @return the tree that has been created
+     * @deprecated
+     */
     @MustBeLogged
     @PostMapping("/tree")
     public ResponseEntity<Tree> createNewTree (@RequestBody TreeAddDTO treeDto) {
@@ -75,6 +95,12 @@ public class TreeController {
         return ResponseEntity.ok(tree);
     }
 
+    /**
+     * Edit an existing tree (not the nodes)
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param treeEditDTO tree object and treeId
+     * @return the tree that has been edited
+     */
     @MustBeLogged
     @PutMapping("/tree")
     public ResponseEntity<Tree> editTree(@RequestBody TreeEditDTO treeEditDTO) {
@@ -85,6 +111,12 @@ public class TreeController {
         return ResponseEntity.ok(actualTree.get());
     }
 
+    /**
+     * Add a new node in a specific tree
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param nodeDto node object
+     * @return the node that has been added
+     */
     @MustBeLogged
     @PostMapping("/tree/node")
     public ResponseEntity<?> addNewNodeToTree (@RequestBody NodeAddDTO nodeDto) {
@@ -98,6 +130,12 @@ public class TreeController {
         }
     }
 
+    /**
+     * Delete a node from a specific tree
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param nodeDto node's id to delete
+     * @return "ok" if the delete is a success
+     */
     @MustBeLogged
     @DeleteMapping("/tree/node")
     public ResponseEntity<String> removeNode (@RequestBody NodeDeleteDTO nodeDto) {
@@ -114,6 +152,12 @@ public class TreeController {
         return ResponseEntity.ok("ok");
     }
 
+    /**
+     * Edit a node from a specific tree
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param nodeDto node object to edit
+     * @return the node that has been edited
+     */
     @MustBeLogged
     @PutMapping("/tree/node")
     public ResponseEntity<Node> editNode(@RequestBody NodeEditDTO nodeDto) {
@@ -126,6 +170,33 @@ public class TreeController {
         return ResponseEntity.ok(node);
     }
 
+    /**
+     * Merge by a get request for the url
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param requestingTreeId id of the tree that request the merge
+     * @param respondingTreeId id of the tree that receive the merge
+     * @param idRequester id of the user that request the merge
+     * @param idResponder id of the user that receive the merge
+     * @return redirect to my tree page
+     */
+    @MustBeLogged
+    @GetMapping("/tree/mergeStrategy")
+    public ResponseEntity<?> mergeStrategy (@RequestParam Long requestingTreeId, @RequestParam Long respondingTreeId, @RequestParam Long idRequester, @RequestParam Long idResponder) {
+        MergeTreeDTO mergeTreeDTO = new MergeTreeDTO(requestingTreeId, respondingTreeId, idRequester, idResponder);
+        this.mergeTree(mergeTreeDTO);
+        // this.mergeTreeTom(mergeTreeDTO);
+
+        // redirect to external page localhost:5173/tree
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("http://localhost:5173/tree"));
+        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+    };
+
+    /**
+     * Merge strategy number 1
+     * @param mergeTreeDto merge information
+     * @return "ok" if merge is a success
+     */
     @MustBeLogged
     @PostMapping("/tree/merge")
     public ResponseEntity<?> mergeTree (@RequestBody  MergeTreeDTO mergeTreeDto) {
@@ -141,6 +212,11 @@ public class TreeController {
         }
     }
 
+    /**
+     * Merge strategy number 2
+     * @param mergeTreeDto merge information
+     * @return "ok" if merge is a success
+     */
     @MustBeLogged
     @PostMapping("/tree/mergeTom")
     public ResponseEntity<?> mergeTreeTom(@RequestBody MergeTreeDTO mergeTreeDto) {
@@ -197,6 +273,11 @@ public class TreeController {
         return ResponseEntity.ok(tree);
     }
 
+    /**
+     * Add a new view of an external tree
+     * @param addViewDTO ViewTree object
+     * @return "Ok" if save is succesfull
+     */
     @MustBeLogged
     @PostMapping("/tree/view")
     public ResponseEntity<String> addView(@RequestBody TreeViewAddDTO addViewDTO) {
@@ -205,6 +286,11 @@ public class TreeController {
         return ResponseEntity.ok("Ok");
     }
 
+    /**
+     * Get the number of view of the tree
+     * @param treeId id of the tree
+     * @return list of treeviews
+     */
     @MustBeLogged
     @GetMapping("/tree/view")
     public ResponseEntity<List<TreeView>> getViews(@RequestParam Long treeId) {

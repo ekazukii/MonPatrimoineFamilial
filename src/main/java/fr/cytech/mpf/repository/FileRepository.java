@@ -9,5 +9,10 @@ import java.util.List;
 
 @Repository
 public interface FileRepository extends JpaRepository<FileInfo, Long> {
+    /**
+     * Get all the messages of a conversation
+     * @param conv the conversation id
+     * @return a list of messages
+     */
     List<FileInfo> findByConv(Long conv);
 }

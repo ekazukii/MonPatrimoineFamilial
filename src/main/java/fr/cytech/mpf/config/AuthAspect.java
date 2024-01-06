@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+/**
+ * AspectAnnotation to check if user is connected
+ */
 @Aspect
 @Component
 public class AuthAspect {

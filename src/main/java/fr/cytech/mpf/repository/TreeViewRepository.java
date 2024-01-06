@@ -9,5 +9,10 @@ import java.util.List;
 public interface TreeViewRepository extends JpaRepository<TreeView, Long> {
     List<TreeView> getAllByTree(Tree tree);
 
+    /**
+     * Get all the views of a tree
+     * @param id the tree id
+     * @return a list of views
+     */
     List<TreeView> getAllByTreeId(Long id);
 }
