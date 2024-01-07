@@ -67,6 +67,12 @@ public class UserController {
     }
 
     @CrossOrigin
+    @GetMapping("/health")
+    public ResponseEntity<String> healthCheck() {
+        return ResponseEntity.ok("Server is up and running");
+    }
+
+    @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody LoginDTO loginDTO, HttpSession session) throws NoSuchAlgorithmException {
         String hashedPass = userService.passwordToHash(loginDTO.getPassword());
