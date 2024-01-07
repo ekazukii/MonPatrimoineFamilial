@@ -4,7 +4,6 @@ const ErrorPopup = () => {
     const [showPopup, setShowPopup] = useState(false);
 
     const testConnection = async () => {
-        console.log("begin");
         try {
             const response = await fetch('http://localhost:8080/health', {
                 mode: 'no-cors' // Utiliser 'no-cors' pour les requêtes cross-origin
@@ -19,7 +18,6 @@ const ErrorPopup = () => {
             // Gestion des erreurs de réseau
             setShowPopup(true);
         }
-        console.log("end");
     };
 
     useEffect(() => {

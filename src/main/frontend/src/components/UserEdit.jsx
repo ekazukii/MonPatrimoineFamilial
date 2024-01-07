@@ -147,6 +147,11 @@ const UserEdit = ({user, isAdmin, handleSubmit}) => {
                 <Form.Label>New Password</Form.Label>
                 <Form.Control type="password" placeholder="Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}/>
             </Form.Group>
+                {isAdmin && (
+                    <Form.Group className="mb-3" controlId="formBasicPassword">
+                        <img src={"http://localhost:8080/user/images/" + username + "_idcard.jpg"}  class="img-fluid" alt="Carte d'identité"/>
+                    </Form.Group>
+                )}
             {message && (
                     <div className={`${message.startsWith("Erreur") ? "alert alert-danger" : "alert alert-success"} mt-4`}>
                         {message}
