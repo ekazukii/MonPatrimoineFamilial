@@ -203,7 +203,7 @@ public class UserController {
     @MustBeLogged
     @CrossOrigin
     @PutMapping("/user")
-    public ResponseEntity<User> editUser(@RequestBody UserEditDTO userEditDTO) {
+    public ResponseEntity<?> editUser(@RequestBody UserEditDTO userEditDTO) {
         Optional<User> actualUser = userRepository.findById(userEditDTO.getId());
         if(actualUser.isEmpty()) return ResponseEntity.notFound().build();
 
@@ -224,6 +224,15 @@ public class UserController {
             }
         }
 
+        try {
+            if ((!userEditDTO.getNewPassword().isEmpty() && !userEditDTO.getOldPassword().isEmpty()) && !userService.passwordToHash(userEditDTO.getOldPassword()).equals(userToUpdate.getPassword())){
+                return ResponseEntity.badRequest().body("L'ancien mot de passe n'est pas correct");
+            } else {
+                userToUpdate.setPassword(userService.passwordToHash(userEditDTO.getNewPassword()));
+            }
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
 
         userRepository.save(actualUser.get());
         return ResponseEntity.ok(actualUser.get());

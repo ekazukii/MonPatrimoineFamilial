@@ -16,4 +16,6 @@ public class UserEditDTO {
     private String username;
     private Boolean isAdmin;
     private Boolean isValidated;
+    private String oldPassword;
+    private String newPassword;
 }

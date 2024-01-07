@@ -13,6 +13,7 @@ const UserEdit = ({user, isAdmin, handleSubmit}) => {
     const [newPassword, setNewPassword] = useState("");
     const [ssn, setSsn] = useState("");
     const [birthdate, setBirthdate] = useState("");
+    const [message, setMessage] = useState(null);
 
     useEffect(() => {
         if(!user) return;
@@ -26,7 +27,15 @@ const UserEdit = ({user, isAdmin, handleSubmit}) => {
     }, [user]);
 
     const handleEditUser = async () => {
-        await fetch(`http://localhost:8080/user`, {
+
+        if(handleValidation()){
+            setMessage(handleValidation);
+            return;
+        } else {
+            setMessage(null);
+        }
+
+        const response = await fetch(`http://localhost:8080/user`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -40,9 +49,56 @@ const UserEdit = ({user, isAdmin, handleSubmit}) => {
                 male: isMale,
                 socialSecurityNumber: ssn,
                 birthdate,
+                oldPassword: oldPassword,
+                newPassword: newPassword
             }),
         });
-        handleSubmit();
+        
+        if (!response.ok) {
+            let errorBody = await response.text();
+            errorBody = "Erreur : " + errorBody;
+            setMessage(errorBody);
+            return;
+        } else {
+            setMessage("Les informations ont correctment été enregistrées")
+        }
+
+        // handleSubmit();
+    };
+
+    const handleValidation = () => {
+
+        // Vérification de la longueur minimale pour le nom et le prénom
+        if (firstName.length < 2) {
+            return "Erreur : Le nom doit avoir au moins 2 caractères.";
+        }
+
+        if (familyName.length < 2) {
+            return "Erreur : Le prénom doit avoir au moins 2 caractères.";
+        }
+
+        // Validation de l'adresse e-mail
+        const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+        if (!emailPattern.test(email)) {
+            return "Erreur : L'adresse e-mail n'est pas valide.";
+        }
+
+        if (newPassword.length !== 0 && oldPassword.length === 0) {
+            return "Erreur: L'ancien mot de passe est vide";
+        }
+
+        //Vérification de la longueur minimale du mot de passe
+        if (oldPassword.length !== 0 && newPassword.length < 8) {
+            return "Erreur: Le nouveau mot de passe doit avoir au moins 8 caractères.";
+        }
+
+
+        //Vérification du format du mot de passe avec un regex (exemple : au moins une lettre majuscule, une lettre minuscule et un chiffre)
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]/;
+        if (oldPassword.length !== 0  && !passwordRegex.test(newPassword)) {
+            return "Erreur: Le nouveau mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule et un chiffre.";
+        }
+
     };
 
     if(!user) return <></>
@@ -91,7 +147,11 @@ const UserEdit = ({user, isAdmin, handleSubmit}) => {
                 <Form.Label>New Password</Form.Label>
                 <Form.Control type="password" placeholder="Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}/>
             </Form.Group>
-
+            {message && (
+                    <div className={`${message.startsWith("Erreur") ? "alert alert-danger" : "alert alert-success"} mt-4`}>
+                        {message}
+                    </div>
+                )}
             <Stack direction="horizontal" gap={3}>
                 <Button variant="primary" onClick={() => handleEditUser()}>
                     Submit
