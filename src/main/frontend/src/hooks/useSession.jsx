@@ -33,7 +33,7 @@ export const useSession = () => {
     console.log(session)
 
     const login = async (username, password) => {
-        const data = await fetch(getBaseUrl() + '/login', {
+        const response = await fetch(getBaseUrl() + '/login', {
             credentials: 'include',
             method: 'POST',
             headers: {
@@ -42,12 +42,24 @@ export const useSession = () => {
             body: JSON.stringify({username, password})
         });
 
-        const json = await data.json();
-        if (json.username) {
-            refreshData(json => {
-                if (json.user) setSession({ user: json.user, isLoggedIn: true });
-            });
-            return true;
+        let message = '';
+        if (response.ok) {
+            const json = await response.json();
+            if (json.username) {
+                refreshData(json => {
+                    if (json.user) setSession({ user: json.user, isLoggedIn: true, message: 'Connexion réussie' });
+                });
+                return true;
+            }
+        } else {
+            // Gestion des messages d'erreur en fonction du code de statut HTTP
+            if(response.status === 404 || response.status === 403) {
+                message = 'Usernername or passoword are incorrect';
+            } else {
+                message = 'Connection Error';
+            }
+            setSession({ user: null, isLoggedIn: false, message });
+            return false;
         }
 
         return false;
@@ -59,8 +71,8 @@ export const useSession = () => {
             credentials: 'include'
         });
 
-        setSession({ user: null, isLoggedIn: false });
+        setSession({ user: null, isLoggedIn: false, message: ''});
     };
 
-    return { user: session.user, isLoggedIn: session.isLoggedIn, setSession, login, refreshData, logout };
+    return { user: session.user, isLoggedIn: session.isLoggedIn, message: session.message, setSession, login, refreshData, logout };
 };
