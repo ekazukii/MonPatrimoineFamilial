@@ -27,6 +27,8 @@ const Register   = () => {
     const [loading, setLoading] = useState(false); // État pour gérer le chargement
     const idCardRef = useRef(null);
     const photoRef = useRef(null);
+    const [message, setMessage] = useState(null);
+
 
     const afficherEtapeSuivante = () => {
         setEtp(printEtp + 1);
@@ -40,6 +42,8 @@ const Register   = () => {
 
     const handleValidation = async () => {
         setLoading(true); // Activer le chargement pendant l'attente de la réponse
+        setMessage("");
+
 
         const formDataObject = new FormData();
 
@@ -67,9 +71,11 @@ const Register   = () => {
                 setPrintEtp(3);
             } else {
                 // Validation failed, handle the error
+                setMessage("Erreur : La validation a échoué");
                 console.error("Validation failed");
             }
         } catch (error) {
+            setMessage("Erreur durant la validation" + error);
             console.error("Error during validation:", error);
         } finally {
             setLoading(false); // Désactiver le chargement après la réponse
@@ -104,6 +110,11 @@ const Register   = () => {
                             <RegisterComponent.documentImport display={printEtp === 1} handleGoNext={() => afficherEtapeSuivante()} idCardRef={idCardRef} photoRef={photoRef}/>
                             <RegisterComponent.validationInfo formData={formData} display={printEtp === 2} idCardRef={idCardRef} photoRef={photoRef}/>
                         </Form>
+                        {message && (
+                            <div className={`${message.startsWith("Erreur") ? "alert alert-danger" : "alert alert-success"} mt-4`}>
+                                {message}
+                            </div>
+                        )}
                         {printEtp === 2 && (
                             <Button onClick={handleValidation} disabled={loading}>
                                 {loading ? 'Chargement...' : 'Valider'}

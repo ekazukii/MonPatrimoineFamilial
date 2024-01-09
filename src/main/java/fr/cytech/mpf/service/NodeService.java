@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NodeService {
@@ -86,4 +87,16 @@ public class NodeService {
             mailService.sendUpdateMessage(user, tree.getOwner());
         }
     }
+
+    public List<Long> findUserAccountIdsByTreeIdAndUserToSearch(Long treeId, Long userToSearchId) {
+        List<Long> userAccountIds = nodeRepository.findDistinctUserAccountIdsByTreeId(treeId);
+
+        // Filtrer la liste pour inclure uniquement les userAccountIds qui ont userToSearchId dans leur liste
+        List<Long> filteredUserAccountIds = userAccountIds.stream()
+                .filter(userId -> nodeRepository.findDistinctUserAccountIdsByTreeId(userId).contains(userToSearchId))
+                .collect(Collectors.toList());
+
+        return filteredUserAccountIds;
+    }
+
 }

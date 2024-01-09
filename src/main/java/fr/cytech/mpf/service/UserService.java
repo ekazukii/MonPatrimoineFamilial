@@ -36,18 +36,20 @@ public class UserService {
         return sb.toString();
     }
 
+
     /**
      * Save image from multipart file to specified location
      * @param image image to save
+     * @param path to save image
      * @param fileName filename of the image
      * @param subFolder
      * @throws IOException
      */
-    public void saveFileImage(MultipartFile image, String fileName, String subFolder) throws IOException {
+    public void saveFileImage(MultipartFile image, String path, String fileName, String subFolder) throws IOException {
         String[] parts = image.getOriginalFilename().split("[.]");
         String extension = parts[parts.length - 1];
 
-        File file = new File("/Desktop/" + fileName + "." + extension);
+        File file = new File(path + fileName + "_" + subFolder + "." + extension);
         OutputStream os = new FileOutputStream(file);
         os.write(image.getBytes());
     }

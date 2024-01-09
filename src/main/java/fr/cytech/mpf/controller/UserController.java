@@ -19,6 +19,9 @@ import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -27,6 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.function.EntityResponse;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.List;
@@ -89,6 +94,12 @@ public class UserController {
      * @throws NoSuchAlgorithmException
      */
     @CrossOrigin
+    @GetMapping("/health")
+    public ResponseEntity<String> healthCheck() {
+        return ResponseEntity.ok("Server is up and running");
+    }
+
+    @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody LoginDTO loginDTO, HttpSession session) throws NoSuchAlgorithmException {
         String hashedPass = userService.passwordToHash(loginDTO.getPassword());
@@ -100,6 +111,9 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    private final String rootLocationString = "/home/anato/dev/atschool/image/";
+    private final Path rootLocation = Paths.get(rootLocationString);
+  
     /**
      * Register a new user in the application
      * HTTP Code 400 if body is malformed 200 otherwise
@@ -129,8 +143,8 @@ public class UserController {
         }
 
 
-        userService.saveFileImage(carteIdentite, personalInfoData.getUsername(), "idcard");
-        userService.saveFileImage(photo, personalInfoData.getUsername(), "photo");
+        userService.saveFileImage(carteIdentite,  rootLocationString, personalInfoData.getUsername(), "idcard");
+        userService.saveFileImage(photo, rootLocationString, personalInfoData.getUsername(), "photo");
 
         Tree tree = new Tree();
         tree.setName("Arbre de " + personalInfoData.getLastName());
@@ -157,6 +171,41 @@ public class UserController {
 
         return ResponseEntity.ok(user);
     }
+
+
+    /**
+     * Handles HTTP GET requests for serving image files.
+     *
+     * @param filename The name of the file to be served. It is extracted from the URL.
+     * @return A {@link ResponseEntity} object containing the image file as a resource. 
+     *         Returns the file with a 'Content-Disposition' header to prompt the browser 
+     *         to download the file. If the file is not found or not readable, a 404 Not Found 
+     *         response is returned. In case of any other exception, a 400 Bad Request response 
+     *         is returned.
+     */
+    @GetMapping("/user/images/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+        try {
+            Path file = rootLocation.resolve(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity
+                    .ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+            } else {
+                return ResponseEntity
+                    .notFound()
+                    .build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity
+                .badRequest()
+                .build();
+        }
+    }
+
 
     /**
      * Validate user account using secret code
@@ -267,7 +316,7 @@ public class UserController {
     @MustBeLogged
     @CrossOrigin
     @PutMapping("/user")
-    public ResponseEntity<User> editUser(@RequestBody UserEditDTO userEditDTO) {
+    public ResponseEntity<?> editUser(@RequestBody UserEditDTO userEditDTO) {
         Optional<User> actualUser = userRepository.findById(userEditDTO.getId());
         if(actualUser.isEmpty()) return ResponseEntity.notFound().build();
 
@@ -288,6 +337,15 @@ public class UserController {
             }
         }
 
+        try {
+            if ((!userEditDTO.getNewPassword().isEmpty() && !userEditDTO.getOldPassword().isEmpty()) && !userService.passwordToHash(userEditDTO.getOldPassword()).equals(userToUpdate.getPassword())){
+                return ResponseEntity.badRequest().body("L'ancien mot de passe n'est pas correct");
+            } else {
+                userToUpdate.setPassword(userService.passwordToHash(userEditDTO.getNewPassword()));
+            }
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
 
         userRepository.save(actualUser.get());
         return ResponseEntity.ok(actualUser.get());

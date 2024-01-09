@@ -15,6 +15,7 @@ import ExampleDataSet from "./pages/ExampleDataSet.jsx";
 import UserSearchPage from "./pages/UserSearchPage.jsx";
 import { useSession } from "./hooks/useSession.jsx";
 import ValidationFront from "./components/ValidationComponent.jsx";
+import ErrorPopup from "./components/ErrorPopup.jsx";
 
 function App() {
     const { user, isLoggedIn } = useSession();
@@ -43,6 +44,7 @@ function App() {
                         <Route path="*" element={<NoPage />} />
                     </Route>
                 </Routes>
+                <ErrorPopup />
             </BrowserRouter>
         </>
     );

@@ -7,6 +7,8 @@ import fr.cytech.mpf.entity.MsgInfo;
 import fr.cytech.mpf.entity.User;
 import fr.cytech.mpf.repository.CommInfoRepository;
 import fr.cytech.mpf.repository.ConvRepository;
+import fr.cytech.mpf.repository.NodeRepository;
+import fr.cytech.mpf.service.NodeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,10 @@ public class ConvController {
     ConvRepository convRepository;
     @Autowired
     CommInfoRepository commInfoRepository;
+    @Autowired
+    NodeRepository nodeRepository;
+    @Autowired
+    NodeService nodeService;
     ModelMapper modelMapper;
 
     ConvController() {
@@ -70,9 +76,9 @@ public class ConvController {
      * @return HTTP Code 400 if body is malformed 200 otherwise, will return a list of MsgGetDTO
      */
     @MustBeLogged
-    @GetMapping(value = "/famille")
-    public ResponseEntity<List<MsgGetDTO>> getMsgByConvId(@RequestParam Long conv) {
-        List<MsgInfo> msgInfos = convRepository.findByConv(conv);
+    @PostMapping(value = "/user")
+    public ResponseEntity<List<MsgGetDTO>> getMsgByConvId(@RequestBody Long userId) {
+        List<MsgInfo> msgInfos = convRepository.findByConv(userId);
         List<MsgGetDTO> msgGetDTOs = msgInfos.stream()
                 .map(msgInfo -> modelMapper.map(msgInfo, MsgGetDTO.class))
                 .collect(Collectors.toList());
@@ -85,6 +91,22 @@ public class ConvController {
      * @param souvenir Id of the memories/message
      * @return HTTP Code 400 if body is malformed 200 otherwise, will return a list of CommGetDTO
      */
+    @MustBeLogged
+    @PostMapping(value = "/famille")
+    public ResponseEntity<List<MsgGetDTO>> getMsgByFamilleUser(@RequestBody Long userId) {
+        List<Long> userListConnected = nodeService.findUserAccountIdsByTreeIdAndUserToSearch(userId, userId);
+
+        // Utilisez la méthode findAllByUserAccountIdIn pour récupérer les messages de tous les utilisateurs dans userListConnected
+        List<MsgInfo> msgInfos = convRepository.findAllByUser_idIn(userListConnected);
+
+        List<MsgGetDTO> msgGetDTOs = msgInfos.stream()
+                .map(msgInfo -> modelMapper.map(msgInfo, MsgGetDTO.class))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(msgGetDTOs);
+    }
+
+
     @MustBeLogged
     @GetMapping("/commentary")
     public ResponseEntity<List<CommGetDTO>> getComm(@RequestParam Long conv, @RequestParam Long souvenir) {
@@ -107,5 +129,12 @@ public class ConvController {
         CommInfo commInfo = modelMapper.map(commDTO, CommInfo.class);
         commInfoRepository.save(commInfo);
         return ResponseEntity.ok(commDTO);
+    }
+
+    @MustBeLogged
+    @GetMapping("/test")
+    public ResponseEntity<List> addComm(@RequestParam Long userId) {
+        List<Long> res = nodeService.findUserAccountIdsByTreeIdAndUserToSearch(userId, userId);
+        return ResponseEntity.ok(res);
     }
 }

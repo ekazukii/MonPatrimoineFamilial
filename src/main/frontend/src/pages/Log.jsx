@@ -11,15 +11,14 @@ import img1 from "../../../resources/img/home/home-1-nobg.png";
 
 const Log = () => {
     const [inputs, setInputs] = useState({});
-    const { user, isLoggedIn, setSession, login, refreshData, logout } = useSession();
+    const { user, isLoggedIn, message, setSession, login, refreshData, logout } = useSession();
     const navigate = useNavigate();
 
     const handleChange = e => setInputs(prevState => ({ ...prevState, [e.target.name]: e.target.value }));
     const sendForm = async (e) => {
         e.preventDefault();
         const success = await login(inputs.username, inputs.password);
-        if(!success) return alert("Connexion failed");
-        window.location.href = "/";
+        if (success) return window.location.href = "/";
     }
 
     return (
@@ -44,6 +43,11 @@ const Log = () => {
                             <Form.Group className="mb-3" controlId="formBasicCheckbox">
                                 <Form.Check type="checkbox" label="Check me out" />
                             </Form.Group>
+                            {message && (
+                                <div className="alert alert-danger mt-4">
+                                    {message}
+                                </div>
+                            )}
                             <Button variant="primary" type="submit">
                                 Submit
                             </Button>
