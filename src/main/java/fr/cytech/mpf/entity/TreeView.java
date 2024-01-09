@@ -7,10 +7,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Table that save all the view of the trees
+ */
 @Entity
 @Getter @Setter
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class TreeView {
+public class
+TreeView {
     @Id @GeneratedValue
     @Column(name = "id")
     private Long id;

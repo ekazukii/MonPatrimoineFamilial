@@ -16,6 +16,9 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Table that save all registered users
+ */
 @Entity
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor

@@ -15,6 +15,12 @@ public class MailService {
     @Autowired
     private final JavaMailSender javaMailSender;
 
+    /**
+     * Send an email with the given parameters
+     * @param toMail the email address to send the email to
+     * @param subject the subject of the email
+     * @param message the message of the email
+     */
     @Async
     public void sendEmail(String toMail, String subject, String message){
         SimpleMailMessage mailMessage = new SimpleMailMessage();
@@ -25,6 +31,10 @@ public class MailService {
         javaMailSender.send(mailMessage);
     }
 
+    /**
+     * Send a validation code to a user
+     * @param user the user to send the validation code to
+     */
     @Async
     public void sendValidationCode(User user) {
         StringBuilder messageBuilder = new StringBuilder();
@@ -36,6 +46,11 @@ public class MailService {
         this.sendEmail(user.getEmail(), "[MPF] Validation de votre email", messageBuilder.toString());
     }
 
+    /**
+     * Send an update your tree message to a user
+     * @param user the user to send the message to
+     * @param userThatChangedTree the user that changed the tree
+     */
     @Async
     public void sendUpdateMessage(User user, User userThatChangedTree) {
         StringBuilder messageBuilder = new StringBuilder();
@@ -47,8 +62,14 @@ public class MailService {
         messageBuilder.append(user.getTree().getId());
         messageBuilder.append("\n");
         messageBuilder.append("\n");
-        messageBuilder.append("Pour re-synchroniser les changements cliquez sur ce lien http://localhost:8080/mergeStrategy?id=");
+        messageBuilder.append("Pour re-synchroniser les changements cliquez sur ce lien http://localhost:8080/tree/mergeStrategy?requestingTreeId=");
         messageBuilder.append(user.getTree().getId());
+        messageBuilder.append("&respondingTreeId=");
+        messageBuilder.append(userThatChangedTree.getTree().getId());
+        messageBuilder.append("&idRequester=");
+        messageBuilder.append(user.getId());
+        messageBuilder.append("&idResponder=");
+        messageBuilder.append(userThatChangedTree.getId());
         this.sendEmail(user.getEmail(), "[MPF] Modification de l'arbre de " + userThatChangedTree.getUsername(), messageBuilder.toString());
     }
 }

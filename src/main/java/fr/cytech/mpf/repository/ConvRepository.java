@@ -10,6 +10,11 @@ import java.util.List;
 
 @Repository
 public interface ConvRepository extends JpaRepository<MsgInfo, Long> {
+    /**
+     * Get all the messages of a conversation
+     * @param conv the conversation id
+     * @return a list of messages
+     */
     List<MsgInfo> findByConv(Long conv);
     @Query("SELECT m FROM MsgInfo m WHERE m.user_id IN :userIds")
     List<MsgInfo> findAllByUser_idIn(@Param("userIds") List<Long> userIds);

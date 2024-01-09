@@ -39,6 +39,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * MVC Controller for the tree node features
+ */
 @Controller
 public class UserController {
     @Autowired
@@ -57,6 +60,12 @@ public class UserController {
         modelMapper = new ModelMapper();
     }
 
+    /**
+     * Create a new user without registering
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param userDto
+     * @deprecated
+     */
     @CrossOrigin
     @PostMapping(value = "/user")
     public void addUser(@RequestBody UserAddDTO userDto) {
@@ -64,6 +73,11 @@ public class UserController {
         userRepository.save(user);
     }
 
+    /**
+     * Get list of all users
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @return
+     */
     @CrossOrigin
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUser() {
@@ -71,6 +85,14 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    /**
+     * Login to the application
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param loginDTO Login information object
+     * @param session current user session
+     * @return User
+     * @throws NoSuchAlgorithmException
+     */
     @CrossOrigin
     @GetMapping("/health")
     public ResponseEntity<String> healthCheck() {
@@ -89,10 +111,21 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-
     private final String rootLocationString = "/home/anato/dev/atschool/image/";
     private final Path rootLocation = Paths.get(rootLocationString);
-
+  
+    /**
+     * Register a new user in the application
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param personalInfo RegisterDTO - Information of the user
+     * @param carteIdentite Image of the idCard
+     * @param photo Image of the user
+     * @param session current session of the user
+     * @return User
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     * @throws RuntimeException
+     */
     @CrossOrigin
     @PostMapping("/register")
     public ResponseEntity<User> registerNewUser(@RequestParam String personalInfo,
@@ -139,6 +172,17 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+
+    /**
+     * Handles HTTP GET requests for serving image files.
+     *
+     * @param filename The name of the file to be served. It is extracted from the URL.
+     * @return A {@link ResponseEntity} object containing the image file as a resource. 
+     *         Returns the file with a 'Content-Disposition' header to prompt the browser 
+     *         to download the file. If the file is not found or not readable, a 404 Not Found 
+     *         response is returned. In case of any other exception, a 400 Bad Request response 
+     *         is returned.
+     */
     @GetMapping("/user/images/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
@@ -163,6 +207,12 @@ public class UserController {
     }
 
 
+    /**
+     * Validate user account using secret code
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param code code that has been received in email
+     * @return redirect to login or home page
+     */
     @GetMapping("/user/validate")
     public String validateUser(@RequestParam String code) {
         List<User> users = userRepository.findUsersByValidationCode(UUID.fromString(code));
@@ -179,6 +229,14 @@ public class UserController {
         }
     }
 
+    /**
+     * Search user by query on first, last or user name, can also add filter on gender and birthdate
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param query String to compare with names of all users
+     * @param gender exact match of the user gender
+     * @param birthdate exact match of the user birtdhate
+     * @return list of users
+     */
     @GetMapping("/user/search")
     public ResponseEntity<List<User>> getUser(@RequestParam String query, @RequestParam String gender, @RequestParam String birthdate) {
         List<User> users = userRepository.findByFirstnameLastnameOrUsernameContainingIgnoreCase(query.toLowerCase());
@@ -186,6 +244,11 @@ public class UserController {
     }
 
 
+    /**
+     * Get user information in the user session
+     * @param session current session
+     * @return User
+     */
     @CrossOrigin
     @GetMapping("/userinfo")
     public ResponseEntity<User> getUserInfo(HttpSession session) {
@@ -194,6 +257,11 @@ public class UserController {
         return ResponseEntity.ok(usr);
     }
 
+    /**
+     * Logout to the current session
+     * @param session current session
+     * @return "ok" if succesfully disconnected
+     */
     @MustBeLogged
     @CrossOrigin
     @GetMapping("/logout") @PostMapping("/logout")
@@ -225,6 +293,12 @@ public class UserController {
         return ResponseEntity.internalServerError().build();
     }
 
+    /**
+     * Delete an user of the database
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param userDto id of the user to delete
+     * @return "ok" if delete is successfull
+     */
     @CrossOrigin
     @DeleteMapping("/user")
     public ResponseEntity<String> removeNode (@RequestBody UserDeleteDTO userDto) {
@@ -233,6 +307,12 @@ public class UserController {
         return ResponseEntity.ok("ok");
     }
 
+    /**
+     * Edit user personnal information, if user is admin also edit validation status
+     * HTTP Code 400 if body is malformed 200 otherwise
+     * @param userEditDTO new user information
+     * @return saved user
+     */
     @MustBeLogged
     @CrossOrigin
     @PutMapping("/user")

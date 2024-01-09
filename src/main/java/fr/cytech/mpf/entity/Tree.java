@@ -11,6 +11,9 @@ import org.hibernate.annotations.Fetch;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Table that save all the nodes of the trees
+ */
 @Getter @Setter @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Tree implements Serializable {

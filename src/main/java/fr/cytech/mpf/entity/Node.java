@@ -12,6 +12,9 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.UUID;
 
+/**
+ * Table that save all the nodes of the trees
+ */
 @Getter
 @Setter
 @Entity

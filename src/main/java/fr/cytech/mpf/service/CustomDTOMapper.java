@@ -34,6 +34,11 @@ public class CustomDTOMapper {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
     }
 
+    /**
+     * Convert a NodeAddDTO to a Node
+     * @param nodeDTO
+     * @return a Node
+     */
     public Node nodeAddDtoToNode(NodeAddDTO nodeDTO) {
         Node node = modelMapper.map(nodeDTO, Node.class);
         node.setTree(treeRepository.findById(nodeDTO.getTreeId()).get());
@@ -43,6 +48,12 @@ public class CustomDTOMapper {
         return node;
     }
 
+    /**
+     * convert a NodeAddDto to a Node entity
+     * @param node entity
+     * @param nodeDTO dto
+     * @return node entity
+     */
     public Node nodeAddDtoToNode(Node node, NodeAddDTO nodeDTO) {
         node.setVisibility(nodeDTO.getNodeVisibility());
         node.setFirstName(nodeDTO.getFirstName());
@@ -56,6 +67,11 @@ public class CustomDTOMapper {
         return node;
     }
 
+    /**
+     * Add a view in the list of tree's view
+     * @param viewAddDTO
+     * @return the tree view object added
+     */
     public TreeView addViewToTreeView(TreeViewAddDTO viewAddDTO) {
         TreeView treeView = new TreeView();
         treeView.setViewer(userRepository.findById(viewAddDTO.getViewerId()).get());

@@ -8,6 +8,9 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
+/**
+ * Table that save all the messages of the memories feature
+ */
 @Entity
 @Table(name = "ConvInfo")
 @Getter
