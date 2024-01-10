@@ -21,7 +21,8 @@ const Register   = () => {
             password2: "",
             firstName: "",
             birthDate: "",
-            nationality: ""
+            isMale: null,
+            male: ""
         }
     });
     const [loading, setLoading] = useState(false); // État pour gérer le chargement
@@ -48,9 +49,9 @@ const Register   = () => {
         const formDataObject = new FormData();
 
         const persInfo = formData.personalInfo;
-        persInfo.isMale = true;
-        persInfo.username = persInfo.firstName.charAt(0) + persInfo.lastName.split(" ").join("");
-
+        persInfo.username = persInfo.lastName.charAt(0) + persInfo.firstName.split(" ").join("");
+        persInfo.isMale = formData.personalInfo.male === "true";
+        delete persInfo.male;
         // Append the personalInfo data as JSON
         formDataObject.append('personalInfo', JSON.stringify(persInfo));
 

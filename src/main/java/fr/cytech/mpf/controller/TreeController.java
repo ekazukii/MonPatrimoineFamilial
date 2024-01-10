@@ -5,9 +5,11 @@ import fr.cytech.mpf.dto.*;
 import fr.cytech.mpf.entity.Node;
 import fr.cytech.mpf.entity.Tree;
 import fr.cytech.mpf.entity.TreeView;
+import fr.cytech.mpf.entity.User;
 import fr.cytech.mpf.repository.NodeRepository;
 import fr.cytech.mpf.repository.TreeRepository;
 import fr.cytech.mpf.repository.TreeViewRepository;
+import fr.cytech.mpf.repository.UserRepository;
 import fr.cytech.mpf.service.CustomDTOMapper;
 import fr.cytech.mpf.service.MergeTreeTomService;
 import fr.cytech.mpf.service.NodeService;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +41,8 @@ public class TreeController {
     TreeRepository treeRepository;
     @Autowired
     TreeViewRepository treeViewRepository;
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     NodeService nodeService;
@@ -168,6 +173,34 @@ public class TreeController {
         nodeService.notifyChange(node.getTree());
         nodeRepository.save(node);
         return ResponseEntity.ok(node);
+    }
+
+    @MustBeLogged
+    @GetMapping("/tree/findUserAccount")
+    public ResponseEntity<?> findUserAccount(@RequestParam Long treeId) {
+        try {
+            List<User> users = new ArrayList<>();
+            Optional<Tree> treeA = treeRepository.findTreeByIdWithNodes(treeId);
+            if(treeA.isPresent()){
+                for(Node node : treeA.get().getNodes()){
+                    if(node.getUserAccount() != null){
+                        System.out.println("Account trouvé dans node");
+                        System.out.println(node.getUserAccount().getFirstname()+" "+node.getUserAccount().getLastname());
+                        users.add(node.getUserAccount());
+                    }else{
+                        System.out.println("Account :"+ node.getFirstName().charAt(0)+node.getLastName() +" BD :"+ node.getBirthDate());
+                        List<User> user = userRepository.findByFirstnameLastnameOrUsernameAndBirthdate(
+                                node.getFirstName().charAt(0)+node.getLastName(), node.getBirthDate().split("/")[2] + "-" + node.getBirthDate().split("/")[1] + "-" + node.getBirthDate().split("/")[0]);
+                        System.out.println(user);
+                        users.addAll(user);
+                    }
+                }
+            }
+            return ResponseEntity.ok(users);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.badRequest().body("Erreur lors de la recherche : " + ex.getMessage());
+        }
     }
 
     /**

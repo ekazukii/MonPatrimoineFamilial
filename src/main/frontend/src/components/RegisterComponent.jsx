@@ -161,14 +161,11 @@ export const personalInfo = ({ onPersonalInfoChange, personalInfo, display }) =>
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formInfoOrigin">
-                        <Form.Label>Nationalité d'origine</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="nationality"
-                            placeholder="Nationalité"
-                            value={localPersonalInfo.nationality}
-                            onChange={handleChange}
-                        />
+                        <Form.Label>Sexe</Form.Label>
+                        <Form.Select name="male" value={localPersonalInfo.male} onChange={handleChange}>
+                            <option value="true">Male</option>
+                            <option value="false">Female</option>
+                        </Form.Select>
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formInfoPasswordConfirm">
@@ -300,11 +297,10 @@ export const validationInfo = ({ formData, display, idCardRef, photoRef }) => {
                 </FormGroup>
                 <FormGroup>
                     <Form.Label>Nationalité d'origine</Form.Label>
-                    <Form.Control
-                        type="text"
-                        value={formData.personalInfo.nationality}
-                        disabled
-                    />
+                    <Form.Select value={formData.personalInfo.male} disabled={true}>
+                        <option value="true">Male</option>
+                        <option value="false">Female</option>
+                    </Form.Select>
                 </FormGroup>
                 <FormGroup>
                     <Form.Label>Carte d'identité</Form.Label>

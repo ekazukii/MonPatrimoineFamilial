@@ -46,7 +46,7 @@ const UserEdit = ({user, isAdmin, handleSubmit}) => {
                 username,
                 firstname: firstName,
                 lastname: familyName,
-                male: isMale,
+                isMale: isMale,
                 socialSecurityNumber: ssn,
                 birthdate,
                 oldPassword: oldPassword,
