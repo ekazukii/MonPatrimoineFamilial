@@ -157,6 +157,8 @@ public class UserController {
         user.setValidationCode(validationCode);
         userRepository.save(user);
 
+        tree.setOwner(user);
+        
         mailService.sendValidationCode(user);
 
         // Convert birthdate from YYYY-MM-DD to DD/MM/YYYY

@@ -105,7 +105,7 @@ export default function OrgChartTree() {
 
     return (
         <div>
-            <FamilyTree nodes={nodeList} onSubmit={onSubmit} treeId={user?.id || 1}/>
+            <FamilyTree nodes={nodeList} onSubmit={onSubmit} treeId={user?.tree || 1}/>
         </div>
     );
 }
