@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -82,6 +83,55 @@ public class TreeController {
         tree.setNodes(nodes);
     
         return ResponseEntity.ok(tree);
+    }
+
+    /**
+     * Handles POST requests to retrieve nodes from a tree based on specified filters.
+     * This method processes a {@link NodeFilterRequestDTO} which contains the tree ID and filter criteria.
+     *
+     * @param filterRequest A {@link NodeFilterRequestDTO} object containing filter parameters.
+     * @return A {@link ResponseEntity} object containing the filtered nodes or an error message.
+     *
+     * The method supports two types of filters:
+     * 1. "byName" - Filters nodes by first and last name. This requires 'firstName' and 'lastName' in the filterInfo map.
+     * 2. "byType" - Filters nodes by type (e.g., cousins, siblings). The specific implementation details are to be defined.
+     *
+     * If the filter type is not supported, it returns a BAD REQUEST response with a descriptive error message.
+     *
+     * In case of a "byName" filter, if the tree ID is valid and nodes are found, it returns an OK response with the nodes.
+     * If no nodes are found, it returns a NOT FOUND response. If the tree ID is invalid, it catches a NumberFormatException 
+     * and returns a BAD REQUEST response with an error message.
+     *
+     * This method is mapped to the "/tree/byFilter" endpoint and expects POST requests.
+     */
+    @PostMapping("/tree/byFilter")
+    public ResponseEntity<?> getFilterTree(@RequestBody NodeFilterRequestDTO filterRequest){
+        try{
+            Long treeId = filterRequest.getTreeId();
+            String filterIs = filterRequest.getFilterIs();
+            Map <String, String> filterInfo = filterRequest.getFilterInfo();
+
+                if ("byName".equals(filterIs)) {
+                    ResponseEntity<Tree> response = getTree(treeId, true); // Vous pouvez spécifier la valeur de 'detail' selon vos besoins
+                    List<Node> nodesFindByName = nodeRepository.findAllByTreeAndFirstNameAndLastName(response.getBody(), filterInfo.get("firstName"), filterInfo.get("lastName"));
+                    // Si la réponse est OK, renvoyez la même réponse
+                    if (response.getStatusCode() == HttpStatus.OK) {
+                        return ResponseEntity.ok(nodesFindByName);
+                    }
+                    else {
+                        // Si la réponse n'est pas OK, renvoyez la même réponse avec le code d'erreur approprié
+                        return ResponseEntity.notFound().build();
+                    }
+                } else if ("byType".equals(filterIs)) {
+                    //A definir dans les noeuds : cousins , frr etc
+                    return ResponseEntity.ok(filterInfo);
+                } else {
+                    return ResponseEntity.badRequest().body("Filtrage non pris en charge : " + filterIs);
+                }
+        } catch (NumberFormatException e) {
+            // Gérez l'erreur si treeId n'est pas un nombre valide
+            return ResponseEntity.badRequest().body("L'id de l'arbre est invalide!");
+        }
     }
 
     /**
