@@ -216,8 +216,8 @@ public class TreeController {
     @GetMapping("/tree/mergeStrategy")
     public ResponseEntity<?> mergeStrategy (@RequestParam Long requestingTreeId, @RequestParam Long respondingTreeId, @RequestParam Long idRequester, @RequestParam Long idResponder) {
         MergeTreeDTO mergeTreeDTO = new MergeTreeDTO(requestingTreeId, respondingTreeId, idRequester, idResponder);
-        this.mergeTree(mergeTreeDTO);
-        // this.mergeTreeTom(mergeTreeDTO);
+        // this.mergeTree(mergeTreeDTO);
+        this.mergeTreeTom(mergeTreeDTO);
 
         // redirect to external page localhost:5173/tree
         HttpHeaders headers = new HttpHeaders();

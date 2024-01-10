@@ -88,7 +88,7 @@ export default function Chart({nodes, readOnly, treeId}) {
             args.nodes = args.nodes.filter(node => node.id !== "_ft_partner");
         });
 
-        family.editUI.on('button-click', function (sender, args) {
+        family.editUI.on('button-click', async function (sender, args) {
             // find nodes with id args.nodeId
             const node = nodes.find(n => n.id === args.nodeId);
             if(!node) return true;
@@ -97,6 +97,16 @@ export default function Chart({nodes, readOnly, treeId}) {
                 if(node.userInfo?.id === treeId) {
                     toast.error("You can't delete your own node");
                     return false;
+                } else {
+                    await fetch('http://localhost:8080/tree/node', {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            nodeId: args.nodeId
+                        })
+                    })
                 }
                 return true;
             }
