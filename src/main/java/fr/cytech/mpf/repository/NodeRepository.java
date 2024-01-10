@@ -35,8 +35,6 @@ public interface NodeRepository extends JpaRepository<Node, UUID> {
      */
     List<Node> findAllByMotherId(UUID nodeId);
 
-    List<Node> findAllByParentBId(Long nodeId);
-
     /**
      * Find all the nodes of a specific user account and not in a specific tree
      * @param userAccountId the user account id
