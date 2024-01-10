@@ -1,5 +1,6 @@
 package fr.cytech.mpf.controller;
 
+import fr.cytech.mpf.config.MustBeLogged;
 import fr.cytech.mpf.dto.FileGetDTO;
 import fr.cytech.mpf.dto.MsgGetDTO;
 import fr.cytech.mpf.entity.MsgInfo;
@@ -41,8 +42,9 @@ public class FileController {
     FileController() {
         modelMapper = new ModelMapper();
     }
+    @MustBeLogged
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file")MultipartFile file){
+    public ResponseEntity<FileInfo> uploadFile(@RequestParam("file")MultipartFile file){
         try{
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
             Path targetPath = Paths.get(uploadDir).resolve(fileName);
@@ -54,12 +56,13 @@ public class FileController {
             fileInfo.setFileSize(file.getSize());
             fileRepository.save(fileInfo);
 
-            return ResponseEntity.ok("File uploaded successfully");
+            return ResponseEntity.ok(fileInfo);
         }catch (IOException ex){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file");
+            return ResponseEntity.badRequest().body(null);
         }
     }
 
+    @MustBeLogged
     @GetMapping("/info")
     public ResponseEntity<FileGetDTO> getFileById(@RequestParam Long id) {
         FileInfo fileInfo = fileRepository.getReferenceById(id);
@@ -67,6 +70,7 @@ public class FileController {
         return ResponseEntity.ok(fileGetDTO);
     }
 
+    @MustBeLogged
     @GetMapping(value = "/famille")
     public ResponseEntity<List<FileGetDTO>> getMsgByConvId(@RequestParam Long conv) {
         List<FileInfo> fileInfos = fileRepository.findByConv(conv);

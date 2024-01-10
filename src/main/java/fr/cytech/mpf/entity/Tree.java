@@ -11,14 +11,16 @@ import org.hibernate.annotations.Fetch;
 import java.io.Serializable;
 import java.util.List;
 
-@Getter
-@Setter
-@Entity
+/**
+ * Table that save all the nodes of the trees
+ */
+@Getter @Setter @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Tree implements Serializable {
+    @SequenceGenerator(name = "tree_seq", sequenceName = "tree_seq", allocationSize = 1)
     @Id @GeneratedValue
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @OneToOne
     private User owner;

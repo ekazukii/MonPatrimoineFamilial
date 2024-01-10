@@ -1,0 +1,13 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+#custom-star {
+  margin-left: 80px;
+}
+
+body{
+  /* background-color: #F5EFE6 !important; */
+}

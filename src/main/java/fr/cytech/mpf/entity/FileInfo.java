@@ -7,6 +7,9 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+/**
+ * Table that save all the path of saved files
+ */
 @Entity
 @Getter
 @Setter

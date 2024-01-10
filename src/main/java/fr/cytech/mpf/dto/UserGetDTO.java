@@ -1,7 +1,14 @@
 package fr.cytech.mpf.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.UUID;
 
+@Getter
+@Setter
 public class UserGetDTO {
     private String lastname;
 
@@ -11,35 +18,11 @@ public class UserGetDTO {
 
     private String username;
 
-    public String getEmail() {
-        return email;
-    }
+    private String socialSecurityNumber;
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    private boolean isValidated;
 
-    public String getLastname() {
-        return lastname;
-    }
+    private boolean isAdmin;
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    private String birthdate;
 }

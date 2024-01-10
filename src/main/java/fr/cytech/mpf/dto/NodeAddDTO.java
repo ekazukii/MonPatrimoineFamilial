@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Optional;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,7 +18,9 @@ public class NodeAddDTO implements Serializable {
     private String firstName;
     private String lastName;
     private String birthDate;
-    private Long parentAId;
-    private Long parentBId;
+    private boolean male;
+    private UUID fatherId;
+    private UUID motherId;
     private NodeVisibility nodeVisibility;
+    private UUID id;
 }

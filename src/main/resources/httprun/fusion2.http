@@ -1,0 +1,353 @@
+@1A = {{$guid}}
+@1B = {{$guid}}
+@1C = {{$guid}}
+@1E = {{$guid}}
+@1G = {{$guid}}
+@1I = {{$guid}}
+@1K = {{$guid}}
+@1M = {{$guid}}
+
+@2A = {{$guid}}
+@2C = {{$guid}}
+@2D = {{$guid}}
+@2F = {{$guid}}
+@2H = {{$guid}}
+@2I = {{$guid}}
+@2J = {{$guid}}
+@2L = {{$guid}}
+
+
+POST /tree HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "name": "Famille_Dupont"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 1, 
+    "firstName": "A", 
+    "lastName": "A", 
+    "birthDate": "12/08/1900", 
+    "male": true, 
+    "fatherId": null, 
+    "motherId": null, 
+    "nodeVisibility": "Public",
+    "id": "{{1A}}"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 1, 
+    "firstName": "B", 
+    "lastName": "B", 
+    "birthDate": "12/08/1900", 
+    "male": true, 
+    "fatherId": null, 
+    "motherId": null, 
+    "nodeVisibility": "Public",
+    "id": "{{1B}}"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 1, 
+    "firstName": "C", 
+    "lastName": "C", 
+    "birthDate": "12/08/1915", 
+    "male": true, 
+    "fatherId": "{{1A}}", 
+    "motherId": "{{1B}}", 
+    "nodeVisibility": "Public",
+    "id": "{{1C}}"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 1, 
+    "firstName": "E", 
+    "lastName": "E", 
+    "birthDate": "12/08/1930", 
+    "male": true, 
+    "fatherId": "{{1C}}", 
+    "motherId": null, 
+    "nodeVisibility": "Public",
+    "id": "{{1E}}"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 1, 
+    "firstName": "G", 
+    "lastName": "G", 
+    "birthDate": "12/08/1930", 
+    "male": true, 
+    "fatherId": null, 
+    "motherId": null, 
+    "nodeVisibility": "Public",
+    "id": "{{1G}}"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 1, 
+    "firstName": "I", 
+    "lastName": "I", 
+    "birthDate": "12/08/1945", 
+    "male": false, 
+    "fatherId": null, 
+    "motherId": "{{1G}}", 
+    "nodeVisibility": "Public",
+    "id": "{{1I}}"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 1, 
+    "firstName": "K", 
+    "lastName": "K", 
+    "birthDate": "12/08/1945", 
+    "male": true, 
+    "fatherId": null, 
+    "motherId": "{{1G}}", 
+    "nodeVisibility": "Public",
+    "id": "{{1K}}"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 1, 
+    "firstName": "M", 
+    "lastName": "M", 
+    "birthDate": "12/08/1970", 
+    "male": true, 
+    "fatherId": null, 
+    "motherId": "{{1I}}", 
+    "nodeVisibility": "Public",
+    "id": "{{1M}}"
+}
+
+###
+
+POST /tree HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "name": "Famille_Dupont"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 2, 
+    "firstName": "A", 
+    "lastName": "A", 
+    "birthDate": "12/08/1900", 
+    "male": true, 
+    "fatherId": null, 
+    "motherId": null, 
+    "nodeVisibility": "Public",
+    "id": "{{2A}}"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 2, 
+    "firstName": "C", 
+    "lastName": "C", 
+    "birthDate": "12/08/1915", 
+    "male": true, 
+    "fatherId": "{{2A}}", 
+    "motherId": null, 
+    "nodeVisibility": "Public",
+    "id": "{{2C}}"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 2, 
+    "firstName": "D", 
+    "lastName": "D", 
+    "birthDate": "12/08/1915", 
+    "male": true, 
+    "fatherId": null, 
+    "motherId": null, 
+    "nodeVisibility": "Public",
+    "id": "{{2D}}"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 2, 
+    "firstName": "F", 
+    "lastName": "F", 
+    "birthDate": "12/08/1930", 
+    "male": true, 
+    "fatherId": "{{2C}}", 
+    "motherId": "{{2D}}", 
+    "nodeVisibility": "Public",
+    "id": "{{2F}}"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 2, 
+    "firstName": "H", 
+    "lastName": "H", 
+    "birthDate": "12/08/1945", 
+    "male": true, 
+    "fatherId": null, 
+    "motherId": null, 
+    "nodeVisibility": "Public",
+    "id": "{{2H}}"
+}
+
+###
+
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 2, 
+    "firstName": "I", 
+    "lastName": "I", 
+    "birthDate": "12/08/1945", 
+    "male": false, 
+    "fatherId": "{{2F}}", 
+    "motherId": null, 
+    "nodeVisibility": "Public",
+    "id": "{{2I}}"
+}
+
+###
+
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 2, 
+    "firstName": "J", 
+    "lastName": "J", 
+    "birthDate": "12/08/1945", 
+    "male": true, 
+    "fatherId": "{{2F}}", 
+    "motherId": null, 
+    "nodeVisibility": "Public",
+    "id": "{{2J}}"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 2, 
+    "firstName": "L", 
+    "lastName": "L", 
+    "birthDate": "12/08/1970", 
+    "male": true, 
+    "fatherId": "{{2H}}", 
+    "motherId": "{{2I}}", 
+    "nodeVisibility": "Public",
+    "id": "{{2L}}"
+}
+
+###
+
+POST /tree/merge HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "requestingTreeId": "1",
+    "respondingTreeId": "2",
+    "parentsNodesRequester": ["{{1C}}", null],
+    "childrenNodesRequester": ["{{1I}}","{{1K}}"],
+    "userNodeRequesterId": "{{1A}}",
+    "userNodeResponderId": "{{2F}}"
+}
+
+###
+
+
+GET /tree?detail=true&id=2 HTTP/1.1
+Host: localhost:8080
+
+
+### 
+
+GET /tree?detail=true&id=1 HTTP/1.1
+Host: localhost:8080

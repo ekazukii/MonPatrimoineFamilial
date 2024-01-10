@@ -1,0 +1,316 @@
+
+
+POST /tree HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "name": "Famille_Dupont"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 1, 
+    "firstName": "Pierre", 
+    "lastName": "Dupont", 
+    "birthDate": "12/08/1945", 
+    "male": true, "fatherId": null, 
+    "motherId": null, 
+    "nodeVisibility": "Public"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+  "treeId": 1,
+  "firstName": "Marie",
+  "lastName": "Dupont",
+  "birthDate": "25/02/1948",
+  "male": false,
+  "fatherId": null,
+  "motherId": null,
+  "nodeVisibility": "Public"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+  "treeId": 1,
+  "firstName": "Jean",
+  "lastName": "Dupont",
+  "birthDate": "30/06/1970",
+  "male": true,
+  "fatherId": 1,
+  "motherId": 2,
+  "nodeVisibility": "Public"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+  "treeId": 1,
+  "firstName": "Sophie",
+  "lastName": "Leroy",
+  "birthDate": "14/11/1972",
+  "male": false,
+  "fatherId": null,
+  "motherId": null,
+  "nodeVisibility": "Public"
+}
+
+###
+
+POST /tree HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "name": "Famille_Dupont"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 2, 
+    "firstName": "Pierre", 
+    "lastName": "Dupont", 
+    "birthDate": "12/08/1945", 
+    "male": true, "fatherId": null, 
+    "motherId": null, 
+    "nodeVisibility": "Public"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+  "treeId": 2,
+  "firstName": "Marie",
+  "lastName": "Dupont",
+  "birthDate": "25/02/1948",
+  "male": false,
+  "fatherId": null,
+  "motherId": null,
+  "nodeVisibility": "Public"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+  "treeId": 2,
+  "firstName": "Jean",
+  "lastName": "Dupont",
+  "birthDate": "30/06/1970",
+  "male": true,
+  "fatherId": 5,
+  "motherId": 6,
+  "nodeVisibility": "Public"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+  "treeId": 2,
+  "firstName": "Sophie",
+  "lastName": "Leroy",
+  "birthDate": "14/11/1972",
+  "male": false,
+  "fatherId": null,
+  "motherId": null,
+  "nodeVisibility": "Public"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+  "treeId": 2,
+  "firstName": "Lucas",
+  "lastName": "Dupont",
+  "birthDate": "15/01/2000",
+  "male": true,
+  "fatherId": 7,
+  "motherId": 8,
+  "nodeVisibility": "Public"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+  "treeId": 2,
+  "firstName": "Julia",
+  "lastName": "Lerroy",
+  "birthDate": "04/03/1947",
+  "male": false,
+  "fatherId": null,
+  "motherId": null,
+  "nodeVisibility": "Public"
+}
+
+###
+
+PUT /tree/node HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{
+  "treeId": 2,
+  "firstName": "Sophie",
+  "lastName": "Leroy",
+  "birthDate": "14/11/1972",
+  "male": false,
+  "fatherId": null,
+  "motherId": 10,
+  "nodeVisibility": "Public",
+  "id": 8
+}
+
+###
+
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{
+  "treeId": 2,
+  "firstName": "Robert",
+  "lastName": "Leroy",
+  "birthDate": "14/11/1921",
+  "male": true,
+  "fatherId": null,
+  "motherId": null,
+  "nodeVisibility": "Public"
+}
+
+###
+
+PUT /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+  "treeId": 2,
+  "firstName": "Julia",                                                         
+  "lastName": "Lerroy",
+  "birthDate": "04/03/1947",
+  "male": false,
+  "fatherId": 11,
+  "motherId": null,
+  "nodeVisibility": "Public",
+  "id": 10
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 1, 
+    "firstName": "Gisèle", 
+    "lastName": "Duchatelle", 
+    "birthDate": "12/08/1945", 
+    "male": false, 
+    "fatherId": null, 
+    "motherId": null, 
+    "nodeVisibility": "Public"
+}
+
+###
+
+POST /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+  "treeId": 1,
+  "firstName": "Jean-Pierre",
+  "lastName": "Dupont",
+  "birthDate": "25/02/1948",
+  "male": true,
+  "fatherId": null,
+  "motherId": null,
+  "nodeVisibility": "Public"
+}
+
+###
+
+PUT /tree/node HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "treeId": 1, 
+    "firstName": "Pierre", 
+    "lastName": "Dupont", 
+    "birthDate": "12/08/1945", 
+    "male": true, 
+    "fatherId": 13, 
+    "motherId": 12, 
+    "nodeVisibility": "Public",
+    "id": 1
+}
+
+###
+
+POST /tree/merge HTTP/1.1
+Host: localhost:8080
+content-type: application/json
+
+{
+    "requestingTreeId": "1",
+    "respondingTreeId": "2",
+    "parentsNodesRequester": ["3","4"]
+}
+
+### 
+
+GET /tree?detail=true&id=2 HTTP/1.1
+Host: localhost:8080
+
+
+### 
+
+GET /tree?detail=true&id=1 HTTP/1.1
+Host: localhost:8080

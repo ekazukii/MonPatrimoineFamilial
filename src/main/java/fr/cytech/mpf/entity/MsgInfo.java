@@ -6,7 +6,11 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Date;
 
+/**
+ * Table that save all the messages of the memories feature
+ */
 @Entity
 @Table(name = "ConvInfo")
 @Getter
@@ -22,6 +26,10 @@ public class MsgInfo implements Serializable {
 
     private String message;
 
+    private Date date;
+
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Timestamp timestamp;
+
+    private long file_id;
 }
