@@ -35,12 +35,16 @@ public interface NodeRepository extends JpaRepository<Node, UUID> {
      */
     List<Node> findAllByMotherId(UUID nodeId);
 
+    List<Node> findAllByParentBId(Long nodeId);
+
     /**
      * Find all the nodes of a specific user account and not in a specific tree
      * @param userAccountId the user account id
      * @param treeId the tree id
      * @return a list of nodes
      */
+    public List<Node> findAllByTreeAndFirstNameAndLastName(Tree tree, String firstName, String lastName);
+
     List<Node> findByUserAccountIdAndTreeIdNot(Long userAccountId, Long treeId);
 
     @Query("SELECT DISTINCT n.userAccount.Id FROM Node n WHERE n.tree.id = :treeId AND n.userAccount.Id IS NOT NULL")
@@ -48,4 +52,5 @@ public interface NodeRepository extends JpaRepository<Node, UUID> {
 
     @Query("SELECT COUNT(n) FROM Node n WHERE n.tree.id = :treeId AND n.userAccount.Id = :userToSearchId")
     int countNodesByTreeIdAndUserAccountId(@Param("treeId") Long treeId, @Param("userToSearchId") Long userToSearchId);
+
 }
