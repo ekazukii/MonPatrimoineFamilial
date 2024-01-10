@@ -275,6 +275,13 @@ public class TreeController {
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     };
 
+    @MustBeLogged
+    @PostMapping("/tree/mergeStrategy")
+    public ResponseEntity<?> mergeStrategy (@RequestBody  MergeTreeDTO mergeTreeDTO) {
+        return this.mergeTree(mergeTreeDTO);
+        // return this.mergeTreeTom(mergeTreeDTO);
+    };
+
     /**
      * Merge strategy number 1
      * @param mergeTreeDto merge information
@@ -285,6 +292,8 @@ public class TreeController {
     public ResponseEntity<?> mergeTree (@RequestBody  MergeTreeDTO mergeTreeDto) {
         try {
             List<Tree> mergedTrees = mergeTreeService.mergeTrees(mergeTreeDto);
+            Optional<Tree> requestingTree = treeRepository.findById(mergeTreeDto.getRequestingTreeId());
+            requestingTree.ifPresent(tree -> nodeService.notifyChange(tree));
             return ResponseEntity.ok("ok");
         } catch (MergeTreeException ex) {
             ex.printStackTrace();
@@ -313,6 +322,8 @@ public class TreeController {
                 System.out.println("----------------------Avant fusion TreeB-------------------");
                 System.out.println(treeB.get().getNodes());
                 Tree mergedTree = mergeTreeTomService.mergeTrees(treeA.get(), treeB.get());
+                Optional<Tree> requestingTree = treeRepository.findById(mergeTreeDto.getRequestingTreeId());
+                requestingTree.ifPresent(tree -> nodeService.notifyChange(tree));
                 return ResponseEntity.ok(mergedTree);
             } else {
                 return ResponseEntity.badRequest().body("Arbres non trouvés");

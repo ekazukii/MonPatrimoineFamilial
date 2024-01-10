@@ -107,7 +107,9 @@ const UserSearch = () => {
 
         try {
             setIsMerging(true); 
-            const response = await fetch('http://localhost:8080/tree/mergeTom', {
+
+            const response = await fetch('http://localhost:8080/tree/mergeStrategy', {
+
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
