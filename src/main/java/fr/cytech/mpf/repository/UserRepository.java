@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Date;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     /**
@@ -34,6 +35,28 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "LOWER(u.lastname) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(u.username) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<User> findByFirstnameLastnameOrUsernameContainingIgnoreCase(String query);
+
+    @Query("SELECT u FROM User u WHERE " +
+            "(LOWER(u.firstname) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(u.lastname) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(u.username) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
+            "u.isMale = :gender")
+    List<User> findByFirstnameLastnameOrUsernameAndGender(String query, Boolean gender);
+
+    @Query("SELECT u FROM User u WHERE " +
+            "(LOWER(u.firstname) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(u.lastname) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(u.username) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
+            "u.birthdate = :birthdate")
+    List<User> findByFirstnameLastnameOrUsernameAndBirthdate(String query, String birthdate);
+
+    @Query("SELECT u FROM User u WHERE " +
+            "(LOWER(u.firstname) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(u.lastname) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(u.username) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
+            "u.isMale = :gender AND " +
+            "u.birthdate = :birthdate")
+    List<User> findByFirstnameLastnameOrUsernameAndGenderAndBirthdate(String query, Boolean gender, String birthdate);
 
     /**
      * Check if a username already exists

@@ -25,4 +25,6 @@ public class UserAddDTO implements Serializable {
     private String socialSecurityNumber;
 
     private String birthdate;
+
+    private Boolean isMale;
 }

@@ -26,6 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -224,6 +225,34 @@ public class TreeController {
         return ResponseEntity.ok(node);
     }
 
+    @MustBeLogged
+    @GetMapping("/tree/findUserAccount")
+    public ResponseEntity<?> findUserAccount(@RequestParam Long treeId) {
+        try {
+            List<User> users = new ArrayList<>();
+            Optional<Tree> treeA = treeRepository.findTreeByIdWithNodes(treeId);
+            if(treeA.isPresent()){
+                for(Node node : treeA.get().getNodes()){
+                    if(node.getUserAccount() != null){
+                        System.out.println("Account trouvé dans node");
+                        System.out.println(node.getUserAccount().getFirstname()+" "+node.getUserAccount().getLastname());
+                        users.add(node.getUserAccount());
+                    }else{
+                        System.out.println("Account :"+ node.getFirstName().charAt(0)+node.getLastName() +" BD :"+ node.getBirthDate());
+                        List<User> user = userRepository.findByFirstnameLastnameOrUsernameAndBirthdate(
+                                node.getFirstName().charAt(0)+node.getLastName(), node.getBirthDate().split("/")[2] + "-" + node.getBirthDate().split("/")[1] + "-" + node.getBirthDate().split("/")[0]);
+                        System.out.println(user);
+                        users.addAll(user);
+                    }
+                }
+            }
+            return ResponseEntity.ok(users);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.badRequest().body("Erreur lors de la recherche : " + ex.getMessage());
+        }
+    }
+
     /**
      * Merge by a get request for the url
      * HTTP Code 400 if body is malformed 200 otherwise
@@ -237,8 +266,8 @@ public class TreeController {
     @GetMapping("/tree/mergeStrategy")
     public ResponseEntity<?> mergeStrategy (@RequestParam Long requestingTreeId, @RequestParam Long respondingTreeId, @RequestParam Long idRequester, @RequestParam Long idResponder) {
         MergeTreeDTO mergeTreeDTO = new MergeTreeDTO(requestingTreeId, respondingTreeId, idRequester, idResponder);
-        this.mergeTree(mergeTreeDTO);
-        // this.mergeTreeTom(mergeTreeDTO);
+        // this.mergeTree(mergeTreeDTO);
+        this.mergeTreeTom(mergeTreeDTO);
 
         // redirect to external page localhost:5173/tree
         HttpHeaders headers = new HttpHeaders();

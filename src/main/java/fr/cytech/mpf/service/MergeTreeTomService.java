@@ -87,6 +87,8 @@ public class MergeTreeTomService {
                     }
                 }
             }
+            System.out.println("Ajout du compte utilisateur");
+            System.out.println(getUserAccount(treeA, treeB, node));
             node.setUserAccount(getUserAccount(treeA, treeB, node));
             System.out.println("----------------------Suivant-------------------");
         }

@@ -21,6 +21,7 @@ import org.modelmapper.spi.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -33,11 +34,9 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * MVC Controller for the tree node features
@@ -111,7 +110,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    private final String rootLocationString = "/home/anato/dev/atschool/image/";
+    private final String rootLocationString = "/Desktop/";
     private final Path rootLocation = Paths.get(rootLocationString);
   
     /**
@@ -158,7 +157,7 @@ public class UserController {
         userRepository.save(user);
 
         tree.setOwner(user);
-        
+
         mailService.sendValidationCode(user);
 
         // Convert birthdate from YYYY-MM-DD to DD/MM/YYYY
@@ -234,17 +233,40 @@ public class UserController {
     /**
      * Search user by query on first, last or user name, can also add filter on gender and birthdate
      * HTTP Code 400 if body is malformed 200 otherwise
-     * @param query String to compare with names of all users
-     * @param gender exact match of the user gender
-     * @param birthdate exact match of the user birtdhate
+     *
+     * @param query     String to compare with names of all users
+     * @param gender    exact match of the user gender (optional)
+     * @param birthdate exact match of the user birthdate (optional)
      * @return list of users
      */
     @GetMapping("/user/search")
-    public ResponseEntity<List<User>> getUser(@RequestParam String query, @RequestParam String gender, @RequestParam String birthdate) {
-        List<User> users = userRepository.findByFirstnameLastnameOrUsernameContainingIgnoreCase(query.toLowerCase());
+    public ResponseEntity<List<User>> getUser(
+            @RequestParam String query,
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String birthdate) {
+
+        List<User> users;
+        Boolean genderValue = (gender != null) ? Boolean.valueOf(gender) : null;
+
+        if (genderValue != null && birthdate != null) {
+            // Both gender and birthdate are provided as filters
+            users = userRepository.findByFirstnameLastnameOrUsernameAndGenderAndBirthdate(
+                    query.toLowerCase(), genderValue, birthdate);
+        } else if (genderValue != null) {
+            // Only gender is provided as a filter
+            users = userRepository.findByFirstnameLastnameOrUsernameAndGender(
+                    query.toLowerCase(), genderValue);
+        } else if (birthdate != null) {
+            // Only birthdate is provided as a filter
+            users = userRepository.findByFirstnameLastnameOrUsernameAndBirthdate(
+                    query.toLowerCase(), birthdate);
+        } else {
+            // No filters
+            users = userRepository.findByFirstnameLastnameOrUsernameContainingIgnoreCase(query.toLowerCase());
+        }
+
         return ResponseEntity.ok(users);
     }
-
 
     /**
      * Get user information in the user session
@@ -323,11 +345,13 @@ public class UserController {
         if(actualUser.isEmpty()) return ResponseEntity.notFound().build();
 
         User userToUpdate = actualUser.get();
+        System.out.println(userEditDTO.getNewPassword());
 
         // Mettre à jour les propriétés de l'utilisateur avec les valeurs du DTO
         if(userEditDTO.getUsername() != null) userToUpdate.setUsername(userEditDTO.getUsername());
         if(userEditDTO.getLastname() != null) userToUpdate.setLastname(userEditDTO.getLastname());
         if(userEditDTO.getFirstname() != null) userToUpdate.setFirstname(userEditDTO.getFirstname());
+        if(userEditDTO.getIsMale() != null) userToUpdate.setMale(userEditDTO.getIsMale());
         if(userEditDTO.getEmail() != null) userToUpdate.setEmail(userEditDTO.getEmail());
         if(userEditDTO.getIsAdmin() != null && userEditDTO.getIsAdmin() != userToUpdate.isAdmin()) userToUpdate.setAdmin(userEditDTO.getIsAdmin());
         if(userEditDTO.getIsValidated() != null) {
@@ -342,14 +366,14 @@ public class UserController {
         try {
             if ((!userEditDTO.getNewPassword().isEmpty() && !userEditDTO.getOldPassword().isEmpty()) && !userService.passwordToHash(userEditDTO.getOldPassword()).equals(userToUpdate.getPassword())){
                 return ResponseEntity.badRequest().body("L'ancien mot de passe n'est pas correct");
-            } else {
+            } else if ((!userEditDTO.getNewPassword().isEmpty() && !userEditDTO.getOldPassword().isEmpty()) && userService.passwordToHash(userEditDTO.getOldPassword()).equals(userToUpdate.getPassword())) {
                 userToUpdate.setPassword(userService.passwordToHash(userEditDTO.getNewPassword()));
             }
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
 
-        userRepository.save(actualUser.get());
-        return ResponseEntity.ok(actualUser.get());
+        userRepository.save(userToUpdate);
+        return ResponseEntity.ok(userToUpdate);
     }
 }

@@ -13,7 +13,7 @@ const UserSearch = () => {
     const {isLoggedIn, user} = useSession();
 
     const [query, setQuery] = useState('');
-    const [gender, setGender] = useState(null);
+    const [gender, setGender] = useState("null");
     const [birthdate, setBirthdate] = useState(null);
     const [showModal, setShowModal] = useState(false);
     
@@ -55,10 +55,18 @@ const UserSearch = () => {
     const handleSearch = async () => {
         // Construct query parameters
         const queryParams = new URLSearchParams({
-            query,
-            gender,
-            birthdate
+            query
         });
+
+        if (gender !== "null") {
+            queryParams.append('gender', gender);
+        }
+
+        // Add birthdate to queryParams only if it's not null
+        if (birthdate !== null) {
+            queryParams.append('birthdate', birthdate);
+        }
+
 
         try {
             // Make the GET request using fetch
@@ -86,7 +94,7 @@ const UserSearch = () => {
     };
 
     const clearChanges = () => {
-        setGender(null);
+        setGender("null");
         setBirthdate(null);
         setShowModal(false);
     }
@@ -99,7 +107,9 @@ const UserSearch = () => {
 
         try {
             setIsMerging(true); 
+
             const response = await fetch('http://localhost:8080/tree/mergeStrategy', {
+
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -210,7 +220,8 @@ const UserSearch = () => {
                 <Modal.Body>
                     <Form.Group>
                         <Form.Label>Sexe</Form.Label>
-                        <Form.Select onChange={e => setGender(e.target.value)}>
+                        <Form.Select value={gender ?? 'null'} onChange={e => setGender(e.target.value)}>
+                            <option value="null">All</option>
                             <option value="true">Male</option>
                             <option value="false">Female</option>
                         </Form.Select>
