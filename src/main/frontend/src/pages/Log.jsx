@@ -40,9 +40,6 @@ const Log = () => {
                                 <Form.Label>Password</Form.Label>
                                 <Form.Control type="password" placeholder="Password" name="password" onChange={handleChange} value={inputs.password} />
                             </Form.Group>
-                            <Form.Group className="mb-3" controlId="formBasicCheckbox">
-                                <Form.Check type="checkbox" label="Check me out" />
-                            </Form.Group>
                             {message && (
                                 <div className="alert alert-danger mt-4">
                                     {message}
