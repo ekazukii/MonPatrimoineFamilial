@@ -22,11 +22,15 @@ const Layout = () => {
         <div className={classes['wrapper']}>
             <Navbar key={false} expand={false} className={"mb-3 "+classes['custom-bg']}>
                 <Container fluid>
-                    <Navbar.Brand href="/">MonPapiFinito</Navbar.Brand>
+                    <Navbar.Brand href="/">Mon Patrimoine Familial</Navbar.Brand>
                     <div>
-                        <Button variant="danger" className={"me-2"} onClick={handleShow}>
-                            Administrateur
-                        </Button>
+                        {isLoggedIn && (
+                        <Link to="/admin" style={{ textDecoration: 'none' }}>
+                            <Button variant="danger" className="me-2">
+                                Administrateur
+                            </Button>
+                        </Link>
+                        )}
                         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${false}`} />
                     </div>
                     <Navbar.Offcanvas
@@ -36,7 +40,7 @@ const Layout = () => {
                     >
                         <Offcanvas.Header closeButton>
                             <Offcanvas.Title id={`offcanvasNavbarLabel-expand-${false}`}>
-                                MonPapiFinito
+                                Mon Patrimoine Familial
                             </Offcanvas.Title>
                         </Offcanvas.Header>
                         <Offcanvas.Body>
@@ -52,7 +56,6 @@ const Layout = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <Nav.Link href="/search">Recherche d'utilisateur</Nav.Link>
                                         <Nav.Link href="/login">Se connecter</Nav.Link>
                                         <Nav.Link href="/register">S'inscrire</Nav.Link>
                                     </>
@@ -62,18 +65,6 @@ const Layout = () => {
                     </Navbar.Offcanvas>
                 </Container>
             </Navbar>
-            <Offcanvas show={show} onHide={handleClose} backdrop="static">
-                <Offcanvas.Header closeButton>
-                    <Offcanvas.Title>Admin Tool</Offcanvas.Title>
-                </Offcanvas.Header>
-                <Offcanvas.Body>
-                    <Nav defaultActiveKey="/admin" variant="underline" className="flex-column">
-                        <Nav.Link href="/admin">Active</Nav.Link>
-                        <Nav.Link eventKey="link-1">Link</Nav.Link>
-                        <Nav.Link eventKey="link-2">Link</Nav.Link>
-                    </Nav>
-                </Offcanvas.Body>
-            </Offcanvas>
             <div className={classes['contentWrapper']}>
                 <Outlet/>
             </div>
@@ -81,11 +72,11 @@ const Layout = () => {
                 <Container>
                     <Row className="pt-2 pb-2">
                         <Col className="d-flex justify-content-center align-items-center">
-                            <span>&copy; {new Date().getFullYear()} monPapiFinito</span>
+                            <span>&copy; {new Date().getFullYear()} Mon Patrimoine Familial</span>
                         </Col>
                         <Col className="d-flex justify-content-center align-items-center">
                             <span>Retrouvez-nous sur GitHub :</span>
-                            <a href="https://github.com/votre-utilisateur" target="_blank" rel="noopener noreferrer" className="ms-1">
+                            <a href="https://github.com/ekazukii/MonPatrimoineFamilial" target="_blank" rel="noopener noreferrer" className="ms-1">
                                 <i className="fa fa-github text-black fa-2x"/>
                             </a>
                         </Col>
