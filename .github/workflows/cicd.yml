@@ -21,6 +21,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: ./Dockerfile.javadoc
+          file: ./.Dockerfile.javadoc
           push: true
           tags: home.ekazuki.fr/mpfjavadoc:latest
