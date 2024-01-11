@@ -63,6 +63,9 @@ public class UserController {
     @Value("${front.url:http://localhost:5173}")
     String frontUrl;
 
+    @Value("${root.path:/Desktop/}")
+    String rootLocationString;
+
     UserController() {
         modelMapper = new ModelMapper();
     }
@@ -117,8 +120,6 @@ public class UserController {
         session.setAttribute("account", user);
         return ResponseEntity.ok(user);
     }
-
-    private final String rootLocationString = "/Desktop/";
     private final Path rootLocation = Paths.get(rootLocationString);
   
     /**
