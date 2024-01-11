@@ -45,6 +45,8 @@ public interface NodeRepository extends JpaRepository<Node, UUID> {
 
     List<Node> findByUserAccountIdAndTreeIdNot(Long userAccountId, Long treeId);
 
+    List<Node> findByUserAccountIdAndTreeId(Long userAccountId, Long treeId);
+
     @Query("SELECT DISTINCT n.userAccount.Id FROM Node n WHERE n.tree.id = :treeId AND n.userAccount.Id IS NOT NULL")
     List<Long> findDistinctUserAccountIdsByTreeId(@Param("treeId") Long treeId);
 

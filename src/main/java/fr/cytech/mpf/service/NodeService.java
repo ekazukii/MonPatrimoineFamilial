@@ -96,8 +96,19 @@ public class NodeService {
     public List<Long> findUserAccountIdsByTreeIdAndUserToSearch(Long treeId, Long userToSearchId) {
         List<Long> userAccountIds = nodeRepository.findDistinctUserAccountIdsByTreeId(treeId);
 
+        List<Long> userPublic = userAccountIds.stream()
+                .filter(userId -> {
+                    NodeVisibility visibility = nodeRepository
+                            .findByUserAccountIdAndTreeId(userId, treeId)
+                            .get(0)
+                            .getVisibility();
+
+                    return visibility.equals(NodeVisibility.Public) || visibility.equals(NodeVisibility.Protected);
+                })
+                .toList();
+
         // Filtrer la liste pour inclure uniquement les userAccountIds qui ont userToSearchId dans leur liste
-        List<Long> filteredUserAccountIds = userAccountIds.stream()
+        List<Long> filteredUserAccountIds = userPublic.stream()
                 .filter(userId -> nodeRepository.findDistinctUserAccountIdsByTreeId(userRepository.findById(userId).get().getTree().getId()).contains(userToSearchId))
                 .collect(Collectors.toList());
 

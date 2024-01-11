@@ -62,6 +62,12 @@ export default function Chart({nodes, readOnly, treeId}) {
 
         const family = new FamilyTree (ref.current , {
             template: "customTommyTemplate",
+            miniMap: true,
+            showXScroll: FamilyTree.scroll.visible,
+            showYScroll: FamilyTree.scroll.visible,
+            mouseScrool: FamilyTree.action.ctrlZoom,
+            enableSearch: true,
+            searchFields: ["name", "birthday"],
             nodes: structuredClone(nodes),
             tags: {
                 registeredF: {
@@ -71,7 +77,6 @@ export default function Chart({nodes, readOnly, treeId}) {
                     template: "registered_male"
                 },
             },
-            enableSearch: false,
             nodeTreeMenu: readOnly ? undefined : true,
             editForm,
             expand: {allChildren: true},
