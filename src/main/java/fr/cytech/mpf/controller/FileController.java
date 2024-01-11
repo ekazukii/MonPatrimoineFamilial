@@ -35,7 +35,8 @@ public class FileController {
     @Autowired
     private FileRepository fileRepository;
 
-    private String uploadDir = "C:\\Users\\CYTech Student\\IdeaProjects\\monPapiFinito\\src\\main\\resources\\img";
+    @Value("${image.path}")
+    private String uploadDir;
 
     ModelMapper modelMapper;
 

@@ -3,6 +3,7 @@ import FamilyTree from "@balkangraph/familytree.js";
 import TreeSettings from "./TreeSettings.jsx";
 import { v4 as uuidv4 } from 'uuid';
 import toast from "react-hot-toast";
+import { getBackUrl } from '../utils/urls';
 
 
 export default function Chart({nodes, readOnly, treeId}) {
@@ -103,7 +104,7 @@ export default function Chart({nodes, readOnly, treeId}) {
                     toast.error("You can't delete your own node");
                     return false;
                 } else {
-                    await fetch('http://localhost:8080/tree/node', {
+                    await fetch(getBackUrl() + '/tree/node', {
                         method: "DELETE",
                         headers: {
                             "Content-Type": "application/json",
@@ -130,7 +131,7 @@ export default function Chart({nodes, readOnly, treeId}) {
                     toast.error("You BACKUP ");
                     return false;
                 }
-                await fetch('http://localhost:8080/tree/node', {
+                await fetch(getBackUrl() + '/tree/node', {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
@@ -156,7 +157,7 @@ export default function Chart({nodes, readOnly, treeId}) {
 
             for(const addedNode of args.addNodesData) {
                 const [firstName, lastName] = addedNode.name && addedNode.name.includes(" ") ? addedNode.name.split(" ") : ["", ""];
-                await fetch('http://localhost:8080/tree/node', {
+                await fetch(getBackUrl() + '/tree/node', {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -177,7 +178,7 @@ export default function Chart({nodes, readOnly, treeId}) {
 
             args.updateNodesData.forEach(nodeData => {
                 const [firstName, lastName] = nodeData.name && nodeData.name.includes(" ") ? nodeData.name.split(" ") : ["", ""];
-                fetch('http://localhost:8080/tree/node', {
+                fetch(getBackUrl() + '/tree/node', {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",

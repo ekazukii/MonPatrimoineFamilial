@@ -1,11 +1,10 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-
-const getBaseUrl = () => 'http://localhost:8080'
+import { getBackUrl } from '../utils/urls';
 
 export const SessionContext = createContext([undefined, () => {}]);
 
 const refreshData = cb => {
-    return fetch(getBaseUrl() + '/userinfo', {
+    return fetch(getBackUrl() + '/userinfo', {
         credentials: 'include' // to send HTTP only cookies
     }).then(data => {
         data.json().then(json => {
@@ -33,7 +32,7 @@ export const useSession = () => {
     console.log(session)
 
     const login = async (username, password) => {
-        const response = await fetch(getBaseUrl() + '/login', {
+        const response = await fetch(getBackUrl() + '/login', {
             credentials: 'include',
             method: 'POST',
             headers: {
@@ -66,7 +65,7 @@ export const useSession = () => {
     };
 
     const logout = () => {
-        fetch(getBaseUrl() + '/logout', {
+        fetch(getBackUrl() + '/logout', {
             method: 'GET',
             credentials: 'include'
         });

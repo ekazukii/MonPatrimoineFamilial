@@ -4,6 +4,7 @@
     import Form from 'react-bootstrap/Form';
     import {format} from 'date-fns';
     import {useSession} from "../hooks/useSession.jsx";
+    import { getBackUrl } from '../utils/urls';
 
 
     const SouvenirComponent = ({ data }) => {
@@ -32,7 +33,7 @@
         }, [data.file_id]);
 
         const getImage = async (id_file) => {
-            const dataFile = await fetch(`http://localhost:8080/files/info?id=${id_file}`);
+            const dataFile = await fetch(`${getBackUrl()}/files/info?id=${id_file}`);
             return await dataFile.json();
         };
         console.log(data);
@@ -85,14 +86,14 @@
         const [json, setJson] = useState([]);
 
         const updateComments = async () => {
-            const data = await fetch(`http://localhost:8080/conversation/commentary?conv=${id_conv}&souvenir=${id_souvenir}`);
+            const data = await fetch(`${getBackUrl()}/conversation/commentary?conv=${id_conv}&souvenir=${id_souvenir}`);
             const jsonData = await data.json();
             setJson(jsonData);
         };
 
         useEffect(() => {
             const fetchData = async () => {
-                const data = await fetch(`http://localhost:8080/conversation/commentary?conv=${id_conv}&souvenir=${id_souvenir}`);
+                const data = await fetch(`${getBackUrl()}/conversation/commentary?conv=${id_conv}&souvenir=${id_souvenir}`);
                 const jsonData = await data.json();
                 setJson(jsonData);
             };
@@ -127,7 +128,7 @@
         const [comment, setComment] = useState('');
 
         const postComm = async (id_conv, id_souvenir, message) => {
-            const data = await fetch('http://localhost:8080/conversation/commentary', {
+            const data = await fetch(getBackUrl() + '/conversation/commentary', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -193,7 +194,7 @@
                 const formData = new FormData();
                 formData.append('file', fileUpload);
 
-                const fileUploadResponse = await fetch('http://localhost:8080/files/upload', {
+                const fileUploadResponse = await fetch(getBackUrl() + '/files/upload', {
                     method: 'POST',
                     body: formData,
                 });
@@ -215,7 +216,7 @@
         };
 
         const postMessage = async (id_conv, user_id, message, date, fileId) =>{
-            const messageResponse = await fetch('http://localhost:8080/conversation/msg', {
+            const messageResponse = await fetch(getBackUrl() + '/conversation/msg', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -307,7 +308,7 @@
 
         // Fonction pour mettre à jour les souvenirs après l'ajout d'un nouveau souvenir
         const updateSouvenir = async () => {
-            const data = await fetch('http://localhost:8080/conversation/famille', {
+            const data = await fetch(getBackUrl() + '/conversation/famille', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -322,7 +323,7 @@
 
         useEffect(() => {
             const fetchData = async () => {
-                const data = await fetch('http://localhost:8080/conversation/famille', {
+                const data = await fetch(getBackUrl() + '/conversation/famille', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

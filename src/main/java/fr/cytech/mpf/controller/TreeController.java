@@ -20,6 +20,7 @@ import fr.cytech.mpf.service.mergeTree.MergeTreeException;
 import fr.cytech.mpf.utils.NodeVisibility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +61,9 @@ public class TreeController {
 
     @Autowired
     private MergeTreeTomService mergeTreeTomService;
+
+    @Value("${front.url:http://localhost:5173}")
+    String frontUrl;
 
     ModelMapper modelMapper;
 
@@ -275,7 +279,7 @@ public class TreeController {
 
         // redirect to external page localhost:5173/tree
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("http://localhost:5173/tree"));
+        headers.setLocation(URI.create(frontUrl+"/tree"));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     };
 
