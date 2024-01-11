@@ -120,8 +120,7 @@ public class UserController {
         session.setAttribute("account", user);
         return ResponseEntity.ok(user);
     }
-    private final Path rootLocation = Paths.get(rootLocationString);
-  
+
     /**
      * Register a new user in the application
      * HTTP Code 400 if body is malformed 200 otherwise
@@ -197,6 +196,7 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
         try {
+            final Path rootLocation = Paths.get(rootLocationString);
             Path file = rootLocation.resolve(filename);
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
