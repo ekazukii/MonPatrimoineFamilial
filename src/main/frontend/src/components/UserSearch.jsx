@@ -204,8 +204,8 @@ const UserSearch = () => {
                                 <td>{user.lastname}</td>
                                 <td>{user.email}</td>
                                 <td>{user.username}</td>
-                                <td><a href={`/external?id=${user.id}`}>Go to tree</a></td>
-                                {isLoggedIn && (<td><Button onClick={() => mergeWith(user) } disabled={isMerging}>Merge tree</Button></td>)}
+                                <td><a href={`/external?id=${user.tree}`}>Voir l'arbre</a></td>
+                                {isLoggedIn && (<td><Button onClick={() => mergeWith(user) } disabled={isMerging}>Fusionner</Button></td>)}
                             </tr>
                         ))}
                         </tbody>

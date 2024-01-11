@@ -54,12 +54,17 @@ public class MailService {
     @Async
     public void sendUpdateMessage(User user, User userThatChangedTree) {
         StringBuilder messageBuilder = new StringBuilder();
+        messageBuilder.append("Bonjour ");
+        messageBuilder.append(user.getFirstname());
+        messageBuilder.append(" ");
+        messageBuilder.append(user.getLastname());
+        messageBuilder.append("\n");
         messageBuilder.append("Modification de l'arbre de ");
         messageBuilder.append(userThatChangedTree.getUsername());
         messageBuilder.append("\n");
         messageBuilder.append("\n");
         messageBuilder.append("Pour voir les modifications cliquez sur ce lien http://localhost:5173/external?id=");
-        messageBuilder.append(user.getTree().getId());
+        messageBuilder.append(userThatChangedTree.getTree().getId());
         messageBuilder.append("\n");
         messageBuilder.append("\n");
         messageBuilder.append("Pour re-synchroniser les changements cliquez sur ce lien http://localhost:8080/tree/mergeStrategy?requestingTreeId=");
@@ -70,6 +75,34 @@ public class MailService {
         messageBuilder.append(user.getId());
         messageBuilder.append("&idResponder=");
         messageBuilder.append(userThatChangedTree.getId());
-        this.sendEmail(user.getEmail(), "[MPF] Modification de l'arbre de " + userThatChangedTree.getUsername(), messageBuilder.toString());
+        this.sendEmail(user.getEmail(), "[MPF] Bonjour " + user.getFirstname() + ", modification de l'arbre de " + userThatChangedTree.getUsername(), messageBuilder.toString());
+    }
+
+    @Async
+    public void sendMergeMessage(User user, User userThatChangedTree) {
+        StringBuilder messageBuilder = new StringBuilder();
+        messageBuilder.append("Bonjour ");
+        messageBuilder.append(user.getFirstname());
+        messageBuilder.append(" ");
+        messageBuilder.append(user.getLastname());
+        messageBuilder.append("\n");
+        messageBuilder.append("L'utilisateur ");
+        messageBuilder.append(userThatChangedTree.getUsername());
+        messageBuilder.append(" vous a ajouté dans son arbre");
+        messageBuilder.append("\n");
+        messageBuilder.append("\n");
+        messageBuilder.append("Pour voir l'arbre dans lequel vous avez été ajouté cliquez sur ce lien http://localhost:5173/external?id=");
+        messageBuilder.append(userThatChangedTree.getTree().getId());
+        messageBuilder.append("\n");
+        messageBuilder.append("\n");
+        messageBuilder.append("Pour ajouter son arbre au votre, cliquez sur ce lien http://localhost:8080/tree/mergeStrategy?requestingTreeId=");
+        messageBuilder.append(user.getTree().getId());
+        messageBuilder.append("&respondingTreeId=");
+        messageBuilder.append(userThatChangedTree.getTree().getId());
+        messageBuilder.append("&idRequester=");
+        messageBuilder.append(user.getId());
+        messageBuilder.append("&idResponder=");
+        messageBuilder.append(userThatChangedTree.getId());
+        this.sendEmail(user.getEmail(), "[MPF] Bonjour " + user.getFirstname() + ", " + userThatChangedTree.getUsername() + " vous a ajouté dans son arbre!", messageBuilder.toString());
     }
 }

@@ -11,6 +11,7 @@ import fr.cytech.mpf.repository.TreeRepository;
 import fr.cytech.mpf.repository.TreeViewRepository;
 import fr.cytech.mpf.repository.UserRepository;
 import fr.cytech.mpf.service.CustomDTOMapper;
+import fr.cytech.mpf.service.MailService;
 import fr.cytech.mpf.service.MergeTreeTomService;
 import fr.cytech.mpf.service.NodeService;
 import fr.cytech.mpf.service.validation.ValidationException;
@@ -47,6 +48,9 @@ public class TreeController {
 
     @Autowired
     NodeService nodeService;
+
+    @Autowired
+    MailService mailService;
 
     @Autowired
     MergeTreeService mergeTreeService;
@@ -278,8 +282,8 @@ public class TreeController {
     @MustBeLogged
     @PostMapping("/tree/mergeStrategy")
     public ResponseEntity<?> mergeStrategy (@RequestBody  MergeTreeDTO mergeTreeDTO) {
-        return this.mergeTree(mergeTreeDTO);
-        // return this.mergeTreeTom(mergeTreeDTO);
+        // return this.mergeTree(mergeTreeDTO);
+        return this.mergeTreeTom(mergeTreeDTO);
     };
 
     /**
@@ -322,15 +326,20 @@ public class TreeController {
                 System.out.println("----------------------Avant fusion TreeB-------------------");
                 System.out.println(treeB.get().getNodes());
                 Tree mergedTree = mergeTreeTomService.mergeTrees(treeA.get(), treeB.get());
-                Optional<Tree> requestingTree = treeRepository.findById(mergeTreeDto.getRequestingTreeId());
-                requestingTree.ifPresent(tree -> nodeService.notifyChange(tree));
+                mailService.sendMergeMessage(treeB.get().getOwner(),treeA.get().getOwner());
+                nodeService.notifyChange(treeA.get());
                 return ResponseEntity.ok(mergedTree);
             } else {
                 return ResponseEntity.badRequest().body("Arbres non trouvés");
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            return ResponseEntity.badRequest().body("Erreur lors de la fusion : " + ex.getMessage());
+            return ResponseEntity.badRequest().body(
+                    "Cause: " + ex.getCause() + "\n" +
+                            "Class: " + ex.getClass().getName() + ":" + ex.getStackTrace()[0].getLineNumber() + "\n" +
+                            "Message: " + ex.getMessage() + "\n" );
+//            ex.printStackTrace();
+//            return ResponseEntity.badRequest().body("Erreur lors de la fusion : " + ex.getMessage());
         }
     }
 

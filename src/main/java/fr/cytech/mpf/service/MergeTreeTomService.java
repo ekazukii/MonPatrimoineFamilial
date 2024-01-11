@@ -100,7 +100,6 @@ public class MergeTreeTomService {
         //    userRepository.save(user);
         //}
         updateTreeWithMerged(mergedTree, treeA);
-        updateTreeWithMerged(mergedTree, treeB);
         return treeA;
     }
 

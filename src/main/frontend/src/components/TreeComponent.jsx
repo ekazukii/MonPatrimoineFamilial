@@ -88,7 +88,9 @@ export default function OrgChartTree() {
 
         addPartnersId(nodes);
         nodes.forEach(node => {
-            if(node.registered) node.tags = [node.gender === "male" ? "registeredM": "registeredF"];
+            if(node.registered){
+                node.tags = [node.gender === "male" ? "registeredM": "registeredF"];
+            }
         })
         setNodeList(nodes);
     }

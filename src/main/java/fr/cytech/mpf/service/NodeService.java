@@ -5,6 +5,7 @@ import fr.cytech.mpf.entity.Node;
 import fr.cytech.mpf.entity.Tree;
 import fr.cytech.mpf.entity.User;
 import fr.cytech.mpf.repository.NodeRepository;
+import fr.cytech.mpf.repository.UserRepository;
 import fr.cytech.mpf.service.validation.ValidationException;
 import fr.cytech.mpf.service.validation.ValidationResponse;
 import fr.cytech.mpf.service.validation.ValidationStrategy;
@@ -24,6 +25,9 @@ public class NodeService {
 
     @Autowired
     NodeRepository nodeRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     CustomDTOMapper customDTOMapper;
@@ -79,12 +83,13 @@ public class NodeService {
      * @param tree tree that has been updated
      */
     public void notifyChange(Tree tree) {
-        List<Node> nodesToNotify = nodeRepository.findByUserAccountIdAndTreeIdNot(tree.getOwner().getId(), tree.getId());
-        List<Tree> treesToNotify = nodesToNotify.stream().map(Node::getTree).toList();
-        List<User> usersToNotify = treesToNotify.stream().map(Tree::getOwner).toList();
-
-        for (User user : usersToNotify) {
-            mailService.sendUpdateMessage(user, tree.getOwner());
+//        List<Node> nodesToNotify = nodeRepository.findByUserAccountIdAndTreeIdNot(tree.getOwner().getId(), tree.getId());
+//        List<Tree> treesToNotify = nodesToNotify.stream().map(Node::getTree).toList();
+//        List<User> usersToNotify = treesToNotify.stream().map(Tree::getOwner).toList();
+          List<Long> userListConnected = findUserAccountIdsByTreeIdAndUserToSearch(tree.getId(), tree.getOwner().getId());
+          List<User> usersToNotify = userRepository.findAllById(userListConnected);
+          for (User user : usersToNotify) {
+              if(user != tree.getOwner()) mailService.sendUpdateMessage(user, tree.getOwner());
         }
     }
 
@@ -93,7 +98,7 @@ public class NodeService {
 
         // Filtrer la liste pour inclure uniquement les userAccountIds qui ont userToSearchId dans leur liste
         List<Long> filteredUserAccountIds = userAccountIds.stream()
-                .filter(userId -> nodeRepository.findDistinctUserAccountIdsByTreeId(userId).contains(userToSearchId))
+                .filter(userId -> nodeRepository.findDistinctUserAccountIdsByTreeId(userRepository.findById(userId).get().getTree().getId()).contains(userToSearchId))
                 .collect(Collectors.toList());
 
         return filteredUserAccountIds;
