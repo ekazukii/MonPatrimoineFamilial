@@ -61,6 +61,10 @@ export const personalInfo = ({ onPersonalInfoChange, personalInfo, display }) =>
             errors.birthDate = "L'âge doit être entre 18 et 99 ans.";
         }
 
+        if (localPersonalInfo.male === "") {
+            errors.sexe = "Vous devez selectionner votre sexe"
+        }
+
         // Vérification des mots de passe identiques
         if (localPersonalInfo.password !== localPersonalInfo.password2) {
             errors.password2 = "Les mots de passe ne correspondent pas.";
@@ -161,8 +165,9 @@ export const personalInfo = ({ onPersonalInfoChange, personalInfo, display }) =>
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formInfoOrigin">
-                        <Form.Label>Sexe</Form.Label>
+                        <Form.Label>Sexe {validationErrors.sexe && (<span className="text-danger">{validationErrors.sexe}</span>)}</Form.Label>
                         <Form.Select name="male" value={localPersonalInfo.male} onChange={handleChange}>
+                            <option value="">Select Gender</option> 
                             <option value="true">Male</option>
                             <option value="false">Female</option>
                         </Form.Select>
