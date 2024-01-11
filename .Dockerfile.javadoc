@@ -1,0 +1,3 @@
+FROM nginx
+
+COPY target/site/apidocs/ /usr/share/nginx/html/
