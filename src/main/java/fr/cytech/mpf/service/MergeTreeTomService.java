@@ -103,6 +103,18 @@ public class MergeTreeTomService {
         return treeA;
     }
 
+    public Boolean findCommonNodes(Tree treeA, Tree treeB) {
+        for (Node nodeA : treeA.getNodes()) {
+            for (Node nodeB : treeB.getNodes()) {
+                if (areNodesEqual(nodeA, nodeB)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     private void addNodeToMergedTree(Tree mergedTree, Node node) {
         Node newNode = new Node(node.getFirstName(), node.getLastName(), node.getBirthDate(), NodeVisibility.Public, mergedTree, node.isMale());
         mergedTree.getNodes().add(newNode);
@@ -116,7 +128,7 @@ public class MergeTreeTomService {
         }
     }
 
-    private boolean mergedTreeContainsNode(Tree mergedTree, Node node) {
+    public boolean mergedTreeContainsNode(Tree mergedTree, Node node) {
         return mergedTree.getNodes().stream()
                 .anyMatch(n -> areNodesEqual(node, n));
     }

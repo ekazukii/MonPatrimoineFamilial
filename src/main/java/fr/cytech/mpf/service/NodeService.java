@@ -5,6 +5,7 @@ import fr.cytech.mpf.entity.Node;
 import fr.cytech.mpf.entity.Tree;
 import fr.cytech.mpf.entity.User;
 import fr.cytech.mpf.repository.NodeRepository;
+import fr.cytech.mpf.repository.TreeRepository;
 import fr.cytech.mpf.repository.UserRepository;
 import fr.cytech.mpf.service.validation.ValidationException;
 import fr.cytech.mpf.service.validation.ValidationResponse;
@@ -28,6 +29,9 @@ public class NodeService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    TreeRepository treeRepository;
 
     @Autowired
     CustomDTOMapper customDTOMapper;
@@ -96,7 +100,7 @@ public class NodeService {
     public List<Long> findUserAccountIdsByTreeIdAndUserToSearch(Long treeId, Long userToSearchId) {
         List<Long> userAccountIds = nodeRepository.findDistinctUserAccountIdsByTreeId(treeId);
 
-        List<Long> userPublic = userAccountIds.stream()
+        List<Long> userPublic = new ArrayList<>(userAccountIds.stream()
                 .filter(userId -> {
                     NodeVisibility visibility = nodeRepository
                             .findByUserAccountIdAndTreeId(userId, treeId)
@@ -105,8 +109,10 @@ public class NodeService {
 
                     return visibility.equals(NodeVisibility.Public) || visibility.equals(NodeVisibility.Protected);
                 })
-                .toList();
-
+                .toList());
+        if(!userPublic.contains(treeRepository.getReferenceById(treeId).getOwner().getId())){
+            userPublic.add(treeRepository.getReferenceById(treeId).getOwner().getId());
+        }
         // Filtrer la liste pour inclure uniquement les userAccountIds qui ont userToSearchId dans leur liste
         List<Long> filteredUserAccountIds = userPublic.stream()
                 .filter(userId -> nodeRepository.findDistinctUserAccountIdsByTreeId(userRepository.findById(userId).get().getTree().getId()).contains(userToSearchId))

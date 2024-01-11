@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
 /**
  * MVC Controller for the tree node features
@@ -60,6 +62,10 @@ public class TreeController {
 
     @Autowired
     private MergeTreeTomService mergeTreeTomService;
+
+    // Block too many queries for tree view
+    private final Map<String, Long> lastRequestTimestampsForTreeView = new ConcurrentHashMap<>();
+    private static final long REQUEST_INTERVAL = 2000; // 2 seconds
 
     ModelMapper modelMapper;
 
@@ -325,10 +331,14 @@ public class TreeController {
                 System.out.println(treeA.get().getNodes());
                 System.out.println("----------------------Avant fusion TreeB-------------------");
                 System.out.println(treeB.get().getNodes());
-                Tree mergedTree = mergeTreeTomService.mergeTrees(treeA.get(), treeB.get());
-                mailService.sendMergeMessage(treeB.get().getOwner(),treeA.get().getOwner());
-                nodeService.notifyChange(treeA.get());
-                return ResponseEntity.ok(mergedTree);
+                if(mergeTreeTomService.findCommonNodes(treeA.get(), treeB.get())){
+                    Tree mergedTree = mergeTreeTomService.mergeTrees(treeA.get(), treeB.get());
+                    mailService.sendMergeMessage(treeB.get().getOwner(),treeA.get().getOwner());
+                    nodeService.notifyChange(treeA.get());
+                    return ResponseEntity.ok(mergedTree);
+                }else{
+                    return ResponseEntity.badRequest().body("Aucune correspondance de noeud trouvé");
+                }
             } else {
                 return ResponseEntity.badRequest().body("Arbres non trouvés");
             }
@@ -336,8 +346,8 @@ public class TreeController {
             ex.printStackTrace();
             return ResponseEntity.badRequest().body(
                     "Cause: " + ex.getCause() + "\n" +
-                            "Class: " + ex.getClass().getName() + ":" + ex.getStackTrace()[0].getLineNumber() + "\n" +
-                            "Message: " + ex.getMessage() + "\n" );
+                    "Class: " + ex.getClass().getName() + ":" + ex.getStackTrace()[0].getLineNumber() + "\n" +
+                    "Message: " + ex.getMessage() + "\n" );
 //            ex.printStackTrace();
 //            return ResponseEntity.badRequest().body("Erreur lors de la fusion : " + ex.getMessage());
         }
@@ -384,9 +394,28 @@ public class TreeController {
     @MustBeLogged
     @PostMapping("/tree/view")
     public ResponseEntity<String> addView(@RequestBody TreeViewAddDTO addViewDTO) {
+        String userId = addViewDTO.getViewerId().toString(); // Assurez-vous de spécifier la manière de récupérer l'ID de l'utilisateur
+
+        // Vérifier si la dernière requête de l'utilisateur a été effectuée il y a moins de REQUEST_INTERVAL millisecondes
+        long currentTime = System.currentTimeMillis();
+        if (lastRequestTimestampsForTreeView.containsKey(userId)) {
+            long lastRequestTime = lastRequestTimestampsForTreeView.get(userId);
+            if (currentTime - lastRequestTime < REQUEST_INTERVAL) {
+                return ResponseEntity.status(429).body("Too Many Requests");
+            }
+        }
+
+        // Mettre à jour le timestamp pour l'utilisateur actuel
+        lastRequestTimestampsForTreeView.put(userId, currentTime);
+
+        // Traiter la requête
         TreeView treeView = customDTOMapper.addViewToTreeView(addViewDTO);
         treeViewRepository.save(treeView);
         return ResponseEntity.ok("Ok");
+
+//        TreeView treeView = customDTOMapper.addViewToTreeView(addViewDTO);
+//        treeViewRepository.save(treeView);
+//        return ResponseEntity.ok("Ok");
     }
 
     /**
@@ -396,8 +425,25 @@ public class TreeController {
      */
     @MustBeLogged
     @GetMapping("/tree/view")
-    public ResponseEntity<List<TreeView>> getViews(@RequestParam Long treeId) {
+    public ResponseEntity<List<TreeViewGetDTO>> getViews(@RequestParam Long treeId) {
         List<TreeView> treeViews = treeViewRepository.getAllByTreeId(treeId);
-        return ResponseEntity.ok(treeViews);
+
+        Map<Long, TreeViewGetDTO> userViewMap = new HashMap<>();
+
+        for (TreeView treeView : treeViews) {
+            Long userId = treeView.getViewer().getId();
+            TreeViewGetDTO userView = userViewMap.get(userId);
+
+            if (userView == null) {
+                userView = new TreeViewGetDTO(treeView.getViewer(), 1); // Première vue pour cet utilisateur
+            } else {
+                userView.incrementTotal(); // Incrémente le total pour cet utilisateur
+            }
+
+            userViewMap.put(userId, userView);
+        }
+
+        List<TreeViewGetDTO> result = new ArrayList<>(userViewMap.values());
+        return ResponseEntity.ok(result);
     }
 }
