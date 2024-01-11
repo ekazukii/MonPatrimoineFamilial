@@ -5,9 +5,11 @@ import fr.cytech.mpf.config.MustBeLogged;
 import fr.cytech.mpf.dto.*;
 import fr.cytech.mpf.entity.Node;
 import fr.cytech.mpf.entity.Tree;
+import fr.cytech.mpf.entity.TreeView;
 import fr.cytech.mpf.entity.User;
 import fr.cytech.mpf.repository.NodeRepository;
 import fr.cytech.mpf.repository.TreeRepository;
+import fr.cytech.mpf.repository.TreeViewRepository;
 import fr.cytech.mpf.repository.UserRepository;
 import fr.cytech.mpf.service.MailService;
 import fr.cytech.mpf.service.UserService;
@@ -51,6 +53,8 @@ public class UserController {
     MailService mailService;
     @Autowired
     TreeRepository treeRepository;
+    @Autowired
+    TreeViewRepository treeViewRepository;
     @Autowired
     NodeRepository nodeRepository;
     ModelMapper modelMapper;
@@ -326,6 +330,32 @@ public class UserController {
     @CrossOrigin
     @DeleteMapping("/user")
     public ResponseEntity<String> removeNode (@RequestBody UserDeleteDTO userDto) {
+        List<Node> nodesWithUser = nodeRepository.findByUserAccountId(userDto.getUserId());
+        Tree treeToDelete = treeRepository.findTreeByOwnerId(userDto.getUserId());
+        List<Node> nodeToDelete = nodeRepository.findAllByTreeEquals(treeToDelete);
+        List<TreeView> treeViewToDeletByIdTree = treeViewRepository.getAllByTreeId(treeToDelete.getId());
+        List<TreeView> treeViewToDeleteByIdUser = treeViewRepository.getAllByViewerId(userDto.getUserId());
+
+        for(Node node : nodeToDelete){
+            node.setFather(null);
+            node.setMother(null);
+        }
+        for(Node node : nodeToDelete){
+            nodeRepository.deleteById(node.getId());
+        }
+        for(Node node : nodesWithUser){
+            node.setUserAccount(null);
+        }
+        // Delete tree view
+        treeViewRepository.deleteAll(treeViewToDeletByIdTree);
+        treeViewRepository.deleteAll(treeViewToDeleteByIdUser);
+
+        // To be aligned with BD constraint, we set Id reference to null
+        treeToDelete.setOwner(null);
+        userRepository.getById(userDto.getUserId()).setTree(null);
+        // Delete tree
+        treeRepository.delete(treeToDelete);
+        // Delete user
         userRepository.deleteById(userDto.userId);
         // TODO: Check has permissions to edit
         return ResponseEntity.ok("ok");

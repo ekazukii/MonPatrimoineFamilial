@@ -50,34 +50,34 @@ const UserValidation = ({dataUsers, handleSelectedUser}) => {
         }
     };
 
-    const handleValidUser = async (userId, username) => {
-        if (window.confirm(`Voulez-vous valider l'utilisateur ${username}?`)) {
-            try {
-                const response = await fetch(`http://localhost:8080/user`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: userId,
-                        validated: true
-                    }),
-                });
-
-                if (response.ok) {
-                    console.log('La modification a réussi.');
-                    // Mettre à jour l'état local en excluant la ligne supprimée
-                    setBodies((prevData) => prevData.filter((row) => row.id !== userId));
-                } else {
-                    console.error('La modification a échoué.');
-                    // Ajoutez ici toute autre logique spécifique à la suppression échouée
-                }
-            } catch (error) {
-                console.error('Erreur lors de la modification :', error);
-                // Ajoutez ici toute autre logique spécifique à l'erreur de suppression
-            }
-        }
-    };
+    // const handleValidUser = async (userId, username) => {
+    //     if (window.confirm(`Voulez-vous valider l'utilisateur ${username}?`)) {
+    //         try {
+    //             const response = await fetch(`http://localhost:8080/user`, {
+    //                 method: 'PUT',
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                 },
+    //                 body: JSON.stringify({
+    //                     id: userId,
+    //                     validated: true
+    //                 }),
+    //             });
+    //
+    //             if (response.ok) {
+    //                 console.log('La modification a réussi.');
+    //                 // Mettre à jour l'état local en excluant la ligne supprimée
+    //                 setBodies((prevData) => prevData.filter((row) => row.id !== userId));
+    //             } else {
+    //                 console.error('La modification a échoué.');
+    //                 // Ajoutez ici toute autre logique spécifique à la suppression échouée
+    //             }
+    //         } catch (error) {
+    //             console.error('Erreur lors de la modification :', error);
+    //             // Ajoutez ici toute autre logique spécifique à l'erreur de suppression
+    //         }
+    //     }
+    // };
 
     useEffect(() => {
         const extractedData = dataUsers.map(record => {
@@ -132,9 +132,9 @@ const UserValidation = ({dataUsers, handleSelectedUser}) => {
             },
             cell: (row) => (
                 <>
-                    <i className="fi fi-ss-user-check me-2"
-                       onClick={() => handleValidUser(row.id, row.username)}
-                    ></i>
+                    {/*<i className="fi fi-ss-user-check me-2"*/}
+                    {/*   onClick={() => handleValidUser(row.id, row.username)}*/}
+                    {/*></i>*/}
                     <i
                         className="fi fi-ss-delete-user me-2"
                         onClick={() => handleDeleteUser(row.id, row.username)}
