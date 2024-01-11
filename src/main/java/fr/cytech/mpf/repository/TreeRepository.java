@@ -14,4 +14,6 @@ public interface TreeRepository extends JpaRepository<Tree, Long> {
      */
     @Query("SELECT t FROM Tree t LEFT JOIN Node n ON n.tree.id = t.id WHERE t.id = :id")
     Optional<Tree> findTreeByIdWithNodes(Long id);
+
+    Tree findTreeByOwnerId(Long id);
 }

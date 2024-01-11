@@ -15,4 +15,6 @@ public interface TreeViewRepository extends JpaRepository<TreeView, Long> {
      * @return a list of views
      */
     List<TreeView> getAllByTreeId(Long id);
+
+    List<TreeView> getAllByViewerId(Long userId);
 }
