@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import FamilyTree from "./MyTree.jsx";
 import {useSession} from "../hooks/useSession.jsx";
+import {getBackUrl} from "../utils/urls.js";
 
 const dasdqf = [
     { id: 1, pids: [2], name: 'Amber McKenzie', gender: 'female', birthday: '18/06/1972', username: 'Person1' },
@@ -68,7 +69,7 @@ export default function OrgChartTree() {
     const [nodeList, setNodeList] = useState([]);
 
     const fetchData = async (treeId) => {
-        const data = await fetch("http://localhost:8080/tree?detail=true&id="+treeId)
+        const data = await fetch(getBackUrl() + "/tree?detail=true&id="+treeId)
         const json = await data.json();
 
         const nodes = json.nodes.map(data => {

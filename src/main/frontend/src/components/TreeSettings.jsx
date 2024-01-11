@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {ListGroup, Modal, Stack, Tab, Tabs} from "react-bootstrap";
 import {BsCheckCircleFill, BsXCircleFill} from "react-icons/bs";
 import Button from "react-bootstrap/Button";
+import {getBackUrl} from "../utils/urls.js";
 
 const DemandItem = ({name, handleAccept, handleRefuse}) => {
     return(
@@ -39,7 +40,7 @@ const TreeSettings = ({id, defItem, opened, handleClose}) => {
 
     const fetchStats = async () => {
         if(!id) return;
-        const data = await fetch("http://localhost:8080/tree/view?treeId="+id);
+        const data = await fetch(getBackUrl() + "/tree/view?treeId="+id);
         const json = await data.json();
         setUsers(json.map(viewData => viewData.viewer));
     }
