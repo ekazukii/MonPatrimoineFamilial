@@ -70,11 +70,6 @@ public class ConvController {
         return ResponseEntity.ok(msgGetDTO);
     }
 
-    /**
-     * Fetch all messages in the specific conversation
-     * @param conv Id of the conversation
-     * @return HTTP Code 400 if body is malformed 200 otherwise, will return a list of MsgGetDTO
-     */
     @MustBeLogged
     @PostMapping(value = "/user")
     public ResponseEntity<List<MsgGetDTO>> getMsgByConvId(@RequestBody Long userId) {
@@ -85,12 +80,6 @@ public class ConvController {
         return ResponseEntity.ok(msgGetDTOs);
     }
 
-    /**
-     * Fetch all comments from a specific conversation and post
-     * @param conv Id of the conversatio
-     * @param souvenir Id of the memories/message
-     * @return HTTP Code 400 if body is malformed 200 otherwise, will return a list of CommGetDTO
-     */
     @MustBeLogged
     @PostMapping(value = "/famille")
     public ResponseEntity<List<MsgGetDTO>> getMsgByFamilleUser(@RequestBody Long userId) {

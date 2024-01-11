@@ -35,14 +35,14 @@ public interface NodeRepository extends JpaRepository<Node, UUID> {
      */
     List<Node> findAllByMotherId(UUID nodeId);
 
+    public List<Node> findAllByTreeAndFirstNameAndLastName(Tree tree, String firstName, String lastName);
+
     /**
      * Find all the nodes of a specific user account and not in a specific tree
      * @param userAccountId the user account id
      * @param treeId the tree id
      * @return a list of nodes
      */
-    public List<Node> findAllByTreeAndFirstNameAndLastName(Tree tree, String firstName, String lastName);
-
     List<Node> findByUserAccountIdAndTreeIdNot(Long userAccountId, Long treeId);
 
     List<Node> findByUserAccountIdAndTreeId(Long userAccountId, Long treeId);

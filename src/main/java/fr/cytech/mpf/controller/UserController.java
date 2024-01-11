@@ -88,6 +88,12 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @CrossOrigin
+    @GetMapping("/health")
+    public ResponseEntity<String> healthCheck() {
+        return ResponseEntity.ok("Server is up and running");
+    }
+
     /**
      * Login to the application
      * HTTP Code 400 if body is malformed 200 otherwise
@@ -96,12 +102,6 @@ public class UserController {
      * @return User
      * @throws NoSuchAlgorithmException
      */
-    @CrossOrigin
-    @GetMapping("/health")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Server is up and running");
-    }
-
     @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody LoginDTO loginDTO, HttpSession session) throws NoSuchAlgorithmException {
