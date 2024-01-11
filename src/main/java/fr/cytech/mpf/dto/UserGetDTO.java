@@ -10,6 +10,8 @@ import java.util.UUID;
 @Getter
 @Setter
 public class UserGetDTO {
+    private Long id;
+
     private String lastname;
 
     private String firstname;

@@ -6,7 +6,7 @@
     import {useSession} from "../hooks/useSession.jsx";
 
 
-    const SouvenirComponent = ({ data }) => {
+    const SouvenirComponent = ({ data, user }) => {
         const date = new Date(data.date);
         const formattedYear = format(date, 'yyyy');
         const formattedDate = format(date, 'dd/MM');
@@ -19,6 +19,29 @@
         const handleButtonClick = () => {
             setIsDivVisible(!isDivVisible);
         };
+
+        const handleButtonDelete = async (msgId) => {
+            if (window.confirm(`Voulez-vous vraiment supprimer le souvenir?`)) {
+                try {
+                    const response = await fetch(`http://localhost:8080/famille/message?msgId=${msgId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (response.ok) {
+                        console.log('La suppression a réussi.');
+                    } else {
+                        console.error('La suppression a échoué.');
+                        // Ajoutez ici toute autre logique spécifique à la suppression échouée
+                    }
+                } catch (error) {
+                    console.error('Erreur lors de la suppression :', error);
+                    // Ajoutez ici toute autre logique spécifique à l'erreur de suppression
+                }
+            }
+        }
 
         useEffect(() => {
             const fetchImage = async () => {
@@ -35,6 +58,7 @@
             const dataFile = await fetch(`http://localhost:8080/files/info?id=${id_file}`);
             return await dataFile.json();
         };
+
         console.log(data);
         return (
             <li>
@@ -51,7 +75,7 @@
                 <Image src="src/utils/avatar.jpeg" />
               </span>
                         <span className={styles.username}>
-                <a>John Smith</a> <small></small>
+                <a>{user.firstname + " " + user.lastname}</a> <small></small>
               </span>
                         <span className="pull-right text-muted">{formattedTimestampDate}</span>
                     </div>
@@ -65,9 +89,12 @@
                         <a onClick={handleButtonClick} className="m-r-15 text-inverse-lighter">
                             <i className="fa fa-comments fa-fw fa-lg m-r-3"></i>
                         </a>
-                        <a className="m-r-15 text-inverse-lighter">
-                            <i className="fa fa-gears fa-fw fa-lg m-r-3"></i>
-                        </a>
+                        {
+                            user.id === data.user_id && (
+                            <a onClick={() => handleButtonDelete(data.id)} className="m-r-15 text-inverse-lighter">
+                                <i className="fa fa-trash fa-fw fa-lg m-r-3"></i>
+                            </a>
+                            )}
                     </div>
                     <div
                         className={`${styles['timeline-comment-box']} ${
@@ -302,12 +329,13 @@
     }
 
     export default function GetSouvenirs() {
-        const [json, setJson] = useState([]);
+        const [jsonMsg, setJsonMsg] = useState([]);
+        const [jsonUsers, setJsonUsers] = useState([]);
         const { user, isLoggedIn, setSession, login, refreshData, logout } = useSession();
 
         // Fonction pour mettre à jour les souvenirs après l'ajout d'un nouveau souvenir
         const updateSouvenir = async () => {
-            const data = await fetch('http://localhost:8080/conversation/famille', {
+            const data = await fetch('http://localhost:8080/conversation/famille/messages', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -317,12 +345,12 @@
             const jsonData = await data.json();
             const sortedJsonData = [...jsonData].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            setJson(sortedJsonData);
+            setJsonMsg(sortedJsonData);
         };
 
         useEffect(() => {
-            const fetchData = async () => {
-                const data = await fetch('http://localhost:8080/conversation/famille', {
+            const getMessagesConnected = async () => {
+                const data = await fetch('http://localhost:8080/conversation/famille/messages', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -332,18 +360,32 @@
                 const jsonData = await data.json();
                 const sortedJsonData = [...jsonData].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-                setJson(sortedJsonData);
+                setJsonMsg(sortedJsonData);
             };
 
-            fetchData();
+            const getInfoUsers = async () => {
+                const response = await fetch(`http://localhost:8080/conversation/famille/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(user.id),
+                });
+                const jsonData = await response.json();
+                setJsonUsers(jsonData);
+            }
+
+            getInfoUsers();
+            getMessagesConnected();
         }, []);
 
         return (
             <ul className={styles.timeline}>
                 {isLoggedIn && <NewSouvenir id_conv={user.id} myUserInfo={user} updateSouvenir={updateSouvenir} />}
-                {json.map((data) => (
-                    <SouvenirComponent key={data.id} data={data} />
-                ))}
+                {jsonMsg.map((data) => {
+                    const currentUser = jsonUsers.find(user => user.id === data.user_id);
+                    return currentUser && <SouvenirComponent key={data.id} data={data} user={currentUser} />;
+                })}
             </ul>
         );
     }

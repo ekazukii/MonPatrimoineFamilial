@@ -15,4 +15,5 @@ public interface CommInfoRepository extends JpaRepository<CommInfo, Long> {
      * @return a list of comments
      */
     List<CommInfo> findCommInfoByConvAndSouvenir(Long conv, Long souvenir);
+    List<CommInfo> findCommInfoBySouvenir(Long souvenir);
 }

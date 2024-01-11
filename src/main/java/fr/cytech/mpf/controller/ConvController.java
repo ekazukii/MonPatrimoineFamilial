@@ -8,6 +8,7 @@ import fr.cytech.mpf.entity.User;
 import fr.cytech.mpf.repository.CommInfoRepository;
 import fr.cytech.mpf.repository.ConvRepository;
 import fr.cytech.mpf.repository.NodeRepository;
+import fr.cytech.mpf.repository.UserRepository;
 import fr.cytech.mpf.service.NodeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ public class ConvController {
     CommInfoRepository commInfoRepository;
     @Autowired
     NodeRepository nodeRepository;
+    @Autowired
+    UserRepository userRepository;
     @Autowired
     NodeService nodeService;
     ModelMapper modelMapper;
@@ -81,7 +84,7 @@ public class ConvController {
     }
 
     @MustBeLogged
-    @PostMapping(value = "/famille")
+    @PostMapping(value = "/famille/messages")
     public ResponseEntity<List<MsgGetDTO>> getMsgByFamilleUser(@RequestBody Long userId) {
         System.out.println("_________Début recherche famille______________");
         System.out.println("Recherche les connexions de l'utilisateur : "+userId);
@@ -95,6 +98,22 @@ public class ConvController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(msgGetDTOs);
+    }
+
+    @MustBeLogged
+    @PostMapping(value = "/famille/users")
+    public ResponseEntity<List<UserGetDTO>> getUsersByFamilyUser(@RequestBody Long userId) {
+        System.out.println("_________Début recherche famille______________");
+        System.out.println("Recherche les connexions de l'utilisateur : "+userId);
+        List<Long> userListConnected = nodeService.findUserAccountIdsByTreeIdAndUserToSearch(userRepository.findById(userId).get().getTree().getId(), userId);
+        System.out.println("Résultat de userListConnected : "+userListConnected);
+        List<User> listUsers = userRepository.findAllById(userListConnected);
+
+        List<UserGetDTO> userGetDTOs = listUsers.stream()
+                .map(userInfo -> modelMapper.map(userInfo, UserGetDTO.class))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(userGetDTOs);
     }
 
 
@@ -127,5 +146,15 @@ public class ConvController {
     public ResponseEntity<List> addComm(@RequestParam Long userId) {
         List<Long> res = nodeService.findUserAccountIdsByTreeIdAndUserToSearch(userId, userId);
         return ResponseEntity.ok(res);
+    }
+
+    @MustBeLogged
+    @DeleteMapping(value = "/famille/message")
+    public ResponseEntity<String> removeMessage(@RequestParam Long msgId) {
+        List<CommInfo> listCommToDelete = commInfoRepository.findCommInfoBySouvenir(msgId);
+        MsgInfo msgToDelete = convRepository.getById(msgId);
+        commInfoRepository.deleteAll(listCommToDelete);
+        convRepository.delete(msgToDelete);
+        return ResponseEntity.ok("Message supprimé");
     }
 }
