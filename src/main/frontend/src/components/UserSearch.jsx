@@ -8,6 +8,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import {useSession} from "../hooks/useSession.jsx";
+import { getBackUrl } from '../utils/urls';
 
 const UserSearch = () => {
     const {isLoggedIn, user} = useSession();
@@ -70,7 +71,7 @@ const UserSearch = () => {
 
         try {
             // Make the GET request using fetch
-            const response = await fetch(`http://localhost:8080/user/search?${queryParams}`, {
+            const response = await fetch(`${getBackUrl()}/user/search?${queryParams}`, {
                 method: 'GET',
                 headers: {
                     // Add any required headers here
@@ -108,7 +109,7 @@ const UserSearch = () => {
         try {
             setIsMerging(true); 
 
-            const response = await fetch('http://localhost:8080/tree/mergeStrategy', {
+            const response = await fetch(getBackUrl() + '/tree/mergeStrategy', {
 
                 method: "POST",
                 headers: {
@@ -141,8 +142,7 @@ const UserSearch = () => {
 
     const fetchData = async (treeId) => {
 
-        const data = await fetch("http://localhost:8080/tree?detail=true&id="+treeId)
-        // const data2 = await fetch("http://localhost:8080/tree?detail=falseid="+treeId)
+        const data = await fetch(getBackUrl() + "/tree?detail=true&id="+treeId)
         const json = await data.json();
 
         const nodes = json.nodes.map(data => {

@@ -2,6 +2,7 @@ import Form from "react-bootstrap/Form";
 import Stack from "react-bootstrap/Stack";
 import Button from "react-bootstrap/Button";
 import {useEffect, useState} from "react";
+import { getBackUrl } from '../utils/urls';
 
 const UserEdit = ({user, isAdmin, handleSubmit}) => {
     const [email, setEmail] = useState("");
@@ -35,7 +36,7 @@ const UserEdit = ({user, isAdmin, handleSubmit}) => {
             setMessage(null);
         }
 
-        const response = await fetch(`http://localhost:8080/user`, {
+        const response = await fetch(`${getBackUrl()}/user`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -149,7 +150,7 @@ const UserEdit = ({user, isAdmin, handleSubmit}) => {
             </Form.Group>
                 {isAdmin && (
                     <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <img src={"http://localhost:8080/user/images/" + username + "_idcard.jpg"}  class="img-fluid" alt="Carte d'identité"/>
+                        <img src={getBackUrl() +"/user/images/" + username + "_idcard.jpg"}  class="img-fluid" alt="Carte d'identité"/>
                     </Form.Group>
                 )}
             {message && (

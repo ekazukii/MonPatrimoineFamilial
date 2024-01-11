@@ -15,6 +15,7 @@ import {
 import {Table} from "react-bootstrap";
 import UserEdit from "../components/UserEdit.jsx";
 import Button from "react-bootstrap/Button";
+import { getBackUrl } from "../utils/urls.js";
 
 const UserValidation = ({dataUsers, handleSelectedUser}) => {
     // Liste des clés que vous souhaitez extraire
@@ -22,10 +23,11 @@ const UserValidation = ({dataUsers, handleSelectedUser}) => {
     // État pour stocker les données extraites
     const [bodies, setBodies] = useState([]);
 
+
     const handleDeleteUser = async (userId, username) => {
         if (window.confirm(`Voulez-vous supprimer l'utilisateur ${username}?`)) {
             try {
-                const response = await fetch(`http://localhost:8080/user`, {
+                const response = await fetch(`${getBackUrl()}/user`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
@@ -53,7 +55,7 @@ const UserValidation = ({dataUsers, handleSelectedUser}) => {
     // const handleValidUser = async (userId, username) => {
     //     if (window.confirm(`Voulez-vous valider l'utilisateur ${username}?`)) {
     //         try {
-    //             const response = await fetch(`http://localhost:8080/user`, {
+    //             const response = await fetch(`${getBackUrl()}/user`, {
     //                 method: 'PUT',
     //                 headers: {
     //                     'Content-Type': 'application/json',
@@ -229,7 +231,7 @@ const AdminPage = () => {
 
     const fetchAllUsers = async () => {
         try {
-            const data = await fetch("http://localhost:8080/users");
+            const data = await fetch(getBackUrl() + "/users");
             if (!data.ok) {
                 throw new Error(`Failed to fetch data. Status: ${data.status}`);
             }

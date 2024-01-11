@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {addPartnersId} from "../utils/tree.js";
 import {useLocation} from "react-router-dom";
 import FamilyTree from "../components/MyTree.jsx";
+import { getBackUrl } from "../utils/urls.js";
 
 function useQuery() {
     const { search } = useLocation();
@@ -15,7 +16,7 @@ const TreePage = () => {
     const [nodes, setNodes] = useState();
 
     const refreshData = async () => {
-        const data = await fetch(`http://localhost:8080/tree?detail=true&id=${id}`)
+        const data = await fetch(`${getBackUrl()}/tree?detail=true&id=${id}`)
         const json = await data.json();
 
         const nodes = json.nodes.map(data => {
@@ -37,7 +38,7 @@ const TreePage = () => {
     };
 
     const postView = async () => {
-        const data = await fetch("http://localhost:8080/tree/view", {
+        const data = await fetch(getBackUrl() + "/tree/view", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'

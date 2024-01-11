@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { getBackUrl } from '../utils/urls';
 
 const ErrorPopup = () => {
     const [showPopup, setShowPopup] = useState(false);
 
     const testConnection = async () => {
         try {
-            const response = await fetch('http://localhost:8080/health', {
+            const response = await fetch(getBackUrl() + '/health', {
                 mode: 'no-cors' // Utiliser 'no-cors' pour les requêtes cross-origin
             });
 

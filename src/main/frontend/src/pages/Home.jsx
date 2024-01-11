@@ -9,6 +9,7 @@ import img4 from "../../../resources/img/home/home-4-nobg.png";
 import img5 from "../../../resources/img/home/home-5-nobg.png";
 import {useSession} from "../hooks/useSession.jsx";
 import './Home.css';
+import { getBackUrl } from '../utils/urls.js';
 
 const Home = () => {
     const products = [{
@@ -27,7 +28,7 @@ const Home = () => {
         text: 'Product Price'
     }];
     const fetchTestUsr = async () => {
-        const data = await fetch("http://localhost:8080/userrdm");
+        const data = await fetch(getBackUrl() + "/userrdm");
         const json = await data.json();
         
         alert(json);

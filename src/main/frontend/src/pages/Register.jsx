@@ -7,6 +7,7 @@ import Container from "react-bootstrap/Container";
 import Nav from 'react-bootstrap/Nav';
 import * as RegisterComponent from '../components/RegisterComponent.jsx'
 import ValidationFront from '../components/ValidationComponent.jsx'
+import { getBackUrl } from '../utils/urls.js';
 
 const Register   = () => {
     const [printEtp, setPrintEtp] = useState(0);
@@ -62,7 +63,7 @@ const Register   = () => {
         formDataObject.append('photo', photo);
 
         try {
-            const response = await fetch("http://localhost:8080/register", {
+            const response = await fetch(getBackUrl() + "/register", {
                 method: "POST",
                 body: formDataObject,
             });

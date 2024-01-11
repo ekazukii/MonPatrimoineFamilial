@@ -3,6 +3,7 @@ package fr.cytech.mpf.service;
 import fr.cytech.mpf.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,6 +15,12 @@ public class MailService {
 
     @Autowired
     private final JavaMailSender javaMailSender;
+
+    @Value("${front.url:http://localhost:5173}")
+    private String frontUrl;
+
+    @Value("${back.url:http://localhost:8080}")
+    private String backUrl;
 
     /**
      * Send an email with the given parameters
@@ -41,7 +48,7 @@ public class MailService {
         messageBuilder.append("Validation de l'email pour le compte ");
         messageBuilder.append(user.getUsername());
         messageBuilder.append("\n");
-        messageBuilder.append("Pour valider la création de votre compte cliquez sur ce lien http://localhost:8080/user/validate?code=");
+        messageBuilder.append("Pour valider la création de votre compte cliquez sur ce lien "+backUrl+"/user/validate?code=");
         messageBuilder.append(user.getValidationCode());
         this.sendEmail(user.getEmail(), "[MPF] Validation de votre email", messageBuilder.toString());
     }
@@ -63,11 +70,11 @@ public class MailService {
         messageBuilder.append(userThatChangedTree.getUsername());
         messageBuilder.append("\n");
         messageBuilder.append("\n");
-        messageBuilder.append("Pour voir les modifications cliquez sur ce lien http://localhost:5173/external?id=");
+        messageBuilder.append("Pour voir les modifications cliquez sur ce lien "+frontUrl+"/external?id=");
         messageBuilder.append(userThatChangedTree.getTree().getId());
         messageBuilder.append("\n");
         messageBuilder.append("\n");
-        messageBuilder.append("Pour re-synchroniser les changements cliquez sur ce lien http://localhost:8080/tree/mergeStrategy?requestingTreeId=");
+        messageBuilder.append("Pour re-synchroniser les changements cliquez sur ce lien "+backUrl+"/tree/mergeStrategy?requestingTreeId=");
         messageBuilder.append(user.getTree().getId());
         messageBuilder.append("&respondingTreeId=");
         messageBuilder.append(userThatChangedTree.getTree().getId());
@@ -91,11 +98,11 @@ public class MailService {
         messageBuilder.append(" vous a ajouté dans son arbre");
         messageBuilder.append("\n");
         messageBuilder.append("\n");
-        messageBuilder.append("Pour voir l'arbre dans lequel vous avez été ajouté cliquez sur ce lien http://localhost:5173/external?id=");
+        messageBuilder.append("Pour voir l'arbre dans lequel vous avez été ajouté cliquez sur ce lien "+frontUrl+"/external?id=");
         messageBuilder.append(userThatChangedTree.getTree().getId());
         messageBuilder.append("\n");
         messageBuilder.append("\n");
-        messageBuilder.append("Pour ajouter son arbre au votre, cliquez sur ce lien http://localhost:8080/tree/mergeStrategy?requestingTreeId=");
+        messageBuilder.append("Pour ajouter son arbre au votre, cliquez sur ce lien "+backUrl+"/tree/mergeStrategy?requestingTreeId=");
         messageBuilder.append(user.getTree().getId());
         messageBuilder.append("&respondingTreeId=");
         messageBuilder.append(userThatChangedTree.getTree().getId());

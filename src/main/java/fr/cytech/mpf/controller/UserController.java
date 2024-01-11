@@ -21,6 +21,7 @@ import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -58,6 +59,9 @@ public class UserController {
     @Autowired
     NodeRepository nodeRepository;
     ModelMapper modelMapper;
+
+    @Value("${front.url:http://localhost:5173}")
+    String frontUrl;
 
     UserController() {
         modelMapper = new ModelMapper();
@@ -226,11 +230,11 @@ public class UserController {
             users.forEach((u) -> u.setValidationCode(null));
             userRepository.saveAll(users);
             //TODO: Mettre une route vers un message de validation
-            return "redirect:http://localhost:5173/login";
+            return "redirect:"+frontUrl+"/login";
         } else {
             // Aucun utilisateur n'a été trouvé avec le code de validation
             //TODO: Mettre une route vers un message d'erreur (non trouvé)
-            return "redirect:http://localhost:5173/";
+            return "redirect:"+frontUrl;
         }
     }
 
