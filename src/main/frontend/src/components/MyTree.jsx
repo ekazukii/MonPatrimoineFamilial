@@ -93,7 +93,7 @@ export default function Chart({nodes, readOnly, treeId}) {
             args.nodes = args.nodes.filter(node => node.id !== "_ft_partner");
         });
 
-        family.editUI.on('button-click', async function (sender, args) {
+        family.editUI.on('button-click',  function (sender, args) {
             // find nodes with id args.nodeId
             const node = nodes.find(n => n.id === args.nodeId);
             if(!node) return true;
@@ -102,8 +102,11 @@ export default function Chart({nodes, readOnly, treeId}) {
                 if(node.userInfo?.id === treeId) {
                     toast.error("You can't delete your own node");
                     return false;
+                } else if (node.fid || node.mid) {
+                    toast.error("You can't delete a node with a father or a mother");
+                    return false;
                 } else {
-                    await fetch('http://localhost:8080/tree/node', {
+                    fetch('http://localhost:8080/tree/node', {
                         method: "DELETE",
                         headers: {
                             "Content-Type": "application/json",
@@ -116,7 +119,7 @@ export default function Chart({nodes, readOnly, treeId}) {
                 return true;
             }
 
-            if(nodes.tags && (node.tags.includes("registeredF") || node.tags.includes("registeredM"))) {
+            if(node.tags && (node.tags.includes("registeredF") || node.tags.includes("registeredM"))) {
                 toast.error("You can't edit a registered node");
                 return false;
             }
@@ -176,6 +179,9 @@ export default function Chart({nodes, readOnly, treeId}) {
             }
 
             args.updateNodesData.forEach(nodeData => {
+                if(node.tags && (node.tags.includes("registeredF") || node.tags.includes("registeredM"))) {
+                    return;
+                }
                 const [firstName, lastName] = nodeData.name && nodeData.name.includes(" ") ? nodeData.name.split(" ") : ["", ""];
                 fetch('http://localhost:8080/tree/node', {
                     method: "PUT",
