@@ -197,17 +197,22 @@ const UserSearch = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {users.map((user) => (
-                            <tr key={user.id}>
-                                <td>{user.id}</td>
-                                <td>{user.firstname}</td>
-                                <td>{user.lastname}</td>
-                                <td>{user.email}</td>
-                                <td>{user.username}</td>
-                                <td><a href={`/external?id=${user.tree}`}>Voir l'arbre</a></td>
-                                {isLoggedIn && (<td><Button onClick={() => mergeWith(user) } disabled={isMerging}>Fusionner</Button></td>)}
-                            </tr>
-                        ))}
+                        {users.map((user1) => {
+                        if (user1.id !== user.id) {
+                            return (
+                                <tr key={user1.id}>
+                                    <td>{user1.id}</td>
+                                    <td>{user1.firstname}</td>
+                                    <td>{user1.lastname}</td>
+                                    <td>{user1.email}</td>
+                                    <td>{user1.username}</td>
+                                    <td><a href={`/external?id=${user1.tree}`}>Voir l'arbre</a></td>
+                                    {isLoggedIn && (<td><Button onClick={() => mergeWith(user1) } disabled={isMerging}>Fusionner</Button></td>)}
+                                </tr>
+                                );
+                            }
+                            return null;
+                        })}
                         </tbody>
                     </Table>
                 </Col>
