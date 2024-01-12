@@ -3,10 +3,12 @@ import FamilyTree from "@balkangraph/familytree.js";
 import TreeSettings from "./TreeSettings.jsx";
 import { v4 as uuidv4 } from 'uuid';
 import toast from "react-hot-toast";
+import {useSession} from "../hooks/useSession.jsx";
 
 
 export default function Chart({nodes, readOnly, treeId}) {
     const [defModalItem, setDefModalItem] = useState();
+    const {user, isLoggedIn} = useSession();
 
     const ref = useRef();
 
@@ -99,7 +101,7 @@ export default function Chart({nodes, readOnly, treeId}) {
             if(!node) return true;
 
             if (args.name === 'remove') {
-                if(node.userInfo?.id === treeId) {
+                if(node.userInfo?.id === user.id) {
                     toast.error("You can't delete your own node");
                     return false;
                 } else if (node.fid || node.mid) {
@@ -129,7 +131,7 @@ export default function Chart({nodes, readOnly, treeId}) {
 
         family.onUpdateNode(async (args) => {
             if(args.removeNodeId) {
-                if(node.nodeId === treeId) {
+                if(args.removeNodeId === user.id) {
                     toast.error("You BACKUP ");
                     return false;
                 }
@@ -179,7 +181,7 @@ export default function Chart({nodes, readOnly, treeId}) {
             }
 
             args.updateNodesData.forEach(nodeData => {
-                if(node.tags && (node.tags.includes("registeredF") || node.tags.includes("registeredM"))) {
+                if(nodeData.tags && (nodeData.tags.includes("registeredF") || nodeData.tags.includes("registeredM"))) {
                     return;
                 }
                 const [firstName, lastName] = nodeData.name && nodeData.name.includes(" ") ? nodeData.name.split(" ") : ["", ""];
