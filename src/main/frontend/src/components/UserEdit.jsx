@@ -107,19 +107,19 @@ const UserEdit = ({user, isAdmin, handleSubmit}) => {
         <Form>
             <Form.Group className="mb-3" controlId="formBasicUsername">
                 <Form.Label>Username</Form.Label>
-                <Form.Control type="text" disabled="true" value={username}/>
+                <Form.Control type="text" disabled={true} value={username}/>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicSecurityNumber">
                 <Form.Label>Social security number</Form.Label>
-                <Form.Control type="number" placeholder="Enter social security number" disabled="true"value={ssn} />
+                <Form.Control type="number" placeholder="Enter social security number" disabled={true}value={ssn} />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicBirthd">
                 <Form.Label>Birth information</Form.Label>
                 <Stack direction="horizontal" gap={3}>
-                    <Form.Control type="date" placeholder="Enter Birth Date"  value={birthdate} disabled="true"/>
-                    <Form.Select value={isMale ? "m" : "f"} onChange={(e) => setIsMale(e.target.value === "m")} disabled="true"> 
+                    <Form.Control type="date" placeholder="Enter Birth Date"  value={birthdate} disabled={true}/>
+                    <Form.Select value={isMale ? "m" : "f"} onChange={(e) => setIsMale(e.target.value === "m")} disabled={true}>
                         <option value="m">Male</option>
                         <option value="f">Female</option>
                     </Form.Select>
@@ -129,8 +129,8 @@ const UserEdit = ({user, isAdmin, handleSubmit}) => {
             <Form.Group className="mb-3" controlId="formBasicUsername">
                 <Form.Label>Name</Form.Label>
                 <Stack direction="horizontal" gap={3}>
-                    <Form.Control type="text" placeholder="Enter First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled="true"/>
-                    <Form.Control type="text" placeholder="Enter Family Name" value={familyName} onChange={(e) => setFamilyName(e.target.value)} disabled="true"/>
+                    <Form.Control type="text" placeholder="Enter First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={true}/>
+                    <Form.Control type="text" placeholder="Enter Family Name" value={familyName} onChange={(e) => setFamilyName(e.target.value)} disabled={true}/>
                 </Stack>
             </Form.Group>
 
