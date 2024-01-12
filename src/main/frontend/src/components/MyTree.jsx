@@ -181,9 +181,9 @@ export default function Chart({nodes, readOnly, treeId}) {
             }
 
             args.updateNodesData.forEach(nodeData => {
-                if(nodeData.tags && (nodeData.tags.includes("registeredF") || nodeData.tags.includes("registeredM"))) {
-                    return;
-                }
+                // if(nodeData.tags && (nodeData.tags.includes("registeredF") || nodeData.tags.includes("registeredM"))) {
+                //     return;
+                // }
                 const [firstName, lastName] = nodeData.name && nodeData.name.includes(" ") ? nodeData.name.split(" ") : ["", ""];
                 fetch('http://localhost:8080/tree/node', {
                     method: "PUT",
