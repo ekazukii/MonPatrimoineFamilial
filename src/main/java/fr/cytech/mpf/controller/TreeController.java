@@ -15,6 +15,9 @@ import fr.cytech.mpf.service.MailService;
 import fr.cytech.mpf.service.MergeTreeTomService;
 import fr.cytech.mpf.service.NodeService;
 import fr.cytech.mpf.service.validation.ValidationException;
+import fr.cytech.mpf.service.validation.ValidationResponse;
+import fr.cytech.mpf.service.validation.ValidationStrategy;
+import fr.cytech.mpf.service.validation.rules.BirthDateRule;
 import fr.cytech.mpf.service.mergeTree.MergeTreeService;
 import fr.cytech.mpf.service.mergeTree.MergeTreeException;
 import fr.cytech.mpf.utils.NodeVisibility;
@@ -221,14 +224,24 @@ public class TreeController {
      */
     @MustBeLogged
     @PutMapping("/tree/node")
-    public ResponseEntity<Node> editNode(@RequestBody NodeEditDTO nodeDto) {
+    public ResponseEntity<?> editNode(@RequestBody NodeEditDTO nodeDto) {
+        
         Node node = nodeRepository.findById(nodeDto.getId()).orElse(null);
         if(node == null) return ResponseEntity.notFound().build();
         customDTOMapper.nodeAddDtoToNode(node, nodeDto);
+
+        ValidationStrategy simpleValidationStrategy = new ValidationStrategy(Arrays.asList(new BirthDateRule()));
+        ValidationResponse response = simpleValidationStrategy.validate(node);
+
         // TODO: Check has permissions to edit
-        nodeService.notifyChange(node.getTree());
-        nodeRepository.save(node);
-        return ResponseEntity.ok(node);
+        if (response.isSucess()) {
+            nodeService.notifyChange(node.getTree());
+            nodeRepository.save(node);
+            return ResponseEntity.ok(node);
+        } else {
+            System.out.println(response.getErrorMessage());
+            return ResponseEntity.badRequest().body(response.getErrorMessage());
+        }
     }
 
     @MustBeLogged
