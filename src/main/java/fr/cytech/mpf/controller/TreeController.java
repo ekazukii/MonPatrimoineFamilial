@@ -27,12 +27,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.HashMap;
 
 /**
  * MVC Controller for the tree node features
@@ -248,11 +244,13 @@ public class TreeController {
                         System.out.println(node.getUserAccount().getFirstname()+" "+node.getUserAccount().getLastname());
                         users.add(node.getUserAccount());
                     }else{
-                        System.out.println("Account :"+ node.getFirstName().charAt(0)+node.getLastName() +" BD :"+ node.getBirthDate());
-                        List<User> user = userRepository.findByFirstnameLastnameOrUsernameAndBirthdate(
-                                node.getFirstName().charAt(0)+node.getLastName(), node.getBirthDate().split("/")[2] + "-" + node.getBirthDate().split("/")[1] + "-" + node.getBirthDate().split("/")[0]);
-                        System.out.println(user);
-                        users.addAll(user);
+                        if(!Objects.equals(node.getLastName(), "") && !Objects.equals(node.getFirstName(), "") && !Objects.equals(node.getBirthDate(), "")){
+                            System.out.println("Account :"+ node.getLastName().charAt(0)+node.getFirstName() +" BD :"+ node.getBirthDate());
+                            List<User> user = userRepository.findByFirstnameLastnameOrUsernameAndBirthdate(
+                                    node.getLastName().charAt(0)+node.getFirstName(), node.getBirthDate().split("/")[2] + "-" + node.getBirthDate().split("/")[1] + "-" + node.getBirthDate().split("/")[0]);
+                            System.out.println(user);
+                            users.addAll(user);
+                        }
                     }
                 }
             }

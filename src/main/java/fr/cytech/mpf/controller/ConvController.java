@@ -88,7 +88,7 @@ public class ConvController {
     public ResponseEntity<List<MsgGetDTO>> getMsgByFamilleUser(@RequestBody Long userId) {
         System.out.println("_________Début recherche famille______________");
         System.out.println("Recherche les connexions de l'utilisateur : "+userId);
-        List<Long> userListConnected = nodeService.findUserAccountIdsByTreeIdAndUserToSearch(userId, userId);
+        List<Long> userListConnected = nodeService.findUserAccountIdsByTreeIdAndUserToSearch(userRepository.findById(userId).get().getTree().getId(), userId);
         System.out.println("Résultat de userListConnected : "+userListConnected);
         // Utilisez la méthode findAllByUserAccountIdIn pour récupérer les messages de tous les utilisateurs dans userListConnected
         List<MsgInfo> msgInfos = convRepository.findAllByUser_idIn(userListConnected);

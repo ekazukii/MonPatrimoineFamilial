@@ -357,10 +357,11 @@
                     },
                     body: JSON.stringify(user.id),
                 });
-                const jsonData = await data.json();
-                const sortedJsonData = [...jsonData].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-                setJsonMsg(sortedJsonData);
+                if(data.ok){
+                    const jsonData = await data.json();
+                    const sortedJsonData = [...jsonData].sort((a, b) => new Date(b.date) - new Date(a.date));
+                    setJsonMsg(sortedJsonData);
+                }
             };
 
             const getInfoUsers = async () => {
